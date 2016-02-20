@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block title %}{% trans "Login" %}{% endblock %}
+
+{% load widget_tweaks %}
+
+{% block content %}
+
+{% if next %}
+<div class="alert alert-warning" role="alert">
+    {% if user.is_authenticated %}
+    <strong>{% trans "Your account doesn't have access to this page. To proceed,
+    please login with an account that has access." %}</strong>
+    {% else %}
+    <strong>{% trans "Please login to see this page." %}</strong>
+    {% endif %}
+</div>
+{% endif %}
+
+{% for error in form.non_field_errors %}
+<div class="alert alert-danger" role="alert">
+    <strong>{{ error }}</strong>
+</div>
+{% endfor %}
+
+
+<div class="block-center">
+    <form class="form-profile" method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        <h2 class="form-signin-heading">{% trans "Please sign in" %}</h2>
+        <div class="form-group">
+        {% for field in form %}
+            <label for="{{ field.id_for_label }}" class="control-label">{{ field.label }}</label>
+            {{ field|attr:"class:form-control" }} 
+            {% for error in field.errors %}
+                <strong class="alert alert-danger" role="alert">{{ error }}</strong>
+            {% endfor %}
+        {% endfor %}
+        </div>
+        
+        <div class="control-group">
+            <div class="controls">
+                <input type="submit" class="btn btn-primary btn-block" value="{% trans "Login" %}" />
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="controls">
+                <a class="btn" href="{% url 'password_reset' %}">{% trans "Lost password?" %}</a>
+                <a class="btn" href="{% url 'register' %}">{% trans "Sign up" %}</a>
+            </div>
+        </div> 
+
+        <input type="hidden" name="next" value="{{ next }}" />
+    </form>
+</div>
+{% endblock %}

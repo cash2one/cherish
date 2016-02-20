@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block title %}{% trans "User Profile" %}{% endblock %}
+
+{% load widget_tweaks %}
+
+{% block content %}
+
+{% for error in profile_form.non_field_errors %}
+<strong class="alert alert-danger">{{ error }}</strong>
+{% endfor %}
+
+{% if message %}
+<div class="alert alert-warning" role="alert">
+    <strong>{{ message }}</strong>
+</div>
+{% endif %}
+
+<div class="block-center">
+    
+    <form class="form-profile">
+    {% for field in user_form %}
+        <div class="form-group">
+            <label class="control-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field|attr:"class:form-control" }} 
+        </div>
+    {% endfor %}
+    </form>
+    <hr/>
+
+    <form class="form-profile" method="post" action="{% url 'profile' %}">
+        {% csrf_token %}
+
+        {% for field in profile_form %}
+            <div class="form-group">
+                <label class="control-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field|attr:"class:form-control" }} 
+                {% for error in field.errors %}
+                    <strong class="alert alert-danger">{{ error }}</strong>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        
+        <div class="control-group">
+            <div class="controls">
+                <input type="submit" class="btn btn-primary" value="{% trans "Update" %}" />
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
