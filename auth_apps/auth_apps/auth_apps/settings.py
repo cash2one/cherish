@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     # third part apps
     'oauth2_provider',
+    'rest_framework',
     'corsheaders',
     'widget_tweaks',
     # my apps
@@ -62,7 +63,7 @@ ROOT_URLCONF = 'auth_apps.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['templates', ],
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -124,3 +125,42 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # CORS settings
 CORS_ORIGIN_ALLOW_ALL = True
+
+# django oauth toolkit settings
+OAUTH2_PROVIDER = {
+    'SCOPES': {
+        'user': 'Read user info scope',
+        'group': 'Read group info scope',
+    },
+    'DEFAULT_SCOPES': ['user', 'group'],
+}
+
+# rest framework settings
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'oauth2_provider.ext.rest_framework.OAuth2Authentication',
+    )
+}
+
+# loggings
+LOGGING = {
+    'version': 1,
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'oauthlib': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'auth_user': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}

@@ -2,5 +2,6 @@ django==1.9.0
 django-cors-headers
 django-oauth-toolkit
 django-widget-tweaks
+djangorestframework
 MySQL-python==1.2.5
 uWSGI==2.0.11.1

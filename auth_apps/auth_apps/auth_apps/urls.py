@@ -16,16 +16,16 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 
-from auth_user.views import UserRegisterView, UserRegisterDoneView, UserProfileView, HomePageView
+from auth_user.views import HomePageView
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^oauth/', include('oauth2_provider.urls', namespace='oauth2_provider')),
+    url(
+        r'^oauth/', 
+        include('oauth2_provider.urls', namespace='oauth2_provider')
+    ),
 
-    url(r'^accounts/', include('django.contrib.auth.urls')),
-    url(r'^accounts/register/done/$', UserRegisterDoneView.as_view(), name='register_done'),
-    url(r'^accounts/register/$', UserRegisterView.as_view(), name='register'),
-    url(r'^accounts/profile/$', UserProfileView.as_view(), name='profile'),
+    url(r'^$', HomePageView.as_view(), name='home'),
 
-    url(r'^$', HomePageView.as_view(), name='home')
+    url(r'^accounts/', include('auth_user.urls')),
 ]

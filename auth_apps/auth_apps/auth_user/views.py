@@ -1,7 +1,7 @@
 import logging
 
 from django.shortcuts import render
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.views.generic import View
 from django.views.decorators.cache import never_cache
@@ -11,9 +11,14 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.db import transaction
 from django.views.generic.base import TemplateView
+from django.contrib.auth.models import Group
+from rest_framework import permissions, generics
+from oauth2_provider.ext.rest_framework import TokenHasReadWriteScope, TokenHasScope
 
 from .models import AuthUser
 from .forms import UserBasicForm, UserProfileForm, UserReadOnlyBasicForm
+from .serializers import AuthUserSerializer, GroupSerializer
+from .permissions import IsTokenOwnerPermission
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +30,7 @@ class HomePageView(TemplateView):
 class UserRegisterView(View):
     user_form_class = UserBasicForm
     profile_form_class = UserProfileForm
-    template_name = 'registration/register.html'
+    template_name = 'accounts/register.html'
 
     @method_decorator(never_cache)
     def get(self, request, *args, **kwargs):
@@ -59,7 +64,7 @@ class UserRegisterView(View):
 
 
 class UserRegisterDoneView(View):
-    template_name = 'registration/register_done.html'
+    template_name = 'accounts/register_done.html'
     
     @method_decorator(never_cache)
     def get(self, request, *args, **kwargs):
@@ -69,7 +74,7 @@ class UserRegisterDoneView(View):
 class UserProfileView(View):
     user_form_class = UserReadOnlyBasicForm
     profile_form_class = UserProfileForm
-    template_name = 'registration/profile.html'
+    template_name = 'accounts/profile.html'
 
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
@@ -101,4 +106,22 @@ class UserProfileView(View):
             'user_form': user_form, 
             'profile_form': profile_form,
         })
+
+
+class UserRetrieveAPIView(generics.RetrieveAPIView):
+    permission_classes = [
+        permissions.IsAuthenticated, TokenHasScope, IsTokenOwnerPermission
+    ]
+    required_scopes = ['user']
+    queryset = AuthUser.objects.all()
+    serializer_class = AuthUserSerializer
+
+
+class GroupRetrieveAPIView(generics.RetrieveAPIView):
+    permission_classes = [
+        permissions.IsAuthenticated, TokenHasScope, IsTokenOwnerPermission
+    ]
+    required_scopes = ['group']
+    queryset = Group.objects.all()
+    serializer_class = GroupSerializer
 
