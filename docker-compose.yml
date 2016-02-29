@@ -19,8 +19,8 @@ web:
      - EMAIL_USE_SSL=1
      - EMAIL_USE_TLS=0
      - EMAIL_HOST=stmp.163.com
-     - EMAIL_HOST_USER=lbj_world@163.com
-     - EMAIL_HOST_PASSWORD=dream829!@#
+     - EMAIL_HOST_USER=<your email account>
+     - EMAIL_HOST_PASSWORD=<your email password>
      - EMAIL_PORT=994
     links:
      - db:db
