@@ -9,4 +9,4 @@
 
 ## 参考
 
-[an introduction to oauth2][https://www.digitalocean.com/community/tutorials/an-introduction-to-oauth-2]
+[an introduction to oauth2](https://www.digitalocean.com/community/tutorials/an-introduction-to-oauth-2)
