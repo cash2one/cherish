@@ -141,6 +141,8 @@ The `authorization code` grant type is the most commonly used because it is opti
 3. Application Receives Authorization Code
 4. Application Requests Access Token
 
+详细应用实例[参考代码](https://github.com/lbjworld/auth_center/tree/master/auth_apps/auth_apps/tests/test_authorization_code.py)
+
 ### Implicit
 ---
 The `implicit` grant type is used for mobile apps and web applications (i.e. applications that run in a web browser), where the client secret confidentiality is not guaranteed. The implicit grant type is also a redirection-based flow but the access token is given to the user-agent to forward to the application, so it may be exposed to the user and other applications on the user's device. Also, this flow does not authenticate the identity of the application, and relies on the redirect URI (that was registered with the service) to serve this purpose.
