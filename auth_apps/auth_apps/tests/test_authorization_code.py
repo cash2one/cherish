@@ -19,7 +19,7 @@ logger.setLevel(logging.DEBUG)
 BASE_URL = u'https://localhost:5000'
 USERNAME = u'admin'
 PASSWORD = u'admin'
-
+USER_PK = 1
 
 class ApplicationClient(object):
     def __init__(self, base_url, username, password):
@@ -258,7 +258,7 @@ class TestAuthorizationCode(unittest.TestCase):
         self.assertTrue(code)
         access_token_info = self._application_requests_access_token(code)
         self.assertTrue(access_token_info)
-        user_info = self._application_requests_resource(access_token_info, 1)
+        user_info = self._application_requests_resource(access_token_info, USER_PK)
         self.assertTrue(user_info)
 
 
