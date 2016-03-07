@@ -128,7 +128,7 @@ AUTH_USER_MODEL = 'auth_user.TechUUser'
 
 # password settings
 PASSWORD_HASHERS = [
-    'auth_user.hashers.TechUPasswordHasher',
+    'django.contrib.auth.hashers.MD5PasswordHasher',
 ]
 
 # CORS settings

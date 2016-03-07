@@ -27,7 +27,7 @@
 
 
 <div class="block-center">
-    <form class="form-profile" method="post" action="{% url 'login' %}">
+    <form class="form-profile" method="post" onsubmit="encrypt_password('id_password')" action="{% url 'login' %}">
         {% csrf_token %}
         <h2 class="form-signin-heading">{% trans "Please sign in" %}</h2>
         <div class="form-group">
@@ -42,7 +42,7 @@
         
         <div class="control-group">
             <div class="controls">
-                <input type="submit" class="btn btn-primary btn-block" value="{% trans "Login" %}" />
+                <input type="submit" class="btn btn-primary btn-block" value="{% trans "Login" %}" onclick />
             </div>
         </div>
         <div class="control-group">
@@ -55,4 +55,5 @@
         <input type="hidden" name="next" value="{{ next }}" />
     </form>
 </div>
+
 {% endblock %}
