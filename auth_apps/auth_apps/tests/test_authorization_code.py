@@ -250,15 +250,21 @@ class TestAuthorizationCode(unittest.TestCase):
         return user_info
 
     def test_authorization_code(self):
+        import time
         auth_link = self._authorization_code_link()
+        time.sleep(5)
         self.assertTrue(auth_link)
         callback_uri = self._user_authorizes_application(auth_link)
+        time.sleep(5)
         self.assertTrue(callback_uri)
         code = self._application_receives_authorization_code(callback_uri)
+        time.sleep(5)
         self.assertTrue(code)
         access_token_info = self._application_requests_access_token(code)
+        time.sleep(5)
         self.assertTrue(access_token_info)
         user_info = self._application_requests_resource(access_token_info, USER_PK)
+        time.sleep(5)
         self.assertTrue(user_info)
 
 

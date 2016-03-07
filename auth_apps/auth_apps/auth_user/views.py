@@ -15,9 +15,9 @@ from django.contrib.auth.models import Group
 from rest_framework import permissions, generics
 from oauth2_provider.ext.rest_framework import TokenHasReadWriteScope, TokenHasScope
 
-from .models import AuthUser
-from .forms import UserBasicForm, UserProfileForm, UserReadOnlyBasicForm
-from .serializers import AuthUserSerializer, GroupSerializer
+from .models import TechUUser
+from .forms import UserProfileForm, UserRegisterForm
+from .serializers import TechUUserSerializer, GroupSerializer
 from .permissions import IsTokenOwnerPermission
 
 logger = logging.getLogger(__name__)
@@ -28,17 +28,14 @@ class HomePageView(TemplateView):
 
 
 class UserRegisterView(View):
-    user_form_class = UserBasicForm
-    profile_form_class = UserProfileForm
+    form_class = UserRegisterForm
     template_name = 'accounts/register.html'
 
     @method_decorator(never_cache)
     def get(self, request, *args, **kwargs):
-        user_form = self.user_form_class()
-        profile_form = self.profile_form_class()
+        form = self.form_class()
         return render(request, self.template_name, {
-            'user_form': user_form, 
-            'profile_form': profile_form,
+            'form': form, 
         })
 
     @method_decorator(sensitive_post_parameters())
@@ -46,20 +43,15 @@ class UserRegisterView(View):
     @method_decorator(never_cache)
     @method_decorator(transaction.atomic)
     def post(self, request, *args, **kwargs):
-        user_form = self.user_form_class(data=request.POST)
-        profile_form = self.profile_form_class(data=request.POST)
-        if all((user_form.is_valid(), profile_form.is_valid())):
+        form = self.form_class(data=request.POST)
+        if form.is_valid():
             # add new user
-            user = user_form.save()
-            auth_user = profile_form.save(commit=False)
-            auth_user.user = user
-            auth_user.save()
+            user = form.save()
             logger.info('[ADD USER] {user}'.format(user=user))
             return HttpResponseRedirect(reverse('register_done'))
 
         return render(request, self.template_name, {
-            'user_form': user_form, 
-            'profile_form': profile_form,
+            'form': form, 
         })
 
 
@@ -72,39 +64,33 @@ class UserRegisterDoneView(View):
 
 
 class UserProfileView(View):
-    user_form_class = UserReadOnlyBasicForm
-    profile_form_class = UserProfileForm
+    form_class = UserProfileForm
     template_name = 'accounts/profile.html'
 
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
-        auth_user = AuthUser.objects.get(user=request.user)
+        auth_user = TechUUser.objects.get(pk=request.user.pk)
         assert(auth_user)
-        user_form = self.user_form_class(instance=auth_user.user)
-        profile_form = self.profile_form_class(instance=auth_user)
+        form = self.form_class(instance=auth_user)
         return render(request, self.template_name, {
-            'user_form': user_form, 
-            'profile_form': profile_form,
+            'form': form, 
         })
 
     @method_decorator(login_required)
     @method_decorator(csrf_protect)
     def post(self, request, *args, **kwargs):
-        auth_user = AuthUser.objects.get(user=request.user)
+        auth_user = TechUUser.objects.get(pk=request.user.pk)
         assert(auth_user)
-        user_form = self.user_form_class(instance=auth_user.user)
-        profile_form = self.profile_form_class(
-            data=request.POST, instance=auth_user)
+        form = self.form_class(instance=auth_user)
         message = None
-        if profile_form.is_valid():
+        if form.is_valid():
             # add new user
-            profile_form.save()
+            form.save()
             message = 'profile updated !'
 
         return render(request, self.template_name, {
             'message': message,
-            'user_form': user_form, 
-            'profile_form': profile_form,
+            'form': form,
         })
 
 
@@ -113,8 +99,8 @@ class UserRetrieveAPIView(generics.RetrieveAPIView):
         permissions.IsAuthenticated, TokenHasScope, IsTokenOwnerPermission
     ]
     required_scopes = ['user']
-    queryset = AuthUser.objects.all()
-    serializer_class = AuthUserSerializer
+    queryset = TechUUser.objects.all()
+    serializer_class = TechUUserSerializer
 
 
 class GroupRetrieveAPIView(generics.RetrieveAPIView):

@@ -8,11 +8,7 @@
 
 {% block content %}
 
-{% for error in user_form.non_field_errors %}
-    <strong class="alert alert-danger">{{ error }}</strong>
-{% endfor %}
-
-{% for error in profile_form.non_field_errors %}
+{% for error in form.non_field_errors %}
     <strong class="alert alert-danger">{{ error }}</strong>
 {% endfor %}
 
@@ -21,19 +17,7 @@
     <form class="form-profile" method="post" action="{% url 'register' %}">
         {% csrf_token %}
 
-        {% for field in user_form %}
-            <div class="control-group {% if field.errors %}error{% endif %}">
-                <label class="control-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
-                {{ field|attr:"class:form-control" }} 
-                {% for error in field.errors %}
-                    <strong class="alert alert-danger">{{ error }}</strong>
-                {% endfor %}
-            </div>
-        {% endfor %}
-
-        <hr/>
-
-        {% for field in profile_form %}
+        {% for field in form %}
             <div class="control-group {% if field.errors %}error{% endif %}">
                 <label class="control-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
                 {{ field|attr:"class:form-control" }} 

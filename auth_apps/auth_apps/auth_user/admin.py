@@ -1,20 +1,26 @@
 from django.contrib import admin
+from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.admin import UserAdmin
-from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserChangeForm
+from django.utils.translation import ugettext_lazy as _
+from django.db.models.fields import Field
 
-from auth_user.models import AuthUser 
+from auth_user.models import TechUUser 
 
-# Define an inline admin descriptor for AuthUser model
-# which acts a bit like a singleton
-class AuthUserInline(admin.StackedInline):
-    model = AuthUser
-    can_delete = False
-    verbose_name_plural = 'AuthUser'
 
-# Define a new User admin
-class UserAdmin(UserAdmin):
-    inlines = (AuthUserInline, )
+class TechUUserChangeForm(UserChangeForm):
+    class Meta(UserChangeForm.Meta):
+        model = TechUUser
 
-# Re-register UserAdmin
-admin.site.unregister(User)
-admin.site.register(User, UserAdmin)
+
+class TechUUserAdmin(UserAdmin):
+    form = TechUUserChangeForm
+
+    fieldsets = UserAdmin.fieldsets + (
+        (_('Profile Info'), {
+            'fields': ('birth_date', 'qq', 'remark', 'mobile', 'phone', 'address')
+        }),
+    )
+
+
+admin.site.register(TechUUser, TechUUserAdmin)

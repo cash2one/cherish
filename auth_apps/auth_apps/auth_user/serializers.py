@@ -1,24 +1,17 @@
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import Group
 from rest_framework import serializers
 
-from .models import AuthUser
+from .models import TechUUser
 
 
-class UserSerializer(serializers.ModelSerializer):
+class TechUUserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
-        exclude = ('password', )
-
-
-class AuthUserSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
-
-    class Meta:
-        model = AuthUser
+        model = TechUUser
         fields = (
-            'user', 'birth_date', 'qq', 'remark', 
+            'user', 'email', 'birth_date', 'qq', 'remark', 
             'mobile', 'phone', 'address'
         )
+        exclude = ('password', )
 
 
 class GroupSerializer(serializers.ModelSerializer):

@@ -123,6 +123,14 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_PORT = int(os.getenv('EMAIL_PORT'))
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER 
 
+# auth setting
+AUTH_USER_MODEL = 'auth_user.TechUUser'
+
+# password settings
+PASSWORD_HASHERS = [
+    'auth_user.hashers.TechUPasswordHasher',
+]
+
 # CORS settings
 CORS_ORIGIN_ALLOW_ALL = True
 
