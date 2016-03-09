@@ -44,6 +44,7 @@ INSTALLED_APPS = (
     'widget_tweaks',
     # my apps
     'auth_user',
+    'custom_admin',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -63,7 +64,7 @@ ROOT_URLCONF = 'auth_apps.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'custom_admin', 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
