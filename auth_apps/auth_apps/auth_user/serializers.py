@@ -8,10 +8,9 @@ class TechUUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = TechUUser
         fields = (
-            'user', 'email', 'birth_date', 'qq', 'remark', 
+            'username', 'email', 'birth_date', 'qq', 'remark', 
             'mobile', 'phone', 'address'
         )
-        exclude = ('password', )
 
 
 class GroupSerializer(serializers.ModelSerializer):

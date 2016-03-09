@@ -172,7 +172,7 @@ class TestAuthorizationCode(unittest.TestCase):
         self.application_helper = ApplicationHelper(self.client, self.base_url)
         app_params = {
             u'name': u'test_application',
-            u'client_type': u'confidential',
+            u'client_type': u'public',
             u'authorization_grant_type': u'authorization-code',
             u'redirect_uris': u'https://baidu.com/', # get grant code callback
         }
@@ -264,7 +264,6 @@ class TestAuthorizationCode(unittest.TestCase):
         time.sleep(5)
         self.assertTrue(access_token_info)
         user_info = self._application_requests_resource(access_token_info, USER_PK)
-        time.sleep(5)
         self.assertTrue(user_info)
 
 

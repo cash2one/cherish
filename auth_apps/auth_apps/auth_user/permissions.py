@@ -12,8 +12,5 @@ class IsTokenOwnerPermission(permissions.BasePermission):
         if request.user:
             logger.debug('[IsTokenOwnerPermission] token user(request.user): {user}'.format(
                 user=request.user))
-            if hasattr(obj, 'user'):
-                logger.debug('[IsTokenOwnerPermission] object.user: {user}'.format(
-                    user=obj.user))
-                return (obj.user == request.user)
+            return (obj == request.user)
         return False
