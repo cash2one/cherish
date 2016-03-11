@@ -43,8 +43,9 @@ INSTALLED_APPS = (
     'corsheaders',
     'widget_tweaks',
     # my apps
+    'common',
     'auth_user',
-    'custom_admin',
+    'custom_oauth2',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -64,7 +65,10 @@ ROOT_URLCONF = 'auth_apps.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'custom_admin', 'templates')],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates'),
+            os.path.join(BASE_DIR, 'custom_oauth2', 'templates'),
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -172,4 +176,15 @@ LOGGING = {
             'propagate': True,
         },
     },
+}
+
+# security setting
+SECURE_SSL_REDIRECT = True
+
+# cache setting
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': os.getenv('MEMCACHED_ADDR') + ':' + os.getenv('MEMCACHED_PORT'),
+    }
 }

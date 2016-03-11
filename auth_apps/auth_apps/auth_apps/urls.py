@@ -13,6 +13,7 @@ Including another URLconf
     1. Add an import:  from blog import urls as blog_urls
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
+import functools
 from django.conf.urls import include, url
 from django.contrib import admin
 
@@ -22,10 +23,11 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(
         r'^oauth/', 
-        include('oauth2_provider.urls', namespace='oauth2_provider')
+        include('custom_oauth2.urls', namespace='oauth2_provider')
     ),
 
     url(r'^$', HomePageView.as_view(), name='home'),
 
     url(r'^accounts/', include('auth_user.urls')),
 ]
+

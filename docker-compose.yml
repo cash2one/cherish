@@ -4,6 +4,7 @@ rproxy:
      - "5000:5000"
     volumes:
      - ./rproxy/nginx.conf:/etc/nginx/nginx.conf:ro
+     - ./rproxy/sslkey:/etc/nginx/sslkey:ro
      - ./static:/var/www/static:ro 
     links:
      - web:web
@@ -11,7 +12,6 @@ rproxy:
 web:
     image: "auth_apps:latest"
     volumes:
-     - ./auth_apps/auth_apps:/code
      - ./static:/code/static
     environment:
      - DJANGO_DEBUG=1
@@ -24,7 +24,11 @@ web:
      - EMAIL_PORT=994
     links:
      - db:db
+     - cache:cache
     command: ./run-site.sh 
+
+cache:
+    image: "memcached:1.4"
 
 db:
     image: "mysql:5.6"

@@ -172,7 +172,7 @@ class TestAuthorizationCode(unittest.TestCase):
         self.application_helper = ApplicationHelper(self.client, self.base_url)
         app_params = {
             u'name': u'test_application',
-            u'client_type': u'public',
+            u'client_type': u'confidential',
             u'authorization_grant_type': u'authorization-code',
             u'redirect_uris': u'https://baidu.com/', # get grant code callback
         }
