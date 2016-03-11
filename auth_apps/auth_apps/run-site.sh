@@ -22,7 +22,7 @@ wait_tcp_dependency ${DB_PORT_3306_TCP_ADDR} ${DB_PORT_3306_TCP_PORT}
 python manage.py makemigrations
 python manage.py migrate
 # collect static files
-python manage.py collectstatic --noinput -c
+python manage.py collectstatic --noinput
 # run server
 # python manage.py runserver 0.0.0.0:${SERVICE_PORT}
 uwsgi --ini uwsgi.ini

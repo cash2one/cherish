@@ -1,10 +1,10 @@
-FROM python:2.7-slim
+FROM docker.zuoyetong.com.cn:8888/python:2.7-slim
 MAINTAINER "Bijia Lan <lbj.world@gmail.com>"
 
 COPY ./auth_apps/requirements.txt /
 
 # install libs
-COPY sources.list /etc/apt/sources.list                                         
+ADD http://docker.zuoyetong.com.cn/build/jessie-sources.list /etc/apt/sources.list
 RUN apt-get update \
     && apt-get install -y build-essential \
                           libmysqlclient-dev \
