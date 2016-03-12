@@ -20,10 +20,10 @@ BASE_URL = u'https://localhost:5000'
 ADMIN_USERNAME = u'admin'
 ADMIN_PASSWORD = u'admin'
 ADMIN_USER_PK = 1
-# LOGIN_USERNAME = u'user1'
-# LOGIN_PASSWORD = u'user1'
-LOGIN_USERNAME = u'15911186897'
-LOGIN_PASSWORD = u'980468'
+LOGIN_USERNAME = u'user1'
+LOGIN_PASSWORD = u'user1'
+# LOGIN_USERNAME = u'15911186897'
+# LOGIN_PASSWORD = u'724534'
 LOGIN_USER_PK = 2
 
 
@@ -50,7 +50,7 @@ class TestPassword(unittest.TestCase):
         url = self.base_url + '/oauth/token/'
         payload = {
             u'grant_type': u'password',
-            u'identity': LOGIN_USERNAME,
+            u'username': LOGIN_USERNAME,
             u'password': client_password_encode(LOGIN_PASSWORD),
         }
         r = requests.post(url, data=payload, auth=(

@@ -169,6 +169,7 @@ OAUTH2_PROVIDER = {
         'group': 'Read group info scope',
     },
     'DEFAULT_SCOPES': ['user', 'group'],
+    'OAUTH2_VALIDATOR_CLASS': 'custom_oauth2.oauth2_validators.TechUOAuth2Validator',
 }
 
 # rest framework settings
