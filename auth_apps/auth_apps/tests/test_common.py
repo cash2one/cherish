@@ -8,8 +8,9 @@ logger = logging.getLogger(__name__)
 
 
 def client_password_encode(raw_password):
-    FRONTEND_SALT = 'cloud_homework-'
-    return hashlib.md5(FRONTEND_SALT + raw_password).hexdigest()
+    # FRONTEND_SALT = 'cloud_homework-'
+    # return hashlib.md5(FRONTEND_SALT + raw_password).hexdigest()
+    return raw_password
 
 
 class ApplicationClient(object):

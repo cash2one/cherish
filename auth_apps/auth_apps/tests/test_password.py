@@ -20,8 +20,10 @@ BASE_URL = u'https://localhost:5000'
 ADMIN_USERNAME = u'admin'
 ADMIN_PASSWORD = u'admin'
 ADMIN_USER_PK = 1
-LOGIN_USERNAME = u'user1'
-LOGIN_PASSWORD = u'user1'
+# LOGIN_USERNAME = u'user1'
+# LOGIN_PASSWORD = u'user1'
+LOGIN_USERNAME = u'15911186897'
+LOGIN_PASSWORD = u'980468'
 LOGIN_USER_PK = 2
 
 
@@ -48,12 +50,13 @@ class TestPassword(unittest.TestCase):
         url = self.base_url + '/oauth/token/'
         payload = {
             u'grant_type': u'password',
-            u'username': LOGIN_USERNAME,
+            u'identity': LOGIN_USERNAME,
             u'password': client_password_encode(LOGIN_PASSWORD),
         }
         r = requests.post(url, data=payload, auth=(
             self.app.get(u'client_id'), self.app.get(u'client_secret')
             ), verify=False)
+        print r.content
         self.assertEqual(r.status_code, 200)
         token_info = r.json()
         logger.info(u'Get token info : {res}'.format(res=token_info))
@@ -99,6 +102,7 @@ class TestPassword(unittest.TestCase):
         self.assertTrue(user_info)
         res = self._application_revoke_token(access_token_info)
         self.assertTrue(res)
+
 
 if __name__ == '__main__':
     unittest.main()

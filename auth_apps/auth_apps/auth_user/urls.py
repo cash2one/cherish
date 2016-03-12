@@ -3,8 +3,15 @@ from django.contrib.auth import views as auth_views
 from rest_framework.urlpatterns import format_suffix_patterns
 
 from .views import (
-    UserRetrieveAPIView,
+    # api views
+    UserRetrieveUpdateAPIView,
     GroupRetrieveAPIView,
+    MobileCodeAPIView,
+    RegisterMobileCodeAPIView,
+    MobileCodeResetPasswordAPIView,
+    UserRegisterAPIView,
+    ChangePasswordAPIView,
+    # page views
     UserRegisterView,
     UserRegisterDoneView,
     UserProfileView,
@@ -17,12 +24,17 @@ from .forms import LoginForm
 from .tokens import email_token_generator
 
 
-extra_urlpatterns = [
-    url(r'^resource/user/(?P<pk>[0-9]+)/$', UserRetrieveAPIView.as_view()),
+api_urlpatterns = [
+    url(r'^resource/user/(?P<pk>[0-9]+)/$', UserRetrieveUpdateAPIView.as_view()),
     url(r'^resource/group/(?P<pk>[0-9]+)/$', GroupRetrieveAPIView.as_view()),
+    url(r'^user/change_password/$', ChangePasswordAPIView.as_view()),
+    url(r'^user/reset_password/mobile/$', MobileCodeResetPasswordAPIView.as_view()),
+    url(r'^user/mobile_code/$', MobileCodeAPIView.as_view()),
+    url(r'^register/mobile_code/$', RegisterMobileCodeAPIView.as_view()),
+    url(r'^register/$', UserRegisterAPIView.as_view()),
 ]
 
-urlpatterns = [
+page_urlpatterns = [
     url(
         r'^register/done/$',
         UserRegisterDoneView.as_view(),
@@ -110,4 +122,4 @@ urlpatterns = [
 
 ]
 
-urlpatterns = urlpatterns + format_suffix_patterns(extra_urlpatterns)
+urlpatterns = page_urlpatterns + format_suffix_patterns(api_urlpatterns)

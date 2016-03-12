@@ -21,6 +21,7 @@ from auth_user.views import HomePageView
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
+
     url(
         r'^oauth/', 
         include('custom_oauth2.urls', namespace='oauth2_provider')
@@ -29,5 +30,7 @@ urlpatterns = [
     url(r'^$', HomePageView.as_view(), name='home'),
 
     url(r'^accounts/', include('auth_user.urls')),
+
+    url(r'^files/', include('db_file_storage.urls')),
 ]
 
