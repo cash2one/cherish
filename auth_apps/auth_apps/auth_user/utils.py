@@ -34,7 +34,7 @@ def validate_mobile(value):
     return True
 
 
-def send_mail(
+def sync_send_email(
         to_email, context, from_email,
         subject_template_name, email_template_name,
         html_email_template_name=None):
@@ -56,7 +56,7 @@ def send_mail(
     email_message.send()
 
 
-def send_mobile(to_mobile, context, mobile_template_name):
+def sync_send_mobile(to_mobile, context, mobile_template_name):
     body = loader.render_to_string(mobile_template_name, context)
     # send sms message to mobile
     logger.debug('send sms : {body}'.format(body=body))
@@ -94,4 +94,10 @@ def get_user_by_email(email):
         return None
     return user 
 
+def check_mobile(mobile):
+    return get_user_model()._default_manager.filter(
+        mobile__iexact=mobile, is_active=True).exists()
 
+def check_email(email):
+    return get_user_model()._default_manager.filter(
+        email__iexact=email, is_active=True).exists()

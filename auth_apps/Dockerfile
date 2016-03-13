@@ -1,9 +1,12 @@
 FROM docker.zuoyetong.com.cn:8888/python:2.7-slim
 MAINTAINER "Bijia Lan <lbj.world@gmail.com>"
 
-COPY ./auth_apps/requirements.txt /
+# add user
+ENV SERVICE_USER authcenter
+RUN useradd -ms /bin/bash $SERVICE_USER 
 
 # install libs
+COPY ./auth_apps/requirements.txt /
 ADD http://docker.zuoyetong.com.cn/build/jessie-sources.list /etc/apt/sources.list
 RUN apt-get update \
     && apt-get install -y build-essential \
@@ -24,9 +27,6 @@ EXPOSE $SERVICE_PORT
 ADD ./auth_apps /code
 WORKDIR /code
 
-ENV SERVICE_USER authcenter
-# add user
-RUN useradd -ms /bin/bash $SERVICE_USER 
 # change dir owner
 RUN chown -R $SERVICE_USER /code
 USER $SERVICE_USER

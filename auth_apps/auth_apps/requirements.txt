@@ -13,3 +13,6 @@ django-db-file-storage
 Pillow
 jsonfield==1.0.3
 http://twhiteman.netfirms.com/pyDES/pyDes-2.0.1.zip
+celery==3.1.18
+django-celery
+redis

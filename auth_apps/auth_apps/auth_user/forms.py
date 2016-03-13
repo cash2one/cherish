@@ -14,13 +14,14 @@ from datetimewidget.widgets import DateWidget
 # from db_file_storage.form_widgets import DBClearableFileInput
 
 from .utils import (
-    validate_mobile, send_mail, send_mobile,
-    get_users_by_email, get_users_by_mobile
+    validate_mobile, get_users_by_email, get_users_by_mobile,
+    check_mobile, check_email,
 )
 from .models import TechUUser
 from .tokens import user_mobile_token_generator
 from .backend import LoginPolicy
 from .widgets import DBAdminImageWidget
+from .tasks import send_mobile_task, send_email_task
 
 logger = logging.getLogger(__name__)
 
@@ -106,7 +107,7 @@ class PasswordResetForm(forms.Form):
             }
 
             self.post_reset_redirect = reverse('email_password_reset_done')
-            send_mail(
+            send_email_task.delay(
                 user.email, context, from_email,
                 subject_template_name='accounts/email/password_reset_subject.txt',
                 email_template_name='accounts/email/password_reset_email.html')
@@ -143,7 +144,8 @@ class PasswordResetForm(forms.Form):
                     'uidb64': urlsafe_base64_encode(force_bytes(user.pk))
                 }
             )
-            send_mobile(user.mobile, context, mobile_template_name)
+            send_mobile_task.delay(
+                user.mobile, context, mobile_template_name)
 
     def clean_entry(self):
         self.is_email = False
@@ -168,16 +170,10 @@ class PasswordResetForm(forms.Form):
         if not (self.is_email or self.is_mobile):
             raise forms.ValidationError(_('Please input email or mobile.'))
         # check entry validate in system
-        if self.is_email:
-            try:
-                self.get_users_by_email(entry).next()
-            except StopIteration:
-                raise forms.ValidationError(_('Invalid email'))
-        if self.is_mobile:
-            try:
-                self.get_users_by_mobile(entry).next()
-            except StopIteration:
-                raise forms.ValidationError(_('Invalid mobile number'))
+        if self.is_email and (not check_email(entry)):
+            raise forms.ValidationError(_('Invalid email'))
+        if self.is_mobile and (not check_mobile(entry)):
+            raise forms.ValidationError(_('Invalid mobile number'))
         return entry
 
     def save(self, **opts):

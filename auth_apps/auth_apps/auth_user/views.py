@@ -17,6 +17,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import Group
 from django.contrib.sites.shortcuts import get_current_site
+from django.conf import settings
 from rest_framework import permissions, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -33,8 +34,9 @@ from .permissions import (
     IsTokenOwnerPermission, OnceUserMobileCodeCheck, OnceGeneralMobileCodeCheck
 )
 from .tokens import user_mobile_token_generator, general_mobile_token_generator
-from .utils import validate_mobile, send_mobile, get_user_by_mobile
+from .utils import validate_mobile, get_user_by_mobile
 from .exceptions import ParameterError, OperationError
+from .tasks import send_mobile_task
 
 logger = logging.getLogger(__name__)
 
@@ -273,8 +275,7 @@ class MobileCodeAPIView(APIView):
             raise self.ParameterError(_('mobile number not exist'))
         current_site = get_current_site(request)
         code = user_mobile_token_generator.make_token(user)
-        # TODO: async send here ?
-        send_mobile(
+        send_mobile_task.delay(
             mobile,
             context={
                 'mobile': mobile,
@@ -287,6 +288,7 @@ class MobileCodeAPIView(APIView):
         response = {
             'mobile': mobile,
             'code': code,
+            'countdown': settings.MOBILE_CODE_COUNTDOWN,
         }
         return Response(response)
 
@@ -307,8 +309,7 @@ class RegisterMobileCodeAPIView(APIView):
             raise self.OperationError(_('mobile already exist'))
         current_site = get_current_site(request)
         code = general_mobile_token_generator.make_token(mobile)
-        # TODO: async send here ?
-        send_mobile(
+        send_mobile_task.delay(
             mobile,
             context={
                 'mobile': mobile,
@@ -320,6 +321,7 @@ class RegisterMobileCodeAPIView(APIView):
             )
         response = {
             'code': code,
+            'countdown': settings.MOBILE_CODE_COUNTDOWN,
         }
         return Response(response)
 

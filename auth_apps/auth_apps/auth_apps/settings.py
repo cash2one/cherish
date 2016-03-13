@@ -26,7 +26,7 @@ SECRET_KEY = 'a&5^-%7tpg1d%8ti9&qw7i)m19xv%mo*q^ej6+4max2+5sz-jx'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = int(os.getenv('DJANGO_DEBUG', 0))
 
-ALLOWED_HOSTS = [ os.getenv('DJANGO_HOST') ]
+ALLOWED_HOSTS = [os.getenv('DJANGO_HOST')]
 
 
 # Application definition
@@ -44,6 +44,7 @@ INSTALLED_APPS = (
     'widget_tweaks',
     'datetimewidget',
     'db_file_storage',
+    'djcelery',
     # my apps
     'common',
     'edu_info',
@@ -143,15 +144,15 @@ EMAIL_HOST = os.getenv('EMAIL_HOST')
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_PORT = int(os.getenv('EMAIL_PORT'))
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER 
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # auth setting
 AUTH_USER_MODEL = 'auth_user.TechUUser'
 AUTHENTICATION_BACKENDS = [
-    # 'oauth_provider.backends.OAuth2Backend', # for OAuth2 login users
-    'auth_user.backend.TechUBackend', # for account center site
-    'auth_user.backend.XPlatformBackend', # for users from xplatform
-    'django.contrib.auth.backends.ModelBackend', # for admin site
+    # 'oauth_provider.backends.OAuth2Backend',  # for OAuth2 login users
+    'auth_user.backend.TechUBackend',  # for account center site
+    'auth_user.backend.XPlatformBackend',  # for users from xplatform
+    'django.contrib.auth.backends.ModelBackend',  # for admin site
 ]
 
 # password settings
@@ -163,6 +164,7 @@ PASSWORD_HASHERS = [
 CORS_ORIGIN_ALLOW_ALL = True
 
 # django oauth toolkit settings
+OAUTH2_PROVIDER_APPLICATION_MODEL = 'custom_oauth2.TechUApplication'
 OAUTH2_PROVIDER = {
     'SCOPES': {
         'user': 'Read user info scope',
@@ -170,6 +172,7 @@ OAUTH2_PROVIDER = {
     },
     'DEFAULT_SCOPES': ['user', 'group'],
     'OAUTH2_VALIDATOR_CLASS': 'custom_oauth2.oauth2_validators.TechUOAuth2Validator',
+    'APPLICATION_MODEL': 'custom_oauth2.TechUApplication',
 }
 
 # rest framework settings
@@ -219,6 +222,8 @@ SECURE_SSL_REDIRECT = True
 ENABLE_MOBILE_PASSWORD_VERIFY = True
 TECHU_FRONTEND_SALT = 'cloud_homework-'
 TECHU_BACKEND_SALT = 'yzy-'
+DEFAULT_REQUEST_TIMEOUT = 3
+MOBILE_CODE_COUNTDOWN = 60  # seconds
 
 # cache setting
 CACHES = {
@@ -240,3 +245,9 @@ XPLATFORM_SERVICE = {
     'CLIENT_KEY': '9852C11D7FF63FDE5732A4BA',
     'TIMEOUT': 3,
 }
+
+# celery settings
+BROKER_URL = os.getenv('CELERY_BROKER_URL') 
+# CELERY_RESULT_BACKEND = 'djcelery.backends.cache:CacheBackend'
+CELERY_ENABLE_UTC = True
+CELERY_TIMEZONE = TIME_ZONE
