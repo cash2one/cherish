@@ -1,0 +1,63 @@
+web:
+    image: "docker.zuoyetong.com.cn:8888/account_web:latest"
+    volumes:
+     - ./auth_apps/auth_apps:/code
+    environment:
+     - DJANGO_DEBUG=1
+     - DJANGO_HOST=auth-center.domain.com.cn
+     - EMAIL_USE_SSL=1
+     - EMAIL_USE_TLS=0
+     - EMAIL_HOST=smtp.163.com
+     - EMAIL_HOST_USER=lbj_world@163.com
+     - EMAIL_HOST_PASSWORD=dream829!@#
+     - EMAIL_PORT=994
+     - MEMCACHED_ADDR=cache
+     - MEMCACHED_PORT=11211
+     - SMS_SERVICE_URL=http://sms.zuoyetong.com.cn
+     - CELERY_BROKER_URL=redis://redis
+    links:
+     - db:db
+     - cache:cache
+     - celery_redis:redis
+    command: ./run-test.sh
+
+
+celery_worker:
+    image: "docker.zuoyetong.com.cn:8888/account_web:latest"
+    volumes:
+     - ./auth_apps/auth_apps:/code
+    environment:
+     - DJANGO_DEBUG=1
+     - DJANGO_HOST=auth-center.domain.com.cn
+     - EMAIL_USE_SSL=1
+     - EMAIL_USE_TLS=0
+     - EMAIL_HOST=smtp.163.com
+     - EMAIL_HOST_USER=lbj_world@163.com
+     - EMAIL_HOST_PASSWORD=dream829!@#
+     - EMAIL_PORT=994
+     - MEMCACHED_ADDR=cache
+     - MEMCACHED_PORT=11211
+     - SMS_SERVICE_URL=http://sms.zuoyetong.com.cn
+     - CELERY_BROKER_URL=redis://redis
+    links:
+     - db:db
+     - cache:cache
+     - celery_redis:redis
+    command: ./run-task-worker.sh
+
+celery_redis:
+    image: "docker.zuoyetong.com.cn:8888/redis:3"
+
+cache:
+    image: "docker.zuoyetong.com.cn:8888/memcached:1.4"
+
+db:
+    image: "docker.zuoyetong.com.cn:8888/mysql:5.6"
+    volumes:
+     - ./db/data:/var/lib/mysql
+     - ./mysql/:/etc/mysql/conf.d:ro
+    environment:
+     - MYSQL_USER=mysql
+     - MYSQL_PASSWORD=account_center123
+     - MYSQL_ROOT_PASSWORD=account_center123
+     - MYSQL_DATABASE=account_center

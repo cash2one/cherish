@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+import string
+import random
 from django.db import models
 from django.db.models import Q
 from django.core import validators
@@ -136,3 +138,10 @@ class TechUUser(AbstractUser):
     def delete(self, *args, **kwargs):
         super(TechUUser, self).delete(*args, **kwargs)
         delete_file(self, 'avatar')
+
+    @classmethod
+    def autogen_username(cls):
+        # TODO: need some policy here?
+        length = 24 
+        return ''.join(random.choice(string.lowercase) for i in range(length))
+

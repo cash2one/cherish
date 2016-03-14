@@ -25,7 +25,7 @@ class OnceUserMobileCodeCheck(permissions.BasePermission):
     message = 'mobile code invalid'
 
     def has_object_permission(self, request, view, obj):
-        code = request.data.get('code')
+        code = request.data.pop('code')
         if request.user and code:
             logger.debug('[OnceUserMobileCodeCheck] user: {user}'.format(
                 user=request.user))
@@ -40,7 +40,7 @@ class OnceGeneralMobileCodeCheck(permissions.BasePermission):
     message = 'mobile code invalid'
 
     def has_object_permission(self, request, view, obj):
-        code = request.data.get('code')
+        code = request.data.pop('code')
         mobile = request.data.get('mobile')
         if mobile and code:
             logger.debug('[OnceGeneralMobileCodeCheck] mobile:{m}, code:{code}'.format(

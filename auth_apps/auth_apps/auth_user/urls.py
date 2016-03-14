@@ -25,13 +25,37 @@ from .tokens import email_token_generator
 
 
 api_urlpatterns = [
-    url(r'^user/register/$', UserRegisterAPIView.as_view()),
+    url(
+        r'^user/register/mobile/$',
+        UserRegisterAPIView.as_view(),
+        name='api_user_register_mobile'
+    ),
     url(r'^user/change_password/$', ChangePasswordAPIView.as_view()),
-    url(r'^user/reset_password/mobile/$', MobileCodeResetPasswordAPIView.as_view()),
-    url(r'^user/(?P<pk>[0-9]+)/$', UserRetrieveUpdateAPIView.as_view()),
-    url(r'^group/(?P<pk>[0-9]+)/$', GroupRetrieveAPIView.as_view()),
-    url(r'^mobile_code/$', MobileCodeAPIView.as_view()),
-    url(r'^register/mobile_code/$', RegisterMobileCodeAPIView.as_view()),
+    url(
+        r'^user/reset_password/mobile/$',
+        MobileCodeResetPasswordAPIView.as_view(),
+        name='api_user_reset_password_mobile'
+    ),
+    url(
+        r'^user/(?P<pk>[0-9]+)/$',
+        UserRetrieveUpdateAPIView.as_view(),
+        name='api_user_resource'
+    ),
+    url(
+        r'^group/(?P<pk>[0-9]+)/$',
+        GroupRetrieveAPIView.as_view(),
+        name='api_group_resource'
+    ),
+    url(
+        r'^mobile_code/$',
+        MobileCodeAPIView.as_view(),
+        name='api_mobile_code'
+    ),
+    url(
+        r'^register/mobile_code/$', 
+        RegisterMobileCodeAPIView.as_view(),
+        name='api_register_mobile_code'
+    ),
 ]
 
 page_urlpatterns = [
