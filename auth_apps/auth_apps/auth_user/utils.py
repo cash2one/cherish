@@ -5,8 +5,7 @@ from django.template import loader
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from django.core.mail import EmailMultiAlternatives
-
-from common.sms_service import sms_service
+from sendsms.message import SmsMessage
 
 logger = logging.getLogger(__name__)
 
@@ -57,10 +56,15 @@ def sync_send_email(
 
 
 def sync_send_mobile(to_mobile, context, mobile_template_name):
-    body = loader.render_to_string(mobile_template_name, context)
+    content = loader.render_to_string(mobile_template_name, context)
     # send sms message to mobile
+    body = {
+        'content': content,
+        'code': context.get('token'),
+    }
+    message = SmsMessage(body=body, to=[to_mobile])
+    message.send()
     logger.debug('send sms : {body}'.format(body=body))
-    sms_service.send_message([to_mobile], body, context.get('token'))
 
 
 def get_users_by_mobile(mobile):

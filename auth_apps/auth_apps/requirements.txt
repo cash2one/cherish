@@ -16,3 +16,4 @@ http://twhiteman.netfirms.com/pyDES/pyDes-2.0.1.zip
 celery==3.1.18
 django-celery
 redis
+git+https://github.com/stefanfoulis/django-sendsms.git@master

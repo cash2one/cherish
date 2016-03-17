@@ -30,7 +30,11 @@ api_urlpatterns = [
         UserRegisterAPIView.as_view(),
         name='api_user_register_mobile'
     ),
-    url(r'^user/change_password/$', ChangePasswordAPIView.as_view()),
+    url(
+        r'^user/change_password/$',
+        ChangePasswordAPIView.as_view(),
+        name='api_user_change_password'
+    ),
     url(
         r'^user/reset_password/mobile/$',
         MobileCodeResetPasswordAPIView.as_view(),

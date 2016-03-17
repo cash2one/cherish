@@ -4,6 +4,7 @@ web:
      - ./auth_apps/auth_apps:/code
     environment:
      - DJANGO_DEBUG=1
+     - DJANGO_TEST=1
      - DJANGO_HOST=auth-center.domain.com.cn
      - EMAIL_USE_SSL=1
      - EMAIL_USE_TLS=0
@@ -28,6 +29,7 @@ celery_worker:
      - ./auth_apps/auth_apps:/code
     environment:
      - DJANGO_DEBUG=1
+     - DJANGO_TEST=1
      - DJANGO_HOST=auth-center.domain.com.cn
      - EMAIL_USE_SSL=1
      - EMAIL_USE_TLS=0

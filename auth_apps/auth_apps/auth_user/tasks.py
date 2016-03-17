@@ -14,8 +14,8 @@ logger = get_task_logger(__name__)
 def send_mobile_task(self, to_mobile, context, mobile_template_name):
     try:
         sync_send_mobile(to_mobile, context, mobile_template_name)
-        logger.debug('send mobile to {to}, context:{c}'.foramt(
-            to=to_email, c=context))
+        logger.debug('send mobile to {to}, context:{c}'.format(
+            to=to_mobile, c=context))
     except Exception as exc:
         raise self.retry(exc=exc)
 
@@ -28,7 +28,7 @@ def send_email_task(
         sync_send_email(
             to_email, context, from_email, subject_template_name,
             email_template_name)
-        logger.debug('send email to {to}, context:{c}'.foramt(
+        logger.debug('send email to {to}, context:{c}'.format(
             to=to_email, c=context))
     except Exception as exc:
         raise self.retry(exc=exc)

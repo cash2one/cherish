@@ -25,6 +25,7 @@ SECRET_KEY = 'a&5^-%7tpg1d%8ti9&qw7i)m19xv%mo*q^ej6+4max2+5sz-jx'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = int(os.getenv('DJANGO_DEBUG', 0))
+TEST = int(os.getenv('DJANGO_TEST', 0))
 
 ALLOWED_HOSTS = [os.getenv('DJANGO_HOST')]
 
@@ -222,6 +223,8 @@ LOGGING = {
 
 # security setting
 SECURE_SSL_REDIRECT = True
+if TEST:
+    SECURE_SSL_REDIRECT = False 
 ENABLE_MOBILE_PASSWORD_VERIFY = True
 TECHU_FRONTEND_SALT = 'cloud_homework-'
 TECHU_BACKEND_SALT = 'yzy-'
@@ -237,6 +240,9 @@ CACHES = {
 }
 
 # SMS service setting
+SENDSMS_BACKEND = 'common.sms_backends.TechUSMSBackend'
+if TEST:
+    SENDSMS_BACKEND='sendsms.backends.locmem.SmsBackend'
 SMS_SERVICE_URL = os.getenv('SMS_SERVICE_URL')
 SMS_REQUEST_TIMEOUT = 3  # seconds
 
@@ -254,3 +260,5 @@ BROKER_URL = os.getenv('CELERY_BROKER_URL')
 # CELERY_RESULT_BACKEND = 'djcelery.backends.cache:CacheBackend'
 CELERY_ENABLE_UTC = True
 CELERY_TIMEZONE = TIME_ZONE
+if TEST:
+    CELERY_ALWAYS_EAGER=True

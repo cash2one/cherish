@@ -1,5 +1,5 @@
 from django.core.urlresolvers import reverse_lazy
-from django.test import override_settings
+# from django.test import override_settings
 from rest_framework import status
 from rest_framework.test import APITestCase
 from oauth2_provider.models import get_application_model, AccessToken
@@ -42,9 +42,6 @@ class RegisterMobileUserTestCase(APITestCase):
     def tearDown(self):
         cache.clear()
 
-    @override_settings(
-        SECURE_SSL_REDIRECT=False
-    )
     def test_minimal_register(self):
         mobile = '15911186897'
         # get mobile code
@@ -86,9 +83,6 @@ class MobileCodeResetPasswordTestCase(OAuth2APITestCase):
     def tearDown(self):
         cache.clear()
 
-    @override_settings(
-        SECURE_SSL_REDIRECT=False
-    )
     def test_reset_success(self):
         self.assertEqual(TechUUser.objects.count(), 1)
         self.assertTrue(TechUUser.objects.get().is_active)
@@ -119,16 +113,15 @@ class MobileCodeResetPasswordTestCase(OAuth2APITestCase):
         self.assertTrue(token.is_valid())
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + token.token)
         # get user info
-        user_url = reverse_lazy('v1:api_user_resource', kwargs={'pk': 1})
+        user_url = reverse_lazy(
+            'v1:api_user_resource', kwargs={'pk': self.test_user.pk})
         response = self.client.get(user_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             response.data.get('username'), self.test_user.username)
 
-    @override_settings(
-        SECURE_SSL_REDIRECT=False
-    )
     def test_reset_with_incorrect_code(self):
+        self.assertEqual(TechUUser.objects.count(), 1)
         # reset user password
         new_password = '123456'
         data = {
@@ -137,3 +130,78 @@ class MobileCodeResetPasswordTestCase(OAuth2APITestCase):
         }
         response = self.client.post(self.reset_url, data, format='json')
         self.assertNotEqual(response.status_code, status.HTTP_200_OK)
+
+
+class ChangePasswordTestCase(OAuth2APITestCase):
+    def setUp(self):
+        cache.clear()
+        self.change_url = reverse_lazy('v1:api_user_change_password')
+        test_user = {
+            'username': 'test',
+            'mobile': '15911186897',
+            'password': 'test',
+        }
+        user = TechUUser.objects.create_user(**test_user)
+        self.test_user = user
+        self.init_application(user)
+
+    def tearDown(self):
+        cache.clear()
+
+    def test_change_success(self):
+        self.assertEqual(TechUUser.objects.count(), 1)
+        # generate access token
+        access_token = '1234567890'
+        scope = 'user'
+        token = self.generate_token(self.test_user, access_token, scope)
+        self.assertTrue(token.is_valid())
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + token.token)
+        # change password
+        data = {
+            'old_password': 'test',
+            'new_password': 'test1',
+        }
+        response = self.client.post(self.change_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # fresh user
+        test_user = TechUUser.objects.get()
+        self.assertTrue(test_user.check_password(data.get('new_password')))
+        self.assertFalse(test_user.check_password(data.get('old_password')))
+
+    def test_change_password_without_token(self):
+        self.assertEqual(TechUUser.objects.count(), 1)
+        # change password without token
+        data = {
+            'old_password': 'test',
+            'new_password': 'test1',
+        }
+        response = self.client.post(self.change_url, data, format='json')
+        self.assertNotEqual(response.status_code, status.HTTP_200_OK)
+
+        # fresh user
+        test_user = TechUUser.objects.get()
+        self.assertFalse(test_user.check_password(data.get('new_password')))
+        self.assertTrue(test_user.check_password(data.get('old_password')))
+
+    def test_change_password_with_wrong_old_password(self):
+        self.assertEqual(TechUUser.objects.count(), 1)
+        # generate access token
+        access_token = '1234567890'
+        scope = 'user'
+        token = self.generate_token(self.test_user, access_token, scope)
+        self.assertTrue(token.is_valid())
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + token.token)
+        # change password
+        data = {
+            'old_password': 'wrong_password',
+            'new_password': 'test1',
+        }
+        response = self.client.post(self.change_url, data, format='json')
+        self.assertNotEqual(response.status_code, status.HTTP_200_OK)
+
+        # fresh user
+        test_user = TechUUser.objects.get()
+        self.assertFalse(test_user.check_password(data.get('new_password')))
+        self.assertFalse(test_user.check_password(data.get('old_password')))
+        self.assertTrue(test_user.check_password('test'))

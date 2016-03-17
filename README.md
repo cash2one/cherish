@@ -7,7 +7,7 @@
 ---
 1. 用户操作（注册、登录、账号找回）
 2. OAuth第三方应用授权管理
-3. 用户账号资源API（用于授权第三方应用访问用户信息）
+3. 用户账号API（用于授权第三方应用访问用户信息，注册，找回密码等）
 
 ### 用户操作页面
 
@@ -75,17 +75,19 @@
 ---
 #### ^/oauth/authorize/$
 
-应用授权接口
+应用授权API接口
 
 * first receive a `GET` request from user asking authorization for a certain client application, a form is served possibly showing some useful info and prompting for authorize/do not authorize.
 * then receive a `POST` request possibly after user authorized the access
 
 #### ^/oauth/token/$
 
+HTTP Method: POST 
 token接口
 
 #### ^/oauth/revoke_token/$
 
+HTTP Method: POST 
 刷新token接口
 
 
