@@ -44,7 +44,7 @@
 ### 应用授权API
 
 ---
-#### ^/oauth/applications/(?P<pk>\d+)/$
+#### ^/oauth/applications/(?P\<pk\>\d+)/$
 
 HTTP Method: GET
 查看应用授权详情
@@ -52,7 +52,7 @@ HTTP Method: GET
 > pk为应用ID
 
 ---
-#### ^/oauth/applications/(?P<pk>\d+)/delete/$
+#### ^/oauth/applications/(?P\<pk\>\d+)/delete/$
 
 HTTP Method: DELETE
 删除应用授权
@@ -60,7 +60,7 @@ HTTP Method: DELETE
 > pk为应用ID
 
 ---
-#### ^/oauth/applications/(?P<pk>\d+)/update/$
+#### ^/oauth/applications/(?P\<pk\>\d+)/update/$
 
 HTTP Method: PUT
 更新应用授权信息
@@ -68,7 +68,7 @@ HTTP Method: PUT
 > pk为应用ID
 
 ---
-#### ^oauth/authorized_tokens/(?P<pk>\d+)/delete/$
+#### ^oauth/authorized_tokens/(?P\<pk\>\d+)/delete/$
 
 HTTP Method: DELETE
 删除指定授权token
@@ -77,8 +77,8 @@ HTTP Method: DELETE
 
 ### 资源API
 
-#### ^accounts/resource/user/(?P<pk>[0-9]+)/$
-#### ^accounts/resource/user/(?P<pk>[0-9]+)\.(?P<format>[a-z0-9]+)/?$
+#### ^accounts/resource/user/(?P\<pk\>[0-9]+)/$
+#### ^accounts/resource/user/(?P\<pk\>[0-9]+)\.(?P\<format\>[a-z0-9]+)/?$
 
 HTTP Method: GET
 获取平台用户详情接口
@@ -88,8 +88,8 @@ HTTP Method: GET
 
 > 注意：该接口只能获取到授权用户信息
 
-#### ^accounts/resource/group/(?P<pk>[0-9]+)/$
-#### ^accounts/resource/group/(?P<pk>[0-9]+)\.(?P<format>[a-z0-9]+)/?$
+#### ^accounts/resource/group/(?P\<pk\>[0-9]+)/$
+#### ^accounts/resource/group/(?P\<pk\>[0-9]+)\.(?P\<format\>[a-z0-9]+)/?$
 
 HTTP Method: GET
 获取平台用户组详情接口
