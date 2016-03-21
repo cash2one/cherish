@@ -13,7 +13,6 @@
 
 ---
 1. 内部应用通过grant:password方式接入
-
     * 通过后台转发用户登陆请求至/oauth/token接口，接口返回access_token
     * 应用后台通过`加密通道`将access_token返回给前端应用（APP或前端网页）
 
