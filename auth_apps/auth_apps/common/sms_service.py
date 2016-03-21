@@ -26,6 +26,7 @@ class SMSService(object):
         except:
             logger.exception('[SMS SERVICE] send message error')
             return False
+        logger.debug('[SMS SERVICE] send message success')
         return True
 
 
