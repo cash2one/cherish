@@ -12,6 +12,8 @@ from .views import (
     MobilePasswordResetConfirm,
     MobilePasswordResetComplete,
 )
+from .forms import LoginForm
+
 
 extra_urlpatterns = [
     url(r'^resource/user/(?P<pk>[0-9]+)/$', UserRetrieveAPIView.as_view()),
@@ -30,7 +32,10 @@ urlpatterns = [
     url(
         r'^login/$',
         auth_views.login,
-        {'template_name': 'accounts/login.html'},
+        {
+            'template_name': 'accounts/login.html',
+            'authentication_form': LoginForm,
+        },
         name='login',
     ),
     url(

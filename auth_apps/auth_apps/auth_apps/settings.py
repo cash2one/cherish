@@ -130,6 +130,10 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # auth setting
 AUTH_USER_MODEL = 'auth_user.TechUUser'
+AUTHENTICATION_BACKENDS = [
+    'auth_user.backend.TechUBackend',
+    # 'django.contrib.auth.backends.ModelBackend',
+]
 
 # password settings
 PASSWORD_HASHERS = [

@@ -4,7 +4,7 @@ from django import forms
 from django.template import loader
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth.tokens import default_token_generator
 from django.core.validators import validate_email
@@ -14,9 +14,10 @@ from django.utils.encoding import force_bytes
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.forms import UserCreationForm, SetPasswordForm
 
+from common.sms_service import sms_service
 from .models import TechUUser
 from .tokens import mobile_token_generator
-from common.sms_service import sms_service
+from .backend import LoginPolicy
 
 logger = logging.getLogger(__name__)
 
@@ -285,3 +286,82 @@ class ValidCodeSetPasswordForm(SetPasswordForm):
         required=True,
         max_length=mobile_token_generator.DEFAULT_CODE_LENGTH,
         widget=forms.TextInput(attrs={'placeholder': _('Code')}))
+
+
+class LoginForm(forms.Form):
+    """
+    identity/password logins.
+    user can login with username, email or mobile number
+    """
+    identity = forms.CharField(
+        label=_('Identity'),
+        max_length=254,
+        widget=forms.TextInput(attrs={'placeholder': _('Username/Email/Mobile')}))
+    password = forms.CharField(
+        label=_("Password"), 
+        widget=forms.PasswordInput(attrs={'placeholder': _('Password')}))
+
+    error_messages = {
+        'invalid_login': _("Please enter a correct identity and password. "
+                           "Note that both fields may be case-sensitive."),
+        'inactive': _("This account is inactive."),
+        'login_constraint': _("Too many times, You've limited to login"),
+    }
+
+    def __init__(self, request=None, *args, **kwargs):
+        """
+        The 'request' parameter is set for custom auth use by subclasses.
+        The form data comes in via the standard 'data' kwarg.
+        """
+        self.request = request
+        self.user_cache = None
+        super(LoginForm, self).__init__(*args, **kwargs)
+
+    def clean(self):
+        identity = self.cleaned_data.get('identity')
+        password = self.cleaned_data.get('password')
+
+        if identity and password:
+            try:
+                self.user_cache = authenticate(identity=identity,
+                                               password=password)
+                if self.user_cache is None:
+                    raise forms.ValidationError(
+                        self.error_messages['invalid_login'],
+                        code='invalid_login',
+                    )
+                else:
+                    self.confirm_login_allowed(self.user_cache)
+            except LoginPolicy.LoginConstraintException:
+                raise forms.ValidationError(
+                    self.error_messages['login_constraint'],
+                    code='login_constraint',
+                )
+
+        return self.cleaned_data
+
+    def confirm_login_allowed(self, user):
+        """
+        Controls whether the given User may log in. This is a policy setting,
+        independent of end-user authentication. This default behavior is to
+        allow login by active users, and reject login by inactive users.
+
+        If the given user cannot log in, this method should raise a
+        ``forms.ValidationError``.
+
+        If the given user may log in, this method should return None.
+        """
+        if not user.is_active:
+            raise forms.ValidationError(
+                self.error_messages['inactive'],
+                code='inactive',
+            )
+
+    def get_user_id(self):
+        if self.user_cache:
+            return self.user_cache.id
+        return None
+
+    def get_user(self):
+        return self.user_cache
+
