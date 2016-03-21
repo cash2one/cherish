@@ -130,7 +130,6 @@ class MobilePasswordResetConfirm(View):
                     if self.token_generator.check_token(
                             user, form.cleaned_data['code']):
                         form.save()
-                        logger.debug('verify code success')
                         return HttpResponseRedirect(
                             reverse(self.post_reset_redirect))
                     else:

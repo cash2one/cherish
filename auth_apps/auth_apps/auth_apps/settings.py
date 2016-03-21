@@ -188,3 +188,7 @@ CACHES = {
         'LOCATION': os.getenv('MEMCACHED_ADDR') + ':' + os.getenv('MEMCACHED_PORT'),
     }
 }
+
+# SMS service setting
+SMS_SERVICE_URL = os.getenv('SMS_SERVICE_URL')
+SMS_REQUEST_TIMEOUT = 3  # seconds

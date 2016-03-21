@@ -16,6 +16,7 @@ from django.contrib.auth.forms import UserCreationForm, SetPasswordForm
 
 from .models import TechUUser
 from .tokens import mobile_token_generator
+from common.sms_service import sms_service
 
 logger = logging.getLogger(__name__)
 
@@ -142,7 +143,8 @@ class PasswordResetForm(forms.Form):
 
     def send_mobile(self, mobile_template_name, context, to_mobile):
         body = loader.render_to_string(mobile_template_name, context)
-        # TODO: send sms message to mobile
+        # send sms message to mobile
+        sms_service.send_message(to_mobile, body)
         logger.debug('send sms : {body}'.format(body=body))
 
     def get_users_by_email(self, email):
@@ -262,7 +264,7 @@ class PasswordResetForm(forms.Form):
             try:
                 self.get_users_by_mobile(entry).next()
             except StopIteration:
-                raise forms.ValidationError(_('Invalid mobile nuber'))
+                raise forms.ValidationError(_('Invalid mobile number'))
         return entry
 
     def save(self, **opts):
