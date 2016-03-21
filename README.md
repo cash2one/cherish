@@ -9,6 +9,20 @@
 2. OAuth第三方应用授权管理
 3. 用户账号API（用于授权第三方应用访问用户信息，注册，找回密码等）
 
+## 关于第三方应用接入
+
+---
+1. 内部应用通过grant:password方式接入
+
+    * 通过后台转发用户登陆请求至/oauth/token接口，接口返回access_token
+    * 应用后台通过`加密通道`将access_token返回给前端应用（APP或前端网页）
+
+2. 前端请求验证
+    * 在所有请求的cookies字段中加入验证凭证（X-TECHU-AUTH: `token_type` `access_token`）
+    * 验证成功后，中间件将添加请求头（X-TECHU-USER: `user_id`）
+    * 验证失败，中间件返回403错误（TODO: 我们需要一个美观的403页面）
+
+
 ### 用户操作页面
 
 ---
