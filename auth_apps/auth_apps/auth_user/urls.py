@@ -11,8 +11,10 @@ from .views import (
     PasswordResetView,
     MobilePasswordResetConfirm,
     MobilePasswordResetComplete,
+    EmailPasswordResetComplete,
 )
 from .forms import LoginForm
+from .tokens import email_token_generator
 
 
 extra_urlpatterns = [
@@ -28,7 +30,8 @@ urlpatterns = [
     ),
     url(r'^register/$', UserRegisterView.as_view(), name='register'),
     url(r'^profile/$', UserProfileView.as_view(), name='profile'),
-    # url(r'^',include('django.contrib.auth.urls')),
+    ########################
+    # about login/reset
     url(
         r'^login/$',
         auth_views.login,
@@ -41,19 +44,25 @@ urlpatterns = [
     url(
         r'^logout/$',
         auth_views.logout,
-        {'template_name': 'accounts/logged_out.html'},
+        {
+            'template_name': 'accounts/logged_out.html'
+        },
         name='logout',
     ),
     url(
         r'^password_change/$',
         auth_views.password_change,
-        {'template_name': 'accounts/password_change_form.html'},
+        {
+            'template_name': 'accounts/password_change_form.html'
+        },
         name='password_change',
     ),
     url(
         r'^password_change/done/$',
         auth_views.password_change_done,
-        {'template_name': 'accounts/password_change_done.html'},
+        {
+            'template_name': 'accounts/password_change_done.html'
+        },
         name='password_change_done',
     ),
     url(
@@ -66,7 +75,9 @@ urlpatterns = [
     url(
         r'^email/password_reset/done/$',
         auth_views.password_reset_done,
-        {'template_name': 'accounts/email/password_reset_done.html'},
+        {
+            'template_name': 'accounts/email/password_reset_done.html'
+        },
         name='email_password_reset_done',
     ),
     url(
@@ -75,15 +86,13 @@ urlpatterns = [
         {
             'template_name': 'accounts/email/password_reset_confirm.html',
             'post_reset_redirect': 'email_password_reset_complete',
+            'token_generator': email_token_generator,
         },
         name='email_password_reset_confirm',
     ),
     url(
         r'^email/reset/complete/$',
-        auth_views.password_reset_complete,
-        {
-            'template_name': 'accounts/email/password_reset_complete.html'
-        },
+        EmailPasswordResetComplete.as_view(),
         name='email_password_reset_complete',
     ),
     ########################

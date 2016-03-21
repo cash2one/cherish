@@ -164,7 +164,17 @@ class MobilePasswordResetComplete(View):
 
     def get(self, request, *args, **kwargs):
         context = {
-            'title': _('Password reset complete'),
+            'title': _('Password reset by mobile complete'),
+        }
+        return render(request, self.template_name, context)
+
+
+class EmailPasswordResetComplete(View):
+    template_name = 'accounts/email/password_reset_complete.html'
+
+    def get(self, request, *args, **kwargs):
+        context = {
+            'title': _('Password reset by email complete'),
         }
         return render(request, self.template_name, context)
 
