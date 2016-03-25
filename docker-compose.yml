@@ -77,7 +77,7 @@ db:
     image: "docker.zuoyetong.com.cn:8888/mysql:5.6"
     volumes:
      - ./db/data:/var/lib/mysql
-     - ./mysql/my.cnf:/etc/mysql/my.cnf
+     - ./mysql/:/etc/mysql/conf.d:ro
     log_opt:
         max-size: "5m"
         max-file: "1"
