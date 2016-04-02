@@ -30,7 +30,7 @@ class UserRegisterForm(UserCreationForm):
         model = TechUUser
         fields = [
             'username', 'email', 'mobile', 'first_name', 'last_name',
-            'avatar', 'edu_profile',
+            'gender', 'avatar', 'edu_profile',
             'birth_date', 'qq', 'phone', 'address', 'remark',
         ]
         widgets = {
@@ -52,7 +52,7 @@ class UserProfileForm(forms.ModelForm):
         model = TechUUser
         fields = [
             'email', 'mobile', 'first_name', 'last_name',
-            'avatar', 'edu_profile',
+            'gender', 'avatar', 'edu_profile',
             'birth_date', 'qq', 'phone', 'address', 'remark',
         ]
         widgets = {

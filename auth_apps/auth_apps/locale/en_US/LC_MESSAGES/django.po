@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-08 09:09+0000\n"
+"POT-Creation-Date: 2016-04-15 03:17+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,108 +17,164 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: auth_user/admin.py:20
+#: auth_user/admin.py:25
 msgid "Profile Info"
 msgstr ""
 
-#: auth_user/forms.py:70
+#: auth_user/exceptions.py:7
+msgid "Parameter error"
+msgstr ""
+
+#: auth_user/exceptions.py:12
+msgid "Operation fail"
+msgstr ""
+
+#: auth_user/forms.py:72
 msgid "Entry"
 msgstr ""
 
-#: auth_user/forms.py:71 auth_user/forms.py:73
+#: auth_user/forms.py:73 auth_user/forms.py:75
 msgid "Email/Mobile"
 msgstr ""
 
-#: auth_user/forms.py:211
+#: auth_user/forms.py:169
 msgid "Please input email or mobile."
 msgstr ""
 
-#: auth_user/forms.py:217
+#: auth_user/forms.py:175
 msgid "Invalid email"
 msgstr ""
 
-#: auth_user/forms.py:222
+#: auth_user/forms.py:180
 msgid "Invalid mobile number"
 msgstr ""
 
-#: auth_user/forms.py:237 auth_user/forms.py:242
+#: auth_user/forms.py:195 auth_user/forms.py:200
 msgid "Code"
 msgstr ""
 
-#: auth_user/forms.py:238
+#: auth_user/forms.py:196
 msgid "mobile verify code"
 msgstr ""
 
-#: auth_user/forms.py:251
+#: auth_user/forms.py:209
 msgid "Identity"
 msgstr ""
 
-#: auth_user/forms.py:254
+#: auth_user/forms.py:212
 msgid "Username/Email/Mobile"
 msgstr ""
 
-#: auth_user/forms.py:257 auth_user/forms.py:258
+#: auth_user/forms.py:215 auth_user/forms.py:216
 msgid "Password"
 msgstr ""
 
-#: auth_user/forms.py:261
+#: auth_user/forms.py:219
 msgid ""
 "Please enter a correct identity and password. Note that both fields may be "
 "case-sensitive."
 msgstr ""
 
-#: auth_user/forms.py:263
+#: auth_user/forms.py:221
 msgid "This account is inactive."
 msgstr ""
 
-#: auth_user/forms.py:264
+#: auth_user/forms.py:222
 msgid "Too many times, You've limited to login"
 msgstr ""
 
-#: auth_user/models.py:16
+#: auth_user/hashers.py:38
+msgid "algorithm"
+msgstr ""
+
+#: auth_user/hashers.py:39
+msgid "salt"
+msgstr ""
+
+#: auth_user/hashers.py:40
+msgid "hash"
+msgstr ""
+
+#: auth_user/models.py:27
+msgid "School Admin"
+msgstr ""
+
+#: auth_user/models.py:28
+msgid "Teacher"
+msgstr ""
+
+#: auth_user/models.py:29
+msgid "Student"
+msgstr ""
+
+#: auth_user/models.py:30
+msgid "Parent"
+msgstr ""
+
+#: auth_user/models.py:33
+msgid "Role"
+msgstr ""
+
+#: auth_user/models.py:50
 msgid "The email already exist in system."
 msgstr ""
 
-#: auth_user/models.py:17
+#: auth_user/models.py:51
 msgid "Mobile number existed, try another one please."
 msgstr ""
 
-#: auth_user/models.py:19
+#: auth_user/models.py:53
 msgid ""
 "We need a reset password entry,please set email or mobile for password reset"
 msgstr ""
 
-#: auth_user/models.py:24
+#: auth_user/models.py:58
+msgid "Unknown"
+msgstr ""
+
+#: auth_user/models.py:59
+msgid "Male"
+msgstr ""
+
+#: auth_user/models.py:60
+msgid "Female"
+msgstr ""
+
+#: auth_user/models.py:63
+msgid "Gender"
+msgstr ""
+
+#: auth_user/models.py:64
 msgid "Birthday"
 msgstr ""
 
-#: auth_user/models.py:25
+#: auth_user/models.py:65
 msgid "QQ"
 msgstr ""
 
-#: auth_user/models.py:27
+#: auth_user/models.py:67
 msgid "Remark"
 msgstr ""
 
-#: auth_user/models.py:29
+#: auth_user/models.py:69
 msgid "Mobile"
 msgstr ""
 
-#: auth_user/models.py:32
+#: auth_user/models.py:72
 msgid "Enter a valid mobile number. This value may contain only numbers"
 msgstr ""
 
-#: auth_user/models.py:38
+#: auth_user/models.py:78
 msgid "Phone"
 msgstr ""
 
-#: auth_user/models.py:41
+#: auth_user/models.py:81
 msgid ""
 "Enter a valid phone number. This value may contain only numbers and - "
 "characters"
 msgstr ""
 
-#: auth_user/models.py:47
+#: auth_user/models.py:87
 msgid "Address"
 msgstr ""
 
@@ -158,7 +214,7 @@ msgstr ""
 msgid "Please kindly check your registered email."
 msgstr ""
 
-#: auth_user/templates/accounts/logged_out.html:5 templates/site_base.html:104
+#: auth_user/templates/accounts/logged_out.html:5 templates/site_base.html:106
 msgid "Logout"
 msgstr ""
 
@@ -167,7 +223,7 @@ msgid "You are logged out."
 msgstr ""
 
 #: auth_user/templates/accounts/login.html:5
-#: auth_user/templates/accounts/login.html:45 templates/site_base.html:106
+#: auth_user/templates/accounts/login.html:45 templates/site_base.html:108
 msgid "Login"
 msgstr ""
 
@@ -185,16 +241,13 @@ msgstr ""
 
 #: auth_user/templates/accounts/login.html:51
 #: auth_user/templates/accounts/register.html:6
-#: auth_user/templates/accounts/register.html:40
+#: auth_user/templates/accounts/register.html:42
 #: auth_user/templates/accounts/register_done.html:5
 msgid "Sign up"
 msgstr ""
 
 #: auth_user/templates/accounts/password_change_done.html:5
 #: auth_user/templates/accounts/password_change_form.html:5
-#: templates/admin/base.html:46
-#: templates/registration/password_change_done.html:3
-#: templates/registration/password_change_form.html:4
 msgid "Change password"
 msgstr ""
 
@@ -203,7 +256,7 @@ msgid "Your password changed successfully."
 msgstr ""
 
 #: auth_user/templates/accounts/password_change_form.html:34
-#: auth_user/templates/accounts/register.html:41
+#: auth_user/templates/accounts/register.html:43
 msgid "Reset"
 msgstr ""
 
@@ -211,7 +264,7 @@ msgstr ""
 msgid "User Profile"
 msgstr ""
 
-#: auth_user/templates/accounts/profile.html:45
+#: auth_user/templates/accounts/profile.html:47
 msgid "Update"
 msgstr ""
 
@@ -219,15 +272,7 @@ msgstr ""
 msgid "Sign up successfully."
 msgstr ""
 
-#: auth_user/templates/home.html:5 templates/admin/base.html.py:58
-#: templates/registration/logged_out.html:4
-#: templates/registration/password_change_done.html:6
-#: templates/registration/password_change_form.html:7
-#: templates/registration/password_reset_complete.html:6
-#: templates/registration/password_reset_confirm.html:6
-#: templates/registration/password_reset_done.html:6
-#: templates/registration/password_reset_form.html:6
-#: templates/site_base.html:90
+#: auth_user/templates/home.html:5 templates/site_base.html.py:92
 msgid "Home"
 msgstr ""
 
@@ -235,31 +280,56 @@ msgstr ""
 msgid "Welcome to Auth Center"
 msgstr ""
 
-#: auth_user/views.py:61 auth_user/views.py:70
-#: templates/registration/password_reset_complete.html:7
-#: templates/registration/password_reset_done.html:7
-#: templates/registration/password_reset_form.html:7
+#: auth_user/views.py:69 auth_user/views.py:78
 msgid "Password reset"
 msgstr ""
 
-#: auth_user/views.py:100
+#: auth_user/views.py:108
 msgid "Enter new password"
 msgstr ""
 
-#: auth_user/views.py:110
+#: auth_user/views.py:118
 msgid "verify code invalid"
 msgstr ""
 
-#: auth_user/views.py:116
+#: auth_user/views.py:124
 msgid "Password reset unsuccessful"
 msgstr ""
 
-#: auth_user/views.py:141
+#: auth_user/views.py:149
 msgid "Password reset by mobile complete"
 msgstr ""
 
-#: auth_user/views.py:151
+#: auth_user/views.py:159
 msgid "Password reset by email complete"
+msgstr ""
+
+#: auth_user/views.py:216
+msgid "need both new and old password"
+msgstr ""
+
+#: auth_user/views.py:222 auth_user/views.py:252
+msgid "invalid password"
+msgstr ""
+
+#: auth_user/views.py:225
+msgid "old password error"
+msgstr ""
+
+#: auth_user/views.py:247
+msgid "need new password"
+msgstr ""
+
+#: auth_user/views.py:270 auth_user/views.py:304
+msgid "mobile number invalid"
+msgstr ""
+
+#: auth_user/views.py:273
+msgid "mobile number not exist"
+msgstr ""
+
+#: auth_user/views.py:307
+msgid "mobile already exist"
 msgstr ""
 
 #: custom_oauth2/templates/oauth2_provider/application_confirm_delete.html:7
@@ -349,159 +419,26 @@ msgstr ""
 msgid "There are no authorized tokens yet."
 msgstr ""
 
-#: templates/admin/base.html:32
-msgid "Welcome,"
+#: edu_info/models.py:8
+msgid "School Name"
 msgstr ""
 
-#: templates/admin/base.html:37
-msgid "View site"
+#: edu_info/models.py:12
+msgid "Subject ID"
 msgstr ""
 
-#: templates/admin/base.html:42
-#: templates/registration/password_change_done.html:3
-#: templates/registration/password_change_form.html:4
-msgid "Documentation"
+#: edu_info/models.py:13
+msgid "Subject Name"
 msgstr ""
 
-#: templates/admin/base.html:48
-#: templates/registration/password_change_done.html:3
-#: templates/registration/password_change_form.html:4
-msgid "Log out"
-msgstr ""
-
-#: templates/admin/login.html:19
-#: templates/registration/password_change_form.html:21
-msgid "Please correct the error below."
-msgstr ""
-
-#: templates/admin/login.html:19
-#: templates/registration/password_change_form.html:21
-msgid "Please correct the errors below."
-msgstr ""
-
-#: templates/admin/login.html:45
-msgid "Forgotten your password or username?"
-msgstr ""
-
-#: templates/admin/login.html:49
-#: templates/registration/password_reset_complete.html:18
-msgid "Log in"
-msgstr ""
-
-#: templates/registration/logged_out.html:8
-msgid "Thanks for spending some quality time with the Web site today."
-msgstr ""
-
-#: templates/registration/logged_out.html:10
-msgid "Log in again"
-msgstr ""
-
-#: templates/registration/password_change_done.html:7
-#: templates/registration/password_change_form.html:8
-msgid "Password change"
-msgstr ""
-
-#: templates/registration/password_change_done.html:14
-msgid "Your password was changed."
-msgstr ""
-
-#: templates/registration/password_change_form.html:26
-msgid ""
-"Please enter your old password, for security's sake, and then enter your new "
-"password twice so we can verify you typed it in correctly."
-msgstr ""
-
-#: templates/registration/password_change_form.html:54
-#: templates/registration/password_reset_confirm.html:24
-msgid "Change my password"
-msgstr ""
-
-#: templates/registration/password_reset_complete.html:16
-msgid "Your password has been set.  You may go ahead and log in now."
-msgstr ""
-
-#: templates/registration/password_reset_confirm.html:7
-msgid "Password reset confirmation"
-msgstr ""
-
-#: templates/registration/password_reset_confirm.html:17
-msgid ""
-"Please enter your new password twice so we can verify you typed it in "
-"correctly."
-msgstr ""
-
-#: templates/registration/password_reset_confirm.html:21
-msgid "New password:"
-msgstr ""
-
-#: templates/registration/password_reset_confirm.html:23
-msgid "Confirm password:"
-msgstr ""
-
-#: templates/registration/password_reset_confirm.html:29
-msgid ""
-"The password reset link was invalid, possibly because it has already been "
-"used.  Please request a new password reset."
-msgstr ""
-
-#: templates/registration/password_reset_done.html:15
-msgid ""
-"We've emailed you instructions for setting your password, if an account "
-"exists with the email you entered. You should receive them shortly."
-msgstr ""
-
-#: templates/registration/password_reset_done.html:17
-msgid ""
-"If you don't receive an email, please make sure you've entered the address "
-"you registered with, and check your spam folder."
-msgstr ""
-
-#: templates/registration/password_reset_email.html:2
-#, python-format
-msgid ""
-"You're receiving this email because you requested a password reset for your "
-"user account at %(site_name)s."
-msgstr ""
-
-#: templates/registration/password_reset_email.html:4
-msgid "Please go to the following page and choose a new password:"
-msgstr ""
-
-#: templates/registration/password_reset_email.html:8
-msgid "Your username, in case you've forgotten:"
-msgstr ""
-
-#: templates/registration/password_reset_email.html:10
-msgid "Thanks for using our site!"
-msgstr ""
-
-#: templates/registration/password_reset_email.html:12
-#, python-format
-msgid "The %(site_name)s team"
-msgstr ""
-
-#: templates/registration/password_reset_form.html:15
-msgid ""
-"Forgotten your password? Enter your email address below, and we'll email "
-"instructions for setting a new one."
-msgstr ""
-
-#: templates/registration/password_reset_form.html:19
-msgid "Email address:"
-msgstr ""
-
-#: templates/registration/password_reset_form.html:19
-msgid "Reset my password"
-msgstr ""
-
-#: templates/site_base.html:86
+#: templates/site_base.html:88
 msgid "Auth Center"
 msgstr ""
 
-#: templates/site_base.html:100
+#: templates/site_base.html:102
 msgid "Profile"
 msgstr ""
 
-#: templates/site_base.html:101
+#: templates/site_base.html:103
 msgid "Change Password"
 msgstr ""

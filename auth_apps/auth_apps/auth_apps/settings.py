@@ -216,6 +216,8 @@ LOGGING = {
 # security setting
 SECURE_SSL_REDIRECT = True
 ENABLE_MOBILE_PASSWORD_VERIFY = True
+TECHU_FRONTEND_SALT = 'cloud_homework-'
+TECHU_BACKEND_SALT = 'yzy-'
 
 # cache setting
 CACHES = {

@@ -44,8 +44,8 @@ class DatabaseFile(models.Model):
 
 
 class TechUUser(AbstractUser):
-    FRONTEND_SALT = 'cloud_homework-'
-    BACKEND_SALT = 'yzy-'
+    FRONTEND_SALT = settings.TECHU_FRONTEND_SALT 
+    BACKEND_SALT = settings.TECHU_BACKEND_SALT
     ERROR_MESSAGES = {
         'email_exist': _('The email already exist in system.'),
         'mobile_exist': _('Mobile number existed, try another one please.'),
@@ -54,7 +54,13 @@ class TechUUser(AbstractUser):
             'please set email or mobile for password reset'
         ),
     }
+    GENDER_TYPES = [
+        (0, _('Unknown')),
+        (1, _('Male')),
+        (2, _('Female')),
+    ]
 
+    gender = models.SmallIntegerField(_('Gender'), default=0, choices=GENDER_TYPES)
     birth_date = models.DateField(_('Birthday'), null=True, blank=True)
     qq = models.BigIntegerField(_('QQ'), null=True, blank=True)
     remark = models.CharField(

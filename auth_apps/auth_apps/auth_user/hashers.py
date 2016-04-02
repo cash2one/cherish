@@ -6,6 +6,7 @@ from django.utils.encoding import force_bytes
 from django.utils.crypto import constant_time_compare
 from django.utils.translation import ugettext_noop as _
 from django.contrib.auth.hashers import BasePasswordHasher, mask_hash
+from django.conf import settings
 
 
 class TechUPasswordHasher(BasePasswordHasher):
@@ -13,7 +14,7 @@ class TechUPasswordHasher(BasePasswordHasher):
     The twice Salted MD5 password hashing algorithm (TechU specific)
     """
     algorithm = "techu"
-    FRONTEND_SALT = 'cloud_homework-'
+    FRONTEND_SALT = settings.TECHU_FRONTEND_SALT 
 
     def encode(self, password, salt):
         assert password is not None
