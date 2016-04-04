@@ -194,11 +194,11 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_CLASSES': (
         'rest_framework.throttling.AnonRateThrottle',
         'rest_framework.throttling.UserRateThrottle',
-    )
+    ),
     'DEFAULT_THROTTLE_RATES': {
         'anon': '10/hour',
         'user': '100/hour',
-    }
+    },
 }
 
 # loggings
@@ -232,7 +232,7 @@ LOGGING = {
 # security setting
 SECURE_SSL_REDIRECT = True
 if TEST:
-    SECURE_SSL_REDIRECT = False 
+    SECURE_SSL_REDIRECT = False
 ENABLE_MOBILE_PASSWORD_VERIFY = True
 TECHU_FRONTEND_SALT = 'cloud_homework-'
 TECHU_BACKEND_SALT = 'yzy-'
@@ -250,13 +250,13 @@ CACHES = {
 # SMS service setting
 SENDSMS_BACKEND = 'common.sms_backends.TechUSMSBackend'
 if TEST:
-    SENDSMS_BACKEND='sendsms.backends.locmem.SmsBackend'
+    SENDSMS_BACKEND = 'sendsms.backends.locmem.SmsBackend'
 SMS_SERVICE_URL = os.getenv('SMS_SERVICE_URL')
 SMS_REQUEST_TIMEOUT = 3  # seconds
 
 # XPLATFORM SERVICE setting
 XPLATFORM_SERVICE = {
-    'URL': os.getenv('XPLATFORM_SERVICE_URL') # 'https://dev.login.yunxiaoyuan.com' if DEBUG else 'https://login.yunxiaoyuan.com',
+    'URL': os.getenv('XPLATFORM_SERVICE_URL'),
     'APP_ID': '98008',
     'SERVER_KEY': 'C6F653399B9A15E053469A66',
     'CLIENT_KEY': '9852C11D7FF63FDE5732A4BA',
@@ -264,9 +264,9 @@ XPLATFORM_SERVICE = {
 }
 
 # celery settings
-BROKER_URL = os.getenv('CELERY_BROKER_URL') 
+BROKER_URL = os.getenv('CELERY_BROKER_URL')
 # CELERY_RESULT_BACKEND = 'djcelery.backends.cache:CacheBackend'
 CELERY_ENABLE_UTC = True
 CELERY_TIMEZONE = TIME_ZONE
 if TEST:
-    CELERY_ALWAYS_EAGER=True
+    CELERY_ALWAYS_EAGER = True
