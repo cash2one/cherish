@@ -103,21 +103,22 @@ class XPlatformBackend(object):
         if not identity:
             return
         user = None
-        username = self.clean_username(identity)
-        res = xplatform_service.backend_login(username, password)
+        identity = self.clean_username(identity)
+        res = xplatform_service.backend_login(identity, password)
         if res:
             UserModel = get_user_model()
             # login success
             if self.create_unknown_user:
-                user, created = UserModel._default_manager.get_or_create(**{
-                    UserModel.USERNAME_FIELD: username,
-                    'context': res 
+                user, created = UserModel._default_manager.get_or_create_techu_user(**{
+                    UserModel.get_identity_field(identity): identity,
+                    'password': password,
+                    'context': res,
                 })
                 if created:
                     user = self.configure_user(user)
             else:
                 try:
-                    user = UserModel._default_manager.get_by_natural_key(username)
+                    user = UserModel._default_manager.get_by_natural_key(identity)
                 except UserModel.DoesNotExist:
                     pass
         return user
@@ -128,7 +129,6 @@ class XPlatformBackend(object):
             return UserModel.objects.get(pk=user_id)
         except UserModel.DoesNotExist:
             return None
-
 
     def clean_username(self, username):
         """

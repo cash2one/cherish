@@ -14,7 +14,7 @@ from datetimewidget.widgets import DateWidget
 # from db_file_storage.form_widgets import DBClearableFileInput
 
 from .utils import (
-    validate_mobile, get_users_by_email, get_users_by_mobile,
+    get_users_by_email, get_users_by_mobile,
     check_mobile, check_email,
 )
 from .models import TechUUser
@@ -22,6 +22,7 @@ from .tokens import user_mobile_token_generator
 from .backend import LoginPolicy
 from .widgets import DBAdminImageWidget
 from .tasks import send_mobile_task, send_email_task
+from .validators import validate_mobile
 
 logger = logging.getLogger(__name__)
 
@@ -156,17 +157,15 @@ class PasswordResetForm(forms.Form):
             validate_email(entry)
             # email
             self.is_email = True
-            logger.debug('clean entry: get email')
         except ValidationError:
-            self.is_email = False
+            pass
         if not self.is_email:
             try:
                 validate_mobile(entry)
                 # mobile
                 self.is_mobile = True
-                logger.debug('clean entry: get mobile')
             except ValidationError:
-                self.is_mobile = False
+                pass
         if not (self.is_email or self.is_mobile):
             raise forms.ValidationError(_('Please input email or mobile.'))
         # check entry validate in system

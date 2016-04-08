@@ -36,9 +36,10 @@ from .permissions import (
     IsTokenOwnerPermission, OnceUserMobileCodeCheck, OnceGeneralMobileCodeCheck
 )
 from .tokens import user_mobile_token_generator, general_mobile_token_generator
-from .utils import validate_mobile, get_user_by_mobile
+from .utils import get_user_by_mobile
 from .exceptions import ParameterError, OperationError
 from .tasks import send_mobile_task
+from .validators import validate_mobile
 
 logger = logging.getLogger(__name__)
 

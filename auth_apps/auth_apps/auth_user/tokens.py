@@ -7,7 +7,7 @@ from django.core.cache import cache
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 
-from .utils import validate_code
+from .validators import validate_mobile_code
 from .backend import LoginPolicy
 
 logger = logging.getLogger(__name__)
@@ -62,7 +62,7 @@ class MobileTokenGenerator(object):
     def _is_code(self, code):
         # check all numbers, and DEFAULT_CODE_LENGTH
         try:
-            return validate_code(code)
+            return validate_mobile_code(code)
         except:
             return False
 
