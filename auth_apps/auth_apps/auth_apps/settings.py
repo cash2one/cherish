@@ -221,6 +221,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        'custom_oauth2': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
         'common': {
             'handlers': ['console'],
             'level': 'DEBUG',

@@ -99,6 +99,22 @@ HTTP Method: POST
 
 token接口
 
+Request:
+
+根据不同的grant_type，参数有所不同，具体参见不同类型的demo
+
+Response:
+```
+{
+    "user_id": 2,
+    "access_token": "BO4tr7JjpA48on8Nhuq2A74SK2b53K",
+    "expires_in": 36000,
+    "token_type": "Bearer",
+    "scope": "user group",
+    "refresh_token": "UZmy05qnimagFX4DJhzj3BZYEjMBIG"
+}
+```
+
 #### ^/oauth/revoke_token/$
 
 HTTP Method: POST
