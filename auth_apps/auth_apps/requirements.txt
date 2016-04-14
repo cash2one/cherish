@@ -17,4 +17,3 @@ celery==3.1.18
 django-celery
 redis
 git+https://github.com/stefanfoulis/django-sendsms.git@master
-django-braces

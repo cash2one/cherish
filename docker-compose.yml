@@ -6,7 +6,6 @@ rproxy:
     volumes:
      - ./rproxy/nginx/nginx.conf:/opt/openresty/nginx/conf/nginx.conf:ro
      - ./rproxy/nginx/sslkey:/opt/openresty/nginx/conf/sslkey:ro
-     - ./rproxy/middleware/:/opt/openresty/nginx/middleware:ro
     environment:
      - MYSQL_HOST=db
      - MYSQL_PORT=3306
