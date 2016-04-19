@@ -99,8 +99,8 @@ class TechUUserManager(UserManager):
             (k, v) for k, v in extra_fields.items()
             if k in self.model.IDENTITY_FIELDS
         ])
-        #logger.debug('[update_or_create] user query: {fields}'.format(
-        #    fields=query_fields))
+        logger.debug('[update_or_create] user query: {fields}'.format(
+            fields=query_fields))
         with transaction.atomic():
             try:
                 # update user
@@ -115,7 +115,6 @@ class TechUUserManager(UserManager):
                 logger.error('cannot identify user: {fields}'.format(
                     fields=query_fields))
         return user, created
-
 
 
 class TechUUser(AbstractUser):
