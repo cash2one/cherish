@@ -15,11 +15,11 @@ class SMSService(object):
             if hasattr(settings, 'SMS_REQUEST_TIMEOUT') \
             else self.DEFAULT_SMS_REQUEST_TIMEOUT
 
-    def send_message(self, to_mobiles, body):
-        url = self.base_url + '/send'
+    def send_message(self, to_mobiles, body, code):
+        url = self.base_url + '/code'
         payload = {
             'receivers': to_mobiles,
-            'content': body,
+            'code': code,
         }
         try:
             requests.post(url, data=payload, timeout=self.timeout)
