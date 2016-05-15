@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # third part apps
+    'mptt',
     'oauth2_provider',
     'rest_framework',
     'corsheaders',
@@ -51,6 +52,7 @@ INSTALLED_APPS = (
     'edu_info',
     'auth_user',
     'custom_oauth2',
+    'loc_service',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -275,3 +277,4 @@ CELERY_ENABLE_UTC = True
 CELERY_TIMEZONE = TIME_ZONE
 if TEST:
     CELERY_ALWAYS_EAGER = True
+
