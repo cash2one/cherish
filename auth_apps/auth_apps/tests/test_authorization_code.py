@@ -93,7 +93,7 @@ class TestAuthorizationCode(unittest.TestCase):
 
     # Application requests resource by using access token
     def _application_requests_resource(self, token_info, user_pk):
-        url = self.base_url + '/accounts/resource/user/{pk}/'.format(
+        url = self.base_url + '/accounts/api/v1/user/{pk}/'.format(
             pk=user_pk)
         headers = {
             u'Authorization': u'{token_type} {access_token}'.format(

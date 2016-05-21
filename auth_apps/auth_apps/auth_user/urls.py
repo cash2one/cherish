@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.conf.urls import url, include
 from django.contrib.auth import views as auth_views
 from rest_framework.urlpatterns import format_suffix_patterns
 
@@ -25,13 +25,13 @@ from .tokens import email_token_generator
 
 
 api_urlpatterns = [
-    url(r'^resource/user/(?P<pk>[0-9]+)/$', UserRetrieveUpdateAPIView.as_view()),
-    url(r'^resource/group/(?P<pk>[0-9]+)/$', GroupRetrieveAPIView.as_view()),
+    url(r'^user/register/$', UserRegisterAPIView.as_view()),
     url(r'^user/change_password/$', ChangePasswordAPIView.as_view()),
     url(r'^user/reset_password/mobile/$', MobileCodeResetPasswordAPIView.as_view()),
-    url(r'^user/mobile_code/$', MobileCodeAPIView.as_view()),
+    url(r'^user/(?P<pk>[0-9]+)/$', UserRetrieveUpdateAPIView.as_view()),
+    url(r'^group/(?P<pk>[0-9]+)/$', GroupRetrieveAPIView.as_view()),
+    url(r'^mobile_code/$', MobileCodeAPIView.as_view()),
     url(r'^register/mobile_code/$', RegisterMobileCodeAPIView.as_view()),
-    url(r'^register/$', UserRegisterAPIView.as_view()),
 ]
 
 page_urlpatterns = [
@@ -122,4 +122,7 @@ page_urlpatterns = [
 
 ]
 
-urlpatterns = page_urlpatterns + format_suffix_patterns(api_urlpatterns)
+versioned_api_urlpatterns = [
+    url(r'^api/v1/', include(api_urlpatterns, namespace='v1')),
+]
+urlpatterns = page_urlpatterns + format_suffix_patterns(versioned_api_urlpatterns, allowed=['json'])
