@@ -9,6 +9,7 @@ from django.http import HttpResponse
 from django.views.generic.base import ContextMixin
 from django.forms.models import modelform_factory
 from django.utils.decorators import method_decorator
+from django.utils.translation import ugettext as _
 from django.views.decorators.debug import sensitive_post_parameters
 from oauth2_provider import views
 from oauth2_provider.models import get_application_model, AccessToken
@@ -26,12 +27,30 @@ class AppDevTagContextMixin(ContextMixin):
         return context
 
 
+class ErrorMsgTranslationMixin(object):
+    REPLACE_KEY = 'description'
+    ERROR_MESSAGES = {
+        'Invalid credentials given.': _('Invalid credentials give.'),
+    }
+
+    def do_translate(self, body):
+        try:
+            jbody = json.loads(body)
+            # add user info when get token success
+            error_msg = jbody.get(self.REPLACE_KEY)
+        except:
+            error_msg = None
+        if error_msg in self.ERROR_MESSAGES:
+            body[self.REPLACE_KEY] = self.ERROR_MESSAGES[error_msg]
+        return body
+
+
 # oauth2 API
 class AuthorizationViewWrapper(views.AuthorizationView):
     pass
 
 
-class TokenViewWrapper(views.TokenView):
+class TokenViewWrapper(views.TokenView, ErrorMsgTranslationMixin):
 
     def _add_user_id(self, body):
         access_token = None
@@ -55,6 +74,7 @@ class TokenViewWrapper(views.TokenView):
     @method_decorator(sensitive_post_parameters('password'))
     def post(self, request, *args, **kwargs):
         url, headers, body, status = self.create_token_response(request)
+        body = self.do_translate(body)
         body = self._add_user_id(body)
         response = HttpResponse(content=body, status=status)
         for k, v in headers.items():

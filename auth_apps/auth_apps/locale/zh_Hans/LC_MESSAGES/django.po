@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-21 03:39+0000\n"
+"POT-Creation-Date: 2016-05-06 07:38+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: lanbijia <lbj.world@gmaile.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: auth_user/admin.py:25
+#: auth_user/admin.py:23
 msgid "Profile Info"
 msgstr "个人信息"
 
@@ -28,57 +28,57 @@ msgstr "参数错误"
 msgid "Operation fail"
 msgstr "操作失败"
 
-#: auth_user/forms.py:74
+#: auth_user/forms.py:73
 msgid "Entry"
 msgstr "回执方式"
 
-#: auth_user/forms.py:75 auth_user/forms.py:77
+#: auth_user/forms.py:74 auth_user/forms.py:76
 msgid "Email/Mobile"
 msgstr "邮箱/手机号"
 
-#: auth_user/forms.py:170
+#: auth_user/forms.py:169
 msgid "Please input email or mobile."
 msgstr "请输入邮箱或手机号"
 
-#: auth_user/forms.py:173
+#: auth_user/forms.py:172
 msgid "Invalid email"
 msgstr "无效的邮箱"
 
-#: auth_user/forms.py:175
+#: auth_user/forms.py:174
 msgid "Invalid mobile number"
 msgstr "无效的手机号码"
 
-#: auth_user/forms.py:190 auth_user/forms.py:195
+#: auth_user/forms.py:189 auth_user/forms.py:194
 msgid "Code"
 msgstr "验证码"
 
-#: auth_user/forms.py:191
+#: auth_user/forms.py:190
 msgid "mobile verify code"
 msgstr "手机验证码"
 
-#: auth_user/forms.py:204
+#: auth_user/forms.py:203
 msgid "Identity"
 msgstr "用户标识"
 
-#: auth_user/forms.py:207
+#: auth_user/forms.py:206
 msgid "Username/Email/Mobile"
 msgstr "用户名/邮箱/手机号"
 
-#: auth_user/forms.py:210 auth_user/forms.py:211
+#: auth_user/forms.py:209 auth_user/forms.py:210
 msgid "Password"
 msgstr "密码"
 
-#: auth_user/forms.py:214
+#: auth_user/forms.py:213
 msgid ""
 "Please enter a correct identity and password. Note that both fields may be "
 "case-sensitive."
 msgstr "请输入正确的用户标识和密码，注意区分大小写"
 
-#: auth_user/forms.py:216
+#: auth_user/forms.py:215
 msgid "This account is inactive."
 msgstr "账号未激活"
 
-#: auth_user/forms.py:217
+#: auth_user/forms.py:216
 msgid "Too many times, You've limited to login"
 msgstr "尝试登陆的次数过多，您被限制登陆"
 
@@ -94,78 +94,98 @@ msgstr ""
 msgid "hash"
 msgstr ""
 
-#: auth_user/models.py:36
+#: auth_user/models.py:39 auth_user/models.py:148
+msgid "Unknown"
+msgstr "未知"
+
+#: auth_user/models.py:40
 msgid "School Admin"
 msgstr "学校管理员"
 
-#: auth_user/models.py:37
+#: auth_user/models.py:41
 msgid "Teacher"
 msgstr "老师"
 
-#: auth_user/models.py:38
+#: auth_user/models.py:42
 msgid "Student"
 msgstr "学生"
 
-#: auth_user/models.py:39
+#: auth_user/models.py:43
 msgid "Parent"
 msgstr "家长"
 
-#: auth_user/models.py:42
+#: auth_user/models.py:46
 msgid "Role"
 msgstr "角色"
 
-#: auth_user/models.py:96
+#: auth_user/models.py:140
 msgid "The email already exist in system."
 msgstr "该邮箱已被使用"
 
-#: auth_user/models.py:97
+#: auth_user/models.py:141
 msgid "Mobile number existed, try another one please."
 msgstr "该手机号已被使用"
 
-#: auth_user/models.py:99
+#: auth_user/models.py:143
 msgid ""
 "We need a reset password entry,please set email or mobile for password reset"
 msgstr "我们需要一个密码回执方式，请输入注册邮箱或手机号"
 
-#: auth_user/models.py:104
-msgid "Unknown"
-msgstr "未知"
-
-#: auth_user/models.py:105
+#: auth_user/models.py:149
 msgid "Male"
 msgstr "男"
 
-#: auth_user/models.py:106
+#: auth_user/models.py:150
 msgid "Female"
 msgstr "女"
 
-#: auth_user/models.py:121
+#: auth_user/models.py:169
+msgid "techu"
+msgstr ""
+
+#: auth_user/models.py:170
+msgid "xplatform"
+msgstr ""
+
+#: auth_user/models.py:171
+msgid "once_xplatform"
+msgstr ""
+
+#: auth_user/models.py:175
+msgid "Nickname"
+msgstr ""
+
+#: auth_user/models.py:177
 msgid "Gender"
 msgstr "性别"
 
-#: auth_user/models.py:122
+#: auth_user/models.py:178
 msgid "Birthday"
 msgstr "生日"
 
-#: auth_user/models.py:123
+#: auth_user/models.py:179
 msgid "QQ"
 msgstr ""
 
-#: auth_user/models.py:125
+#: auth_user/models.py:181
 msgid "Remark"
 msgstr "备注"
 
-#: auth_user/models.py:127
+#: auth_user/models.py:183
 msgid "Mobile"
 msgstr "手机号"
 
-#: auth_user/models.py:131
+#: auth_user/models.py:187
 msgid "Phone"
 msgstr "电话"
 
-#: auth_user/models.py:135
+#: auth_user/models.py:191
 msgid "Address"
 msgstr "住址"
+
+#: auth_user/models.py:200
+msgid "User Source"
+msgstr "用户来源"
 
 #: auth_user/templates/accounts/email/password_reset_complete.html:5
 msgid "Reset Password"
@@ -270,98 +290,76 @@ msgid "Welcome to Auth Center"
 msgstr "欢迎来到用户中心"
 
 #: auth_user/validators.py:7
-#, fuzzy
-#| msgid "Invalid mobile number"
 msgid "Invalid mobile number."
 msgstr "无效的手机号码"
 
 #: auth_user/validators.py:13
-#, fuzzy
-#| msgid "Invalid mobile number"
 msgid "Invalid phone number."
-msgstr "无效的手机号码"
+msgstr "无效的电话号码"
 
 #: auth_user/validators.py:19
-#, fuzzy
-#| msgid "Invalid email"
 msgid "Invalid code."
-msgstr "无效的邮箱"
+msgstr "无效的验证码"
 
 #: auth_user/validators.py:24
-#, fuzzy
-#| msgid ""
-#| "Enter a valid phone number. This value may contain only numbers and - "
-#| "characters"
 msgid ""
 "Enter a valid username. This value may contain only letters, numbers and @/./"
 "+/-/_ characters."
-msgstr "请输入有效的电话号码，仅由数字和-组成"
+msgstr "请输入有效的用户名，仅由字母，数字和@/./+/-/_组成"
 
 #: auth_user/validators.py:30
 msgid "username cannot be all digits."
 msgstr "用户名不能全为数字"
 
-#: auth_user/views.py:74 auth_user/views.py:83
+#: auth_user/views.py:76 auth_user/views.py:85
 msgid "Password reset"
 msgstr "密码重置"
 
-#: auth_user/views.py:113
+#: auth_user/views.py:115
 msgid "Enter new password"
 msgstr "输入新密码"
 
-#: auth_user/views.py:123
+#: auth_user/views.py:125
 msgid "verify code invalid"
 msgstr "无效验证码"
 
-#: auth_user/views.py:129
+#: auth_user/views.py:131
 msgid "Password reset unsuccessful"
 msgstr "密码重置失败"
 
-#: auth_user/views.py:154
+#: auth_user/views.py:156
 msgid "Password reset by mobile complete"
 msgstr "通过手机号重置密码完成"
 
-#: auth_user/views.py:164
+#: auth_user/views.py:166
 msgid "Password reset by email complete"
 msgstr "通过邮箱重置密码完成"
 
-#: auth_user/views.py:221
-#, fuzzy
-#| msgid "Enter new password"
+#: auth_user/views.py:223
 msgid "need both new and old password"
-msgstr "输入新密码"
+msgstr "需要同时输入新旧密码"
 
-#: auth_user/views.py:227 auth_user/views.py:256
-#, fuzzy
-#| msgid "Change password"
+#: auth_user/views.py:229 auth_user/views.py:258
 msgid "invalid password"
-msgstr "修改密码"
+msgstr "无效密码"
 
-#: auth_user/views.py:230
-#, fuzzy
-#| msgid "Lost password?"
+#: auth_user/views.py:232
 msgid "old password error"
-msgstr "忘记密码?"
+msgstr "旧密码错误"
 
-#: auth_user/views.py:249
-#, fuzzy
-#| msgid "Enter new password"
+#: auth_user/views.py:251
 msgid "need new password, mobile"
-msgstr "输入新密码"
+msgstr "需要新密码和手机号"
 
-#: auth_user/views.py:252 auth_user/views.py:277
+#: auth_user/views.py:254 auth_user/views.py:279
 msgid "mobile number not exist"
 msgstr "手机号码不存在"
 
-#: auth_user/views.py:274 auth_user/views.py:308
-#, fuzzy
-#| msgid "Invalid mobile number"
+#: auth_user/views.py:276 auth_user/views.py:310
 msgid "mobile number invalid"
 msgstr "无效的手机号码"
 
-#: auth_user/views.py:311
-#, fuzzy
-#| msgid "The email already exist in system."
+#: auth_user/views.py:313
 msgid "mobile already exist"
 msgstr "该邮箱已被使用"
 
@@ -456,17 +454,57 @@ msgstr ""
 msgid "There are no authorized tokens yet."
 msgstr "无授权token"
 
-#: edu_info/models.py:8
+#: custom_oauth2/views.py:33
+msgid "Invalid credentials give."
+msgstr "用户名或密码错误"
+
+#: edu_info/models.py:19
+msgid "unknown"
+msgstr "未知"
+
+#: edu_info/models.py:20
+msgid "primary school"
+msgstr "小学"
+
+#: edu_info/models.py:21
+msgid "middle school"
+msgstr "初中"
+
+#: edu_info/models.py:22
+msgid "high school"
+msgstr "高中"
+
+#: edu_info/models.py:23
+msgid "university"
+msgstr "大学"
+
+#: edu_info/models.py:26
+msgid "School ID"
+msgstr "学校名称"
+
+#: edu_info/models.py:27
 msgid "School Name"
 msgstr "学校名称"
 
-#: edu_info/models.py:12
+#: edu_info/models.py:30
+msgid "School Category"
+msgstr "学校类别"
+
+#: edu_info/models.py:42
 msgid "Subject ID"
 msgstr "学科ID"
 
-#: edu_info/models.py:13
+#: edu_info/models.py:43
 msgid "Subject Name"
 msgstr "学科"
+
+#: loc_service/models.py:9
+msgid "Location code"
+msgstr ""
+
+#: loc_service/models.py:10
+msgid "Location name"
+msgstr ""
 
 #: templates/site_base.html:88
 msgid "Auth Center"

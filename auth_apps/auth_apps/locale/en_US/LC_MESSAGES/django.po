@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-21 03:39+0000\n"
+"POT-Creation-Date: 2016-05-06 07:38+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: auth_user/admin.py:25
+#: auth_user/admin.py:23
 msgid "Profile Info"
 msgstr ""
 
@@ -29,57 +29,57 @@ msgstr ""
 msgid "Operation fail"
 msgstr ""
 
-#: auth_user/forms.py:74
+#: auth_user/forms.py:73
 msgid "Entry"
 msgstr ""
 
-#: auth_user/forms.py:75 auth_user/forms.py:77
+#: auth_user/forms.py:74 auth_user/forms.py:76
 msgid "Email/Mobile"
 msgstr ""
 
-#: auth_user/forms.py:170
+#: auth_user/forms.py:169
 msgid "Please input email or mobile."
 msgstr ""
 
-#: auth_user/forms.py:173
+#: auth_user/forms.py:172
 msgid "Invalid email"
 msgstr ""
 
-#: auth_user/forms.py:175
+#: auth_user/forms.py:174
 msgid "Invalid mobile number"
 msgstr ""
 
-#: auth_user/forms.py:190 auth_user/forms.py:195
+#: auth_user/forms.py:189 auth_user/forms.py:194
 msgid "Code"
 msgstr ""
 
-#: auth_user/forms.py:191
+#: auth_user/forms.py:190
 msgid "mobile verify code"
 msgstr ""
 
-#: auth_user/forms.py:204
+#: auth_user/forms.py:203
 msgid "Identity"
 msgstr ""
 
-#: auth_user/forms.py:207
+#: auth_user/forms.py:206
 msgid "Username/Email/Mobile"
 msgstr ""
 
-#: auth_user/forms.py:210 auth_user/forms.py:211
+#: auth_user/forms.py:209 auth_user/forms.py:210
 msgid "Password"
 msgstr ""
 
-#: auth_user/forms.py:214
+#: auth_user/forms.py:213
 msgid ""
 "Please enter a correct identity and password. Note that both fields may be "
 "case-sensitive."
 msgstr ""
 
-#: auth_user/forms.py:216
+#: auth_user/forms.py:215
 msgid "This account is inactive."
 msgstr ""
 
-#: auth_user/forms.py:217
+#: auth_user/forms.py:216
 msgid "Too many times, You've limited to login"
 msgstr ""
 
@@ -95,77 +95,97 @@ msgstr ""
 msgid "hash"
 msgstr ""
 
-#: auth_user/models.py:36
+#: auth_user/models.py:39 auth_user/models.py:148
+msgid "Unknown"
+msgstr ""
+
+#: auth_user/models.py:40
 msgid "School Admin"
 msgstr ""
 
-#: auth_user/models.py:37
+#: auth_user/models.py:41
 msgid "Teacher"
 msgstr ""
 
-#: auth_user/models.py:38
+#: auth_user/models.py:42
 msgid "Student"
 msgstr ""
 
-#: auth_user/models.py:39
+#: auth_user/models.py:43
 msgid "Parent"
 msgstr ""
 
-#: auth_user/models.py:42
+#: auth_user/models.py:46
 msgid "Role"
 msgstr ""
 
-#: auth_user/models.py:96
+#: auth_user/models.py:140
 msgid "The email already exist in system."
 msgstr ""
 
-#: auth_user/models.py:97
+#: auth_user/models.py:141
 msgid "Mobile number existed, try another one please."
 msgstr ""
 
-#: auth_user/models.py:99
+#: auth_user/models.py:143
 msgid ""
 "We need a reset password entry,please set email or mobile for password reset"
 msgstr ""
 
-#: auth_user/models.py:104
-msgid "Unknown"
-msgstr ""
-
-#: auth_user/models.py:105
+#: auth_user/models.py:149
 msgid "Male"
 msgstr ""
 
-#: auth_user/models.py:106
+#: auth_user/models.py:150
 msgid "Female"
 msgstr ""
 
-#: auth_user/models.py:121
+#: auth_user/models.py:169
+msgid "techu"
+msgstr ""
+
+#: auth_user/models.py:170
+msgid "xplatform"
+msgstr ""
+
+#: auth_user/models.py:171
+msgid "once_xplatform"
+msgstr ""
+
+#: auth_user/models.py:175
+msgid "Nickname"
+msgstr ""
+
+#: auth_user/models.py:177
 msgid "Gender"
 msgstr ""
 
-#: auth_user/models.py:122
+#: auth_user/models.py:178
 msgid "Birthday"
 msgstr ""
 
-#: auth_user/models.py:123
+#: auth_user/models.py:179
 msgid "QQ"
 msgstr ""
 
-#: auth_user/models.py:125
+#: auth_user/models.py:181
 msgid "Remark"
 msgstr ""
 
-#: auth_user/models.py:127
+#: auth_user/models.py:183
 msgid "Mobile"
 msgstr ""
 
-#: auth_user/models.py:131
+#: auth_user/models.py:187
 msgid "Phone"
 msgstr ""
 
-#: auth_user/models.py:135
+#: auth_user/models.py:191
 msgid "Address"
+msgstr ""
+
+#: auth_user/models.py:200
+msgid "User Source"
 msgstr ""
 
 #: auth_user/templates/accounts/email/password_reset_complete.html:5
@@ -292,55 +312,55 @@ msgstr ""
 msgid "username cannot be all digits."
 msgstr ""
 
-#: auth_user/views.py:74 auth_user/views.py:83
+#: auth_user/views.py:76 auth_user/views.py:85
 msgid "Password reset"
 msgstr ""
 
-#: auth_user/views.py:113
+#: auth_user/views.py:115
 msgid "Enter new password"
 msgstr ""
 
-#: auth_user/views.py:123
+#: auth_user/views.py:125
 msgid "verify code invalid"
 msgstr ""
 
-#: auth_user/views.py:129
+#: auth_user/views.py:131
 msgid "Password reset unsuccessful"
 msgstr ""
 
-#: auth_user/views.py:154
+#: auth_user/views.py:156
 msgid "Password reset by mobile complete"
 msgstr ""
 
-#: auth_user/views.py:164
+#: auth_user/views.py:166
 msgid "Password reset by email complete"
 msgstr ""
 
-#: auth_user/views.py:221
+#: auth_user/views.py:223
 msgid "need both new and old password"
 msgstr ""
 
-#: auth_user/views.py:227 auth_user/views.py:256
+#: auth_user/views.py:229 auth_user/views.py:258
 msgid "invalid password"
 msgstr ""
 
-#: auth_user/views.py:230
+#: auth_user/views.py:232
 msgid "old password error"
 msgstr ""
 
-#: auth_user/views.py:249
+#: auth_user/views.py:251
 msgid "need new password, mobile"
 msgstr ""
 
-#: auth_user/views.py:252 auth_user/views.py:277
+#: auth_user/views.py:254 auth_user/views.py:279
 msgid "mobile number not exist"
 msgstr ""
 
-#: auth_user/views.py:274 auth_user/views.py:308
+#: auth_user/views.py:276 auth_user/views.py:310
 msgid "mobile number invalid"
 msgstr ""
 
-#: auth_user/views.py:311
+#: auth_user/views.py:313
 msgid "mobile already exist"
 msgstr ""
 
@@ -435,16 +455,56 @@ msgstr ""
 msgid "There are no authorized tokens yet."
 msgstr ""
 
-#: edu_info/models.py:8
+#: custom_oauth2/views.py:33
+msgid "Invalid credentials give."
+msgstr ""
+
+#: edu_info/models.py:19
+msgid "unknown"
+msgstr ""
+
+#: edu_info/models.py:20
+msgid "primary school"
+msgstr ""
+
+#: edu_info/models.py:21
+msgid "middle school"
+msgstr ""
+
+#: edu_info/models.py:22
+msgid "high school"
+msgstr ""
+
+#: edu_info/models.py:23
+msgid "university"
+msgstr ""
+
+#: edu_info/models.py:26
+msgid "School ID"
+msgstr ""
+
+#: edu_info/models.py:27
 msgid "School Name"
 msgstr ""
 
-#: edu_info/models.py:12
+#: edu_info/models.py:30
+msgid "School Category"
+msgstr ""
+
+#: edu_info/models.py:42
 msgid "Subject ID"
 msgstr ""
 
-#: edu_info/models.py:13
+#: edu_info/models.py:43
 msgid "Subject Name"
+msgstr ""
+
+#: loc_service/models.py:9
+msgid "Location code"
+msgstr ""
+
+#: loc_service/models.py:10
+msgid "Location name"
 msgstr ""
 
 #: templates/site_base.html:88
