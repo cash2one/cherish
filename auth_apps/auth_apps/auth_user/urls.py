@@ -12,6 +12,7 @@ from .views import (
     UserRegisterAPIView,
     ChangePasswordAPIView,
     UserRegisterBackendAPIView,
+    XPlatformNotifyAPIView,
     # page views
     UserRegisterView,
     UserRegisterDoneView,
@@ -66,6 +67,11 @@ api_urlpatterns = [
         RegisterMobileCodeAPIView.as_view(),
         name='api_register_mobile_code'
     ),
+    url(
+        r'^xplatform/notify/$',
+        XPlatformNotifyAPIView.as_view(),
+        name='api_xplatform_notify'
+    )
 ]
 
 page_urlpatterns = [
