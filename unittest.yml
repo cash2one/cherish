@@ -1,35 +1,27 @@
 web:
-    image: "docker.zuoyetong.com.cn:8888/account_web:latest"
+    extends:
+        file: common.yml
+        service: web
     volumes:
      - ./auth_apps/auth_apps:/code
     environment:
-     - DJANGO_DEBUG=1
      - DJANGO_TEST=1
-     - DJANGO_HOST=auth-center.domain.com.cn
-     - MEMCACHED_ADDR=cache
-     - MEMCACHED_PORT=11211
-     - SMS_SERVICE_URL=http://sms.zuoyetong.com.cn
-     - CELERY_BROKER_URL=redis://redis
     links:
-     - db:db
+     - db_proxy:db_proxy
      - cache:cache
      - celery_redis:redis
     command: ./run-unittest.sh
 
 celery_worker:
-    image: "docker.zuoyetong.com.cn:8888/account_web:latest"
+    extends:
+        file: common.yml
+        service: web
     volumes:
      - ./auth_apps/auth_apps:/code
     environment:
-     - DJANGO_DEBUG=1
      - DJANGO_TEST=1
-     - DJANGO_HOST=auth-center.domain.com.cn
-     - MEMCACHED_ADDR=cache
-     - MEMCACHED_PORT=11211
-     - SMS_SERVICE_URL=http://sms.zuoyetong.com.cn
-     - CELERY_BROKER_URL=redis://redis
     links:
-     - db:db
+     - db_proxy:db_proxy
      - cache:cache
      - celery_redis:redis
     command: ./run-task-worker.sh
@@ -40,13 +32,15 @@ celery_redis:
 cache:
     image: "docker.zuoyetong.com.cn:8888/memcached:1.4"
 
+db_proxy:
+    extends:
+        file: common.yml
+        service: db_proxy
+    
 db:
-    image: "docker.zuoyetong.com.cn:8888/mysql:5.6"
+    extends:
+        file: common.yml
+        service: db
     volumes:
-     - ./db/data:/var/lib/mysql
-     - ./mysql/:/etc/mysql/conf.d:ro
-    environment:
-     - MYSQL_USER=mysql
-     - MYSQL_PASSWORD=account_center123
-     - MYSQL_ROOT_PASSWORD=account_center123
-     - MYSQL_DATABASE=account_center
+     - ./db/pgdata:/var/lib/postgresql/data
+    net: "container:db_proxy"

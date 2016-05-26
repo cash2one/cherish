@@ -14,7 +14,7 @@ out_hdlr.setFormatter(logging.Formatter('%(asctime)s %(message)s'))
 logger.addHandler(out_hdlr)
 logger.setLevel(logging.DEBUG)
 
-BASE_URL = u'https://localhost:5000'
+BASE_URL = u'http://localhost:5000'
 USERNAME = u'admin'
 PASSWORD = u'admin'
 USER_PK = 1

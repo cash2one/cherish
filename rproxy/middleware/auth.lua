@@ -1,6 +1,6 @@
 local cjson = require "cjson"
 local memc = require "common.memc"
-local db = require "common.mysql_db"
+local db = require "common.postgres_db"
 
 function separate_token(v, from)
     local token_type = nil
@@ -52,8 +52,6 @@ function main()
     local memc_conn = nil
     local db_conn = nil
     local res = nil
-    local errno = nil
-    local sqlstate = nil
     local v = nil
     local flag = nil
 
@@ -65,7 +63,7 @@ function main()
 
     if not v then
         db_conn = db:get_connection()
-        res, err, errno, sqlstate =
+        res, err =
             db_conn:query(string.format([[select * from oauth2_provider_accesstoken where token = %s]],
                                         ngx.quote_sql_str(access_token)))
         db_conn:close()

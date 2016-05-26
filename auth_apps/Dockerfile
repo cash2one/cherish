@@ -10,14 +10,14 @@ COPY ./auth_apps/requirements.txt /
 ADD http://docker.zuoyetong.com.cn/build/jessie-sources.list /etc/apt/sources.list
 RUN apt-get update \
     && apt-get install -y build-essential \
-                          libmysqlclient-dev \
+                          libpq-dev \
                           gettext \
                           git \
                           libjpeg-dev \
     && pip install -r /requirements.txt \
     && apt-get purge -y build-essential git \
     && apt-get autoremove -y \
-    && apt-get remove -y libmysqlclient-dev libjpeg-dev \
+    && apt-get remove -y libpq-dev libjpeg-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # setup env

@@ -20,7 +20,7 @@ wait_tcp_dependency ${MEMCACHED_ADDR} ${MEMCACHED_PORT}
 echo "connecting to redis ..."
 wait_tcp_dependency ${REDIS_PORT_6379_TCP_ADDR} ${REDIS_PORT_6379_TCP_PORT}
 echo "connecting to db ..."
-wait_tcp_dependency ${DB_PORT_3306_TCP_ADDR} ${DB_PORT_3306_TCP_PORT}
+wait_tcp_dependency ${DB_PROXY_PORT_5432_TCP_ADDR} ${DB_PROXY_PORT_5432_TCP_PORT}
 
 echo "run celery worker ..."
 celery --app=auth_apps.celery:app worker --loglevel=DEBUG --autoreload

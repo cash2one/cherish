@@ -16,8 +16,8 @@ out_hdlr.setFormatter(logging.Formatter('%(asctime)s %(message)s'))
 logger.addHandler(out_hdlr)
 logger.setLevel(logging.DEBUG)
 
-BASE_URL = u'https://localhost:5000'
-AUTH_PROXY_URL = u'https://localhost:5001'
+BASE_URL = u'http://localhost:5000'
+AUTH_PROXY_URL = u'http://localhost:5001'
 ADMIN_USERNAME = u'admin'
 ADMIN_PASSWORD = u'admin'
 ADMIN_USER_PK = 1

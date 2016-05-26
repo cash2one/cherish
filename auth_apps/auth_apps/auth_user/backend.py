@@ -75,13 +75,13 @@ class TechUBackend(object):
             return None
 
     def authenticate(self, identity=None, password=None, request=None):
+        user = self._try_auth(identity, password, self._get_user_by_username)
+        if user:
+            return user
         user = self._try_auth(identity, password, self._get_user_by_email)
         if user:
             return user
         user = self._try_auth(identity, password, self._get_user_by_mobile)
-        if user:
-            return user
-        user = self._try_auth(identity, password, self._get_user_by_username)
         if user:
             return user
         return None

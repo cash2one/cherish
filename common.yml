@@ -1,0 +1,71 @@
+web_proxy:
+    image: "docker.zuoyetong.com.cn:8888/techu_openresty:latest"
+    restart: always
+    volumes:
+     - /etc/localtime:/etc/localtime:ro
+     - /etc/timezone:/etc/timezone:ro
+    log_opt:
+        max-size: "5m"
+        max-file: "5"
+    environment:
+     - POSTGRES_HOST=db_proxy
+     - POSTGRES_PORT=5432
+     - POSTGRES_USER=account_center
+     - POSTGRES_DATABASE=account_center
+     - POSTGRES_PASSWORD=account_center123
+     - MEMCACHED_ADDR=cache
+     - MEMCACHED_PORT=11211
+     - DB_CONN_TIMEOUT=500
+
+web:
+    image: "docker.zuoyetong.com.cn:8888/account_web:latest"
+    restart: always
+    volumes:
+     - /etc/localtime:/etc/localtime:ro
+     - /etc/timezone:/etc/timezone:ro
+    log_opt:
+        max-size: "5m"
+        max-file: "5"
+    environment:
+     - DJANGO_DEBUG=1
+     - DJANGO_HOST=auth-center.domain.com.cn
+     - EMAIL_USE_SSL=1
+     - EMAIL_USE_TLS=0
+     - EMAIL_HOST=smtp.126.com
+     - EMAIL_HOST_USER=techyou@126.com
+     - EMAIL_HOST_PASSWORD=techupangu2015
+     - EMAIL_PORT=994
+     - POSTGRES_HOST=db_proxy
+     - POSTGRES_PORT=5432
+     - POSTGRES_PASSWORD=account_center123
+     - POSTGRES_USER=account_center
+     - POSTGRES_DATABASE=account_center
+     - MEMCACHED_ADDR=cache
+     - MEMCACHED_PORT=11211
+     - SMS_SERVICE_URL=http://sms.zuoyetong.com.cn
+     - XPLATFORM_SERVICE_URL=https://dev.login.yunxiaoyuan.com
+     - CELERY_BROKER_URL=redis://redis
+
+db_proxy:
+    image: "docker.zuoyetong.com.cn:8888/account_db_proxy:latest"
+    restart: always
+    volumes:
+     - /etc/localtime:/etc/localtime:ro
+     - /etc/timezone:/etc/timezone:ro
+    log_opt:
+        max-size: "10m"
+        max-file: "5"
+
+db:
+    image: "docker.zuoyetong.com.cn:8888/postgres:9.4"
+    restart: always
+    environment:
+     - POSTGRES_PASSWORD=account_center123
+     - POSTGRES_USER=account_center
+     - POSTGRES_DATABASE=account_center
+    log_opt:
+        max-size: "10m"
+        max-file: "5"
+    volumes:
+     - /etc/localtime:/etc/localtime:ro
+     - /etc/timezone:/etc/timezone:ro
