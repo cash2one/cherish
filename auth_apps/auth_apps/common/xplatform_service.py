@@ -197,11 +197,11 @@ class XPlatformService(object):
         }
     """
     def backend_batch_username_register(self, register_entries):
-        url = self.base_url + '/Login/register2ByPhone'
+        url = self.base_url + '/Login/register2'
         user_list = [
             {
-                'accountName': entry.get('mobile'),
-                'newPwd': entry.get('password', '').upper(),
+                'accountName': entry.get('username'),
+                'newPwd': self._encode_rawpassword(entry.get('password')),
                 'nickName': entry.get('nickname'),
             }
             for entry in register_entries]
@@ -231,7 +231,7 @@ class XPlatformService(object):
             return False
         url = self.base_url + '/Login/changePwd2'
         body = {
-            'newPwd': self.encode_rawpassword(raw_password) 
+            'newPwd': self._encode_rawpassword(raw_password)
         }
         if userid:
             body['accountId'] = int(userid)

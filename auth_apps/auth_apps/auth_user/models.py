@@ -21,6 +21,7 @@ from .validators import (
     validate_mobile, validate_phone, validate_username,
     username_not_digits
 )
+from .signals import user_set_password_signal
 
 logger = logging.getLogger(__name__)
 
@@ -156,6 +157,7 @@ class TechUUser(AbstractUser):
     def set_password(self, raw_password):
         self.password = make_password(
             raw_password, salt=self.BACKEND_SALT + self.username)
+        user_set_password_signal.send(sender=None, user=self)
 
     # override
     def set_unusable_password(self):
