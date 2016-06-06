@@ -145,7 +145,7 @@ class PasswordResetForm(forms.Form):
     def send_mobile(self, mobile_template_name, context, to_mobile):
         body = loader.render_to_string(mobile_template_name, context)
         # send sms message to mobile
-        sms_service.send_message([to_mobile], body, constext.get('token'))
+        sms_service.send_message([to_mobile], body, context.get('token'))
         logger.debug('send sms : {body}'.format(body=body))
 
     def get_users_by_email(self, email):
