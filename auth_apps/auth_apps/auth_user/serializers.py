@@ -36,3 +36,12 @@ class TechUMobileUserRegisterSerializer(serializers.ModelSerializer):
 class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
+
+
+class TechUBackendUserRegisterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TechUUser
+        fields = (
+            'username', 'email', 'password', 'gender', 'birth_date', 'qq',
+            'remark', 'mobile', 'phone', 'address', 'avatar', 'context'
+        )
