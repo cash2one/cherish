@@ -1,13 +1,14 @@
 # coding: utf-8
 from django.db import connection
 from django.db.utils import IntegrityError
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 
 from loc_service.models import Location
 from edu_info.models import School
 
 
 class Command(BaseCommand):
+    DB_TABLE = 'jingyou_school'
 
     def dictfetchall(self, cursor):
         "Return all rows from a cursor as a dict"
@@ -20,7 +21,11 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         all_categories = dict(School.SCHOOL_CATEGORIES)
         all_categories = all_categories.keys()
-        sql = 'SELECT SCHOOL_ID as id, SCHOOL_AREA_CODE as code,SCHOOL_NAME as name, SCHOOL_CATEGORY as category FROM jingyou_school'
+        sql = """SELECT SCHOOL_ID as id,
+                        SCHOOL_AREA_CODE as code,
+                        SCHOOL_NAME as name,
+                        SCHOOL_CATEGORY as category FROM {table}""".format(
+            table=self.DB_TABLE)
         with connection.cursor() as c:
             c.execute(sql)
             for p in self.dictfetchall(c):

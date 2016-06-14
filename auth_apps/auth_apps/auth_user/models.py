@@ -27,23 +27,26 @@ logger = logging.getLogger(__name__)
 
 class EduProfile(models.Model):
     USER_ROLE = enum(
+        UNKNOWN=0,
         SCHOOL_ADMIN=1,
         TEACHER=2,
         STUDENT=3,
         PARENT=4
     )
     USER_ROLE_TYPES = [
+        (USER_ROLE.UNKNOWN, _('Unknown')),
         (USER_ROLE.SCHOOL_ADMIN, _('School Admin')),
         (USER_ROLE.TEACHER, _('Teacher')),
         (USER_ROLE.STUDENT, _('Student')),
         (USER_ROLE.PARENT, _('Parent')),
     ]
 
-    role = models.IntegerField(_('Role'), choices=USER_ROLE_TYPES)
+    role = models.IntegerField(
+        _('Role'), choices=USER_ROLE_TYPES, default=USER_ROLE.UNKNOWN)
     school = models.ForeignKey(
-        School, on_delete=models.PROTECT, related_name='+')
+        School, on_delete=models.PROTECT, related_name='+', null=True)
     subject = models.ForeignKey(
-        Subject, on_delete=models.PROTECT, related_name='+')
+        Subject, on_delete=models.PROTECT, related_name='+', null=True)
 
 
 class DatabaseFile(models.Model):
@@ -88,6 +91,31 @@ class TechUUserManager(UserManager):
                     fields=query_fields))
         return user, created
 
+    def update_or_create_techu_user(self, **extra_fields):
+        user = None
+        created = False
+        query_fields = dict([
+            (k, v) for k, v in extra_fields.items()
+            if k in self.model.IDENTITY_FIELDS
+        ])
+        #logger.debug('[update_or_create] user query: {fields}'.format(
+        #    fields=query_fields))
+        with transaction.atomic():
+            try:
+                # update user
+                user = self.get_queryset().get(**query_fields)
+                for k, v in extra_fields.items():
+                    setattr(user, k, v)
+                user.save()
+            except self.model.DoesNotExist:
+                created = True
+                user = self.create_techu_user(**extra_fields)
+            except self.model.MultipleObjectsReturned:
+                logger.error('cannot identify user: {fields}'.format(
+                    fields=query_fields))
+        return user, created
+
+
 
 class TechUUser(AbstractUser):
     AUTO_USERNAME_PREFIX = 'auto_'
@@ -119,6 +147,8 @@ class TechUUser(AbstractUser):
     }
     IDENTITY_FIELDS = IDENTITY_TYPE_MAP.values()
 
+    nickname = models.CharField(
+        _('Nickname'), max_length=64, null=True, blank=True)
     gender = models.SmallIntegerField(
         _('Gender'), default=0, choices=GENDER_TYPES)
     birth_date = models.DateField(_('Birthday'), null=True, blank=True)
