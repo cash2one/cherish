@@ -16,9 +16,10 @@ wait_tcp_dependency()
 
 echo "connecting to cache ..."
 wait_tcp_dependency ${MEMCACHED_ADDR} ${MEMCACHED_PORT}
-echo "connecting to redis ..."
-wait_tcp_dependency ${REDIS_PORT_6379_TCP_ADDR} ${REDIS_PORT_6379_TCP_PORT}
+#echo "connecting to redis ..."
+#wait_tcp_dependency ${REDIS_PORT_6379_TCP_ADDR} ${REDIS_PORT_6379_TCP_PORT}
 echo "connecting to db ..."
 wait_tcp_dependency ${DB_PROXY_PORT_5432_TCP_ADDR} ${DB_PROXY_PORT_5432_TCP_PORT}
 
-python manage.py test 
+# python manage.py test --noinput auth_user.tests.ResetPasswordBackendTestCase 
+python manage.py test --noinput

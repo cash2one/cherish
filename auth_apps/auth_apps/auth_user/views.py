@@ -239,6 +239,34 @@ class ChangePasswordAPIView(APIView):
         return Response(response)
 
 
+class ResetPasswordBackendAPIView(APIView):
+    """
+        reset password from backend service
+        NOTICE : use `hashed_password` to update password
+    """
+    permission_classes = [
+        IPRestriction,
+    ]
+    
+    def post(self, request, *args, **kwargs):
+        identity = request.data.get('identity')
+        hashed_password = request.data.get('hashed_password')
+        if not (hashed_password and identity):
+            raise ParameterError(_('need user `identity` (username, email or mobile) and `hashed_password`.'))
+        # get user
+        UserModel = get_user_model()
+        try:
+            user = UserModel._default_manager.get(**{
+                UserModel.get_identity_field(identity): identity
+            })
+        except UserModel.DoesNotExist:
+            raise ParameterError(_('user identity not found.'))
+        user.update_hashed_password(hashed_password)
+        user.save()
+        response = {}
+        return Response(response)
+
+
 class MobileCodeResetPasswordAPIView(APIView):
     """
         reset password by offering mobile code
