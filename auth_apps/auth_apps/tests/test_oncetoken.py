@@ -1,8 +1,9 @@
+# coding: utf-8
 import sys
 import logging
 import unittest
 import requests
-import os
+import os, os.path
 import django
 from django.conf import settings
 if not os.getenv('DJANGO_SETTINGS_MODULE'):
@@ -14,15 +15,16 @@ if not os.getenv('DJANGO_SETTINGS_MODULE'):
         'SERVER_KEY': 'C6F653399B9A15E053469A66',
         'CLIENT_KEY': '9852C11D7FF63FDE5732A4BA',
         'TIMEOUT': 3,
-    })
-    # Calling django.setup() is required for “standalone” Django usage
+        }
+    )
+    # Calling django.setup() is required for "standalone" Django usage
     django.setup()
 
 from test_common import (
     ApplicationClient, ApplicationHelper, client_password_encode
 )
 
-
+sys.path.append(os.path.abspath(os.path.dirname(__name__) + '..'))
 from common.xplatform_service import xplatform_service
 
 logger = logging.getLogger(__name__)

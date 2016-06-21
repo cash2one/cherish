@@ -94,9 +94,15 @@ class XPlatformService(object):
         def body(self):
             encrypted_body = self._data.get('body')
             if encrypted_body:
-                return XPlatformService.decrypt(
+                decrypt_body = XPlatformService.decrypt(
                     encrypted_body,
                     XPlatformService.SERVER_KEY)
+                try:
+                    if decrypt_body:
+                        return json.loads(decrypt_body)
+                except:
+                    logger.error('json body({b}) load error'.format(b=decrypt_body))
+                    pass
             return None
 
         def is_success(self):
@@ -127,6 +133,7 @@ class XPlatformService(object):
                 url=url, r=request))
             r = requests.post(
                 url, json=request.data(), timeout=XPlatformService.TIMEOUT)
+            logger.debug(r.content)
             if r.content:
                 response = self.BaseResponse(r.content)
                 logger.debug(response)
@@ -141,11 +148,14 @@ class XPlatformService(object):
     def backend_verify_once_token(self, userid, once_token):
         url = self.base_url + '/Login/verifyOnceToken'
         assert(userid)
+        head = {
+            'accountId': int(userid),
+        }
         body = {
             'accountId': int(userid),
             'onceToken': once_token,
         }
-        response = self.post(url, head={}, body=body)
+        response = self.post(url, head=head, body=body)
         if not response or not response.is_success():
             # login error
             logger.error(response)
@@ -156,7 +166,7 @@ class XPlatformService(object):
         res = self.backend_verify_once_token(userid, once_token)
         user_info = None
         if res:
-            user_info = self.account_info(userid)
+            user_info = self.account_info(userid=userid)
         return user_info
 
     def backend_verify_access_token(self, userid, access_token):
@@ -251,7 +261,7 @@ class XPlatformService(object):
             return False
         return True
 
-    def account_info(self, userid, username):
+    def account_info(self, userid=None, username=None):
         url = self.base_url + '/Login/getUserInfo'
         body = {}
         if userid:

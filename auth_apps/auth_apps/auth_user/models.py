@@ -291,7 +291,8 @@ class TechUUser(AbstractUser):
             return cls.IDENTITY_TYPE.USERNAME
         except ValidationError:
             pass
-        return None
+        # default type : username
+        return cls.IDENTITY_TYPE.USERNAME
 
     @classmethod
     def get_identity_field(cls, identity):
@@ -305,7 +306,7 @@ class TechUUser(AbstractUser):
     def origin_id(self):
         pk = None
         if self.source == self.USER_SOURCE.XPLATFORM:
-            pk = self.context and json.loads(self.context).get(u'accountId')
+            pk = self.context and self.context.get(u'accountId')
         else:
             pk = self.pk
         return self.source, pk
