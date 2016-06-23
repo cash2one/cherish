@@ -1,6 +1,6 @@
 #!/bin/bash
 
-REGISTRY="docker.zuoyetong.com.cn:8888/"
+REGISTRY="docker.zuoyetong.com.cn/account_center/"
 IMAGE_NAME="account_web"
 VERSION="`date +%Y%m%d%H%M`"
 

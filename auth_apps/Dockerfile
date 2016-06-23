@@ -1,9 +1,9 @@
-FROM docker.zuoyetong.com.cn:8888/python:2.7-slim
+FROM docker.zuoyetong.com.cn/python:2.7-slim
 MAINTAINER "Bijia Lan <lbj.world@gmail.com>"
 
 # add user
 ENV SERVICE_USER authcenter
-RUN useradd -ms /bin/bash $SERVICE_USER 
+RUN useradd -ms /bin/bash $SERVICE_USER
 
 # install libs
 COPY ./auth_apps/requirements.txt /
@@ -32,4 +32,4 @@ RUN chown -R $SERVICE_USER /code
 USER $SERVICE_USER
 
 # run task
-CMD ./run-site.sh 
+CMD ./run-site.sh

@@ -25,7 +25,7 @@ web:
      - db_proxy:db_proxy
      - cache:cache
      - celery_redis:redis
-    command: ./run-site.sh 
+    command: ./run-site.sh
 
 celery_worker:
     extends:
@@ -40,13 +40,13 @@ celery_worker:
     command: ./run-task-worker.sh
 
 celery_redis:
-    image: "docker.zuoyetong.com.cn:8888/redis:3"
+    image: "docker.zuoyetong.com.cn/redis:3"
     log_opt:
         max-size: "5m"
         max-file: "1"
 
 cache:
-    image: "docker.zuoyetong.com.cn:8888/memcached:1.4"
+    image: "docker.zuoyetong.com.cn/memcached:1.4"
     log_opt:
         max-size: "5m"
         max-file: "1"
@@ -55,7 +55,7 @@ db_proxy:
     extends:
         file: common.yml
         service: db_proxy
-    
+
 db:
     extends:
         file: common.yml
