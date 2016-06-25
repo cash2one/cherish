@@ -50,9 +50,9 @@ class Command(BaseCommand):
             if 2 == len(v):
                 v.sort()
                 if v[1].startswith('s'):
-                    _del_mobile.append(v[1], k)
+                    _del_mobile.append((v[1], k))
                 else:
-                    _del_mobile.append(v[0], k)
+                    _del_mobile.append((v[0], k))
             else:
                 self.stderr.write('[WARNING] too many same user : {u} mobile : {m}'.format(u=v, m=k))
 

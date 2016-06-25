@@ -354,7 +354,7 @@ class RegisterMobileCodeAPIView(APIView):
             raise ParameterError(_('mobile number invalid'))
         user = get_user_by_mobile(mobile)
         if user:
-            raise OperationError(_('mobile already exist'))
+            raise ParameterError(_('mobile already exist'))
         current_site = get_current_site(request)
         code = general_mobile_token_generator.make_token(mobile)
         send_mobile_task.delay(
@@ -406,6 +406,14 @@ class UserRegisterBackendAPIView(generics.CreateAPIView):
     ]
     queryset = TechUUser.objects.all()
     serializer_class = TechUBackendUserRegisterSerializer
+
+    # override CreateModelMixin
+    def create(self, request, *args, **kwargs):
+        try:
+            response = super(UserRegisterBackendAPIView, self).create(request, *args, **kwargs)
+        except ValidationError:
+            raise ParameterError(_('mobile already exist'))
+        return response
 
 
 class XPlatformNotifyAPIView(APIView):
