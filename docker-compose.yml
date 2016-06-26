@@ -67,6 +67,19 @@ celery_worker:
 celery_redis:
     image: "docker.zuoyetong.com.cn:8888/redis:3"
 
+component:
+    image: "ficusio/openresty"
+    ports:
+     - "8080:8080"
+    volumes:
+     - ./component/conf:/opt/openresty/nginx/conf
+     - ./component/lua:/opt/openresty/nginx/lua
+    environment:
+     - MEMCACHED_PORT=11211
+    links:
+     - db:db
+     - cache:cache
+
 cache:
     image: "docker.zuoyetong.com.cn:8888/memcached:1.4"
     log_opt:
