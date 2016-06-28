@@ -161,6 +161,7 @@ AUTHENTICATION_BACKENDS = [
     # 'oauth_provider.backends.OAuth2Backend',  # for OAuth2 login users
     'auth_user.backend.TechUBackend',  # for account center site
     'auth_user.backend.XPlatformBackend',  # for users from xplatform
+    'auth_user.backend.XPlatformOnceTokenBackend',  # for once token users from xplatform
     'django.contrib.auth.backends.ModelBackend',  # for admin site
 ]
 

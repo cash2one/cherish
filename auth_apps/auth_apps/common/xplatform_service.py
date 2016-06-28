@@ -152,6 +152,13 @@ class XPlatformService(object):
             return None
         return response.body()
 
+    def backend_verify_get_account_info(self, userid, once_token):
+        res = self.backend_verify_once_token(userid, once_token)
+        user_info = None
+        if res:
+            user_info = self.account_info(userid)
+        return user_info
+
     def backend_verify_access_token(self, userid, access_token):
         url = self.base_url + '/Login/verifyAccessToken'
         assert(userid)

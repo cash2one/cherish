@@ -117,6 +117,11 @@ class XPlatformBackend(object):
                 })
                 if created:
                     user = self.configure_user(user)
+                else:
+                    if user.USER_SOURCE.ONCE_XPLATFORM == user.source:
+                        user.update_password(password)
+                        user.source = user.USER_SOURCE.XPLATFORM
+                        user.save()
             else:
                 try:
                     user = UserModel._default_manager.get_by_natural_key(identity)
@@ -147,3 +152,28 @@ class XPlatformBackend(object):
         By default, returns the user unmodified.
         """
         return user
+
+
+class XPlatformOnceTokenBackend(object):
+
+    def authenticate(self, account_id=None, once_token=None, request=None):
+        user = None
+        user_info = xplatform_service.backend_verify_get_account_info(account_id, once_token)
+        if user_info:
+            UserModel = get_user_model()
+            # login success
+            identity = user_info.get(u'accountName') or user_info.get(u'mobilePhone')
+            user, created = UserModel._default_manager.get_or_create_techu_user(**{
+                UserModel.get_identity_field(identity): identity,
+                'password': None,
+                'context': user_info,
+                'source': UserModel.USER_SOURCE.ONCE_XPLATFORM
+            })
+        return user
+
+    def get_user(self, user_id):
+        UserModel = get_user_model()
+        try:
+            return UserModel.objects.get(pk=user_id)
+        except UserModel.DoesNotExist:
+            return None

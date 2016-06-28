@@ -161,10 +161,12 @@ class TechUUser(AbstractUser):
     USER_SOURCE = enum(
         TECHU=0,
         XPLATFORM=1,
+        ONCE_XPLATFORM=2,
     )
     USER_SOURCES = [
         (USER_SOURCE.TECHU, _('techu')),
         (USER_SOURCE.XPLATFORM, _('xplatform')),
+        (USER_SOURCE.ONCE_XPLATFORM, _('once_xplatform')),
     ]
 
     nickname = models.CharField(
@@ -208,8 +210,14 @@ class TechUUser(AbstractUser):
     def set_password(self, raw_password):
         self.password = make_password(
             raw_password, salt=self.BACKEND_SALT + self.username)
-        user_set_password_signal.send_robust(sender=self.__class__, user=self,
-                                             raw_password=raw_password)
+        # NOTICE: ONCE_XPLATFORM use None password
+        if not raw_password:
+            user_set_password_signal.send_robust(sender=self.__class__, user=self,
+                                                 raw_password=raw_password)
+
+    def update_password(self, raw_password):
+        self.password = make_password(
+            raw_password, salt=self.BACKEND_SALT + self.username)
 
     # override
     def set_unusable_password(self):
@@ -259,7 +267,7 @@ class TechUUser(AbstractUser):
         length = cls.AUTO_USERNAME_LENGTH
         return cls.AUTO_USERNAME_PREFIX + ''.join(
             random.choice(string.lowercase + string.digits)
-            for i in range(length-1)
+            for i in range(length - 1)
         )
 
     @classmethod
