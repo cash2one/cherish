@@ -23,7 +23,7 @@
 {% endif %}
 
 <div class="block-center">
-    <form class="form-profile" method="post" action="{% url 'profile' %}">
+    <form class="form-profile" enctype="multipart/form-data" method="post" action="{% url 'profile' %}">
         {% csrf_token %}
 
         {% for field in form %}
