@@ -8,7 +8,7 @@
 2. OAuth第三方应用授权管理
 3. 用户账号资源API（用于授权第三方应用访问用户信息）
 
-### 用户操作页面接口
+### 用户操作页面
 
 #### /accounts/register/
 
@@ -26,27 +26,23 @@
 
 > 重置密码将移除之前的`多次登陆限制`
 
-### 应用管理页面接口
+### 应用管理页面
 
-#### /oauth/applications/
+> 需要登陆，需要用户在`app_dev`用户组中
+
+---
+#### ^/oauth/applications/$
 
 列出当前用户注册的应用
 
-#### /oauth/applications/register/
+---
+#### ^/oauth/applications/register/$
 
 为当前用户注册新应用
-
-#### /oauth/authorized_tokens/
-
-查看当前用户已经授权的有效token
-
-
-### 应用授权API
 
 ---
 #### ^/oauth/applications/(?P\<pk\>\d+)/$
 
-HTTP Method: GET
 查看应用授权详情
 
 > pk为应用ID
@@ -54,7 +50,6 @@ HTTP Method: GET
 ---
 #### ^/oauth/applications/(?P\<pk\>\d+)/delete/$
 
-HTTP Method: DELETE
 删除应用授权
 
 > pk为应用ID
@@ -62,18 +57,43 @@ HTTP Method: DELETE
 ---
 #### ^/oauth/applications/(?P\<pk\>\d+)/update/$
 
-HTTP Method: PUT
 更新应用授权信息
 
 > pk为应用ID
 
 ---
-#### ^oauth/authorized_tokens/(?P\<pk\>\d+)/delete/$
+#### ^/oauth/authorized_tokens/$
 
-HTTP Method: DELETE
-删除指定授权token
+查看当前用户已经授权的有效token
 
-> pk为应用ID
+---
+#### ^/oauth/authorized_tokens/(?P\<pk\>\d+)/delete/$',
+
+删除指定token
+
+> pk为token ID
+
+
+### 应用授权API
+
+---
+#### ^/oauth/authorize/$
+
+应用授权接口
+
+* first receive a `GET` request from user asking authorization for a certain client application, a form is served possibly showing some useful info and prompting for authorize/do not authorize.
+* then receive a `POST` request possibly after user authorized the access
+
+---
+#### ^/oauth/token/$
+
+token接口
+
+---
+#### ^/oauth/revoke_token/$
+
+刷新token接口
+
 
 ### 资源API
 

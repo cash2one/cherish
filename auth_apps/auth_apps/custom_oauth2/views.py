@@ -14,21 +14,20 @@ class AppDevTagContextMixin(ContextMixin):
         return context
 
 
-class AuthorizationViewWrapper(
-        GroupRequiredMixin, AppDevTagContextMixin, views.AuthorizationView):
-    group_required = APP_DEV_GROUP
+# oauth2 API
+class AuthorizationViewWrapper(views.AuthorizationView):
+    pass
 
 
-class TokenViewWrapper(
-        GroupRequiredMixin, AppDevTagContextMixin, views.TokenView):
-    group_required = APP_DEV_GROUP
+class TokenViewWrapper(views.TokenView):
+    pass
 
 
-class RevokeTokenViewWrapper(
-        GroupRequiredMixin, AppDevTagContextMixin, views.RevokeTokenView):
-    group_required = APP_DEV_GROUP
+class RevokeTokenViewWrapper(views.RevokeTokenView):
+    pass
 
 
+# oauth2 application management
 class ApplicationListWrapper(
         GroupRequiredMixin, AppDevTagContextMixin, views.ApplicationList):
     group_required = APP_DEV_GROUP
@@ -54,11 +53,7 @@ class ApplicationUpdateWrapper(
     group_required = APP_DEV_GROUP
 
 
-class ApplicationUpdateWrapper(
-        GroupRequiredMixin, AppDevTagContextMixin, views.ApplicationUpdate):
-    group_required = APP_DEV_GROUP
-
-
+# oauth2 token management 
 class AuthorizedTokensListViewWrapper(
         GroupRequiredMixin, AppDevTagContextMixin, views.AuthorizedTokensListView):
     group_required = APP_DEV_GROUP
