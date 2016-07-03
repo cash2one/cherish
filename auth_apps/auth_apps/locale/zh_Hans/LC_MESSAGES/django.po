@@ -361,7 +361,7 @@ msgstr "无效的手机号码"
 
 #: auth_user/views.py:316
 msgid "mobile already exist"
-msgstr "该邮箱已被使用"
+msgstr "该手机号已被使用"
 
 #: custom_oauth2/models.py:11
 msgid "Notify callback URIs list, space separated"
