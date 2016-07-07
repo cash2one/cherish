@@ -39,15 +39,16 @@ from .serializers import (
     TechUBackendUserRegisterSerializer
 )
 from .permissions import (
-    IsTokenOwnerPermission, OnceUserMobileCodeCheck, OnceGeneralMobileCodeCheck,
-    IPRestriction
+    IsTokenOwnerPermission, OnceUserMobileCodeCheck,
+    OnceGeneralMobileCodeCheck, IPRestriction
 )
 from .tokens import user_mobile_token_generator, general_mobile_token_generator
 from .utils import get_user_by_mobile
 from .exceptions import ParameterError, OperationError
-from .tasks import send_mobile_task, xplatform_update_account
+from .tasks import send_mobile_task
 from .validators import validate_mobile
 from .throttle import BackendAPIThrottle
+from .mixins import TechUUserUpdateMixin
 
 logger = logging.getLogger(__name__)
 
@@ -187,7 +188,8 @@ class UserProfileView(LoginRequiredMixin, UpdateView):
 
 ##########################
 # APIs
-class UserRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
+class UserRetrieveUpdateAPIView(
+        generics.RetrieveUpdateAPIView, TechUUserUpdateMixin):
     """
         Get and update user info
     """
@@ -199,12 +201,17 @@ class UserRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
     serializer_class = TechUUserSerializer
 
     # override
+    # NOTICE : only support partial update
     def update(self, request, *args, **kwargs):
-        try:
-            response = super(UserRetrieveUpdateAPIView, self).update(request, *args, **kwargs)
-        except ValidationError:
-            raise ParameterError(_('mobile already exist'))
-        return response
+        instance = self.get_object()
+        if not instance:
+            raise ParameterError(_('user identity not found.'))
+        serializer = self.get_serializer(
+            instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.techu_update(user=instance, data=request.data)
+        self.perform_update(serializer)
+        return Response(serializer.data)
 
 
 class GroupRetrieveAPIView(generics.RetrieveAPIView):
@@ -271,7 +278,10 @@ class ResetPasswordBackendAPIView(APIView):
         identity = request.data.get('identity')
         hashed_password = request.data.get('hashed_password')
         if not (hashed_password and identity):
-            raise ParameterError(_('need user `identity` (username, email or mobile) and `hashed_password`.'))
+            raise ParameterError(
+                _('need user `identity` (username, email'
+                  ' or mobile) and `hashed_password`.')
+            )
         # get user
         UserModel = get_user_model()
         try:
@@ -320,11 +330,11 @@ class UserDestroyBackendAPIView(APIView):
         return Response(response, status=status.HTTP_200_OK)
 
 
-class UserUpdateBackendAPIView(generics.UpdateAPIView):
+class UserUpdateBackendAPIView(generics.UpdateAPIView, TechUUserUpdateMixin):
     """
         update user info from backend service
         NOTE: 修改属性分为两种：
-              1. 用户标识信息：用户名，手机号（需要到xplatform重新注册）
+              1. 用户标识信息：用户名，手机号（如果是来自xplatform的用户，需要到xplatform更新）
               2. 其他用户属性修改
 
     """
@@ -343,23 +353,12 @@ class UserUpdateBackendAPIView(generics.UpdateAPIView):
         instance = self.get_object()
         if not instance:
             raise ParameterError(_('user identity not found.'))
-        if request.data.get('username') or request.data.get('mobile'):
-            self._register_to_xplatform(user=instance, data=request.data)
-        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer = self.get_serializer(
+            instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
+        self.techu_update(user=instance, data=request.data)
         self.perform_update(serializer)
         return Response(serializer.data)
-
-    def _register_to_xplatform(self, user, data):
-        if settings.ENABLE_XPLATFORM:
-            xplatform_userid = user.context and user.context.get(u'accountId')
-            if xplatform_userid:
-                # update account info to xplatform
-                xplatform_update_account.delay(
-                    userid=xplatform_userid,
-                    username=data.get('username'),
-                    mobile=data.get('mobile')
-                )
 
 
 class MobileCodeResetPasswordAPIView(APIView):
@@ -470,7 +469,8 @@ class UserRegisterAPIView(generics.CreateAPIView):
     # override CreateModelMixin
     def create(self, request, *args, **kwargs):
         try:
-            response = super(UserRegisterAPIView, self).create(request, *args, **kwargs)
+            response = super(UserRegisterAPIView, self).create(
+                request, *args, **kwargs)
         except ValidationError as e:
             raise ParameterError(e)
         return response
@@ -492,7 +492,8 @@ class UserRegisterBackendAPIView(generics.CreateAPIView):
     # override CreateModelMixin
     def create(self, request, *args, **kwargs):
         try:
-            response = super(UserRegisterBackendAPIView, self).create(request, *args, **kwargs)
+            response = super(UserRegisterBackendAPIView, self).create(
+                request, *args, **kwargs)
         except ValidationError as e:
             raise ParameterError(e)
         return response
