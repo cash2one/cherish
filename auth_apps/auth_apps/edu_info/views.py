@@ -48,30 +48,33 @@ class GetOrCreateSchoolAPIView(generics.GenericAPIView):
         category = request.data.get('category')
 
         if not (province_name and city_name and area_name and school_name):
-            raise ParameterError()
-        if category is None:
-            raise ParameterError()
+            raise ParameterError("province or city or area or school invalid ")
+
+        try:
+            category = int(category)
+        except:
+            raise ParameterError("category invalid")
 
         try:
             province = Location.objects.get(name__contains=province_name)
             city = province.children.get(name__contains=city_name)
             area = city.children.get(name__contains=area_name)
         except (Location.DoesNotExist, Location.MultipleObjectsReturned):
-            raise ParameterError()
+            raise ParameterError("province or city or area invalid")
 
         try:
             school = area.schools.get(name__contains=school_name)
-            if school.category != int(category):
-                school.category = int(category)
+            if school.category != category:
+                school.category = category
                 school.save()
         except School.DoesNotExist:
             school = School.objects.create(
                 name=school_name,
                 area_code=area,
-                category=int(category)
+                category=category
             )
         except School.MultipleObjectsReturned:
-            raise ParameterError()
+            raise ParameterError("school invalid")
 
         response = {
             'province_code': province.code,
