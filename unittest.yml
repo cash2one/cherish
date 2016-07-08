@@ -38,12 +38,6 @@ cache:
 db_proxy:
     extends:
         file: common.yml
-        service: db_proxy
-
-db:
-    extends:
-        file: common.yml
         service: db
     volumes:
      - ./db/pgdata:/var/lib/postgresql/data
-    net: "container:db_proxy"

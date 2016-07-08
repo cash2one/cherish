@@ -288,14 +288,14 @@ DEFAULT_REQUEST_TIMEOUT = 3
 MOBILE_CODE_COUNTDOWN = 60  # seconds
 
 # policy setting
-POLICY_LOGIN_COUNT = int(os.getenv('POLICY_LOGIN_COUNT'))
-POLICY_LOGIN_FLUSH_SECONDS = int(os.getenv('POLICY_LOGIN_FLUSH_SECONDS'))
+POLICY_LOGIN_COUNT = int(os.getenv('POLICY_LOGIN_COUNT', 5))
+POLICY_LOGIN_FLUSH_SECONDS = int(os.getenv('POLICY_LOGIN_FLUSH_SECONDS', 300))
 
 # cache setting
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': os.getenv('MEMCACHED_ADDR') + ':' + os.getenv('MEMCACHED_PORT'),
+        'LOCATION': os.getenv('MEMCACHED_ADDR', 'localhost') + ':' + os.getenv('MEMCACHED_PORT', '11211'),
     }
 }
 

@@ -15,13 +15,50 @@ wait_tcp_dependency()
     done
 }
 
+resolve_service()
+{
+    if [ "${DNS_SERVICE}" == "" ]; then
+        echo "no DNS service found"
+        exit 1
+    fi
+    local service=$1;
+    echo "setting "$service" service ..."
+    result=`curl http://${DNS_SERVICE}/v1/services/${service}`
+    raw_ip=$(echo $result | awk -F, '{print $3}' | awk -F: '{print $2}')
+    RESOLVE_IP=${raw_ip//\"/}
+    RESOLVE_IP=${RESOLVE_IP// /}
+    raw_port=$(echo $result | awk -F, '{print $4}' | awk -F: '{print $2}' | awk -F} '{print $1}' )
+    RESOLVE_PORT=${raw_port//\"/}
+    RESOLVE_PORT=${RESOLVE_PORT// /}
+}
+
+if [ "${DB_SERVICE}" != "" ]; then
+    echo "setting DB service ..."
+    resolve_service ${DB_SERVICE}
+    export DB_PROXY_PORT_5432_TCP_ADDR=$RESOLVE_IP
+    export DB_PROXY_PORT_5432_TCP_PORT=$RESOLVE_PORT
+fi
+if [ "${REDIS_SERVICE}" != "" ]; then
+    echo "setting redis service ..."
+    resolve_service ${REDIS_SERVICE}
+    export CELERY_REDIS_PORT_1_6379_TCP_ADDR=$RESOLVE_IP
+    export CELERY_REDIS_PORT_1_6379_TCP_PORT=$RESOLVE_PORT
+fi
+if [ "${CACHE_SERVICE}" != "" ]; then
+    echo "setting cache redis service ..."
+    resolve_service ${CACHE_SERVICE}
+    export MEMCACHED_ADDR=$RESOLVE_IP
+    export MEMCACHED_PORT=$RESOLVE_PORT
+fi
+
 echo "connecting to cache ..."
 wait_tcp_dependency ${MEMCACHED_ADDR} ${MEMCACHED_PORT}
 echo "connecting to redis ..."
-wait_tcp_dependency ${REDIS_PORT_6379_TCP_ADDR} ${REDIS_PORT_6379_TCP_PORT}
+wait_tcp_dependency ${CELERY_REDIS_1_PORT_6379_TCP_ADDR} ${CELERY_REDIS_1_PORT_6379_TCP_PORT}
 echo "connecting to db ..."
 wait_tcp_dependency ${DB_PROXY_PORT_5432_TCP_ADDR} ${DB_PROXY_PORT_5432_TCP_PORT}
 
 echo "run celery worker ..."
+export CELERY_BROKER_URL=redis://${CELERY_REDIS_1_PORT_6379_TCP_ADDR}:${CELERY_REDIS_1_PORT_6379_TCP_PORT}
 celery --app=auth_apps.celery:app worker --loglevel=DEBUG --autoreload &
 celery --app=auth_apps.celery:app beat -S djcelery.schedulers.DatabaseScheduler

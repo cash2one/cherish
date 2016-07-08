@@ -1,3 +1,0 @@
-"admin" "123456"
-"readonly" "123456"
-"root" "account_center"

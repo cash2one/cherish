@@ -9,7 +9,7 @@ web_proxy:
         max-file: "5"
     environment:
      - POSTGRES_HOST=db_proxy
-     - POSTGRES_PORT=5432
+     - POSTGRES_PORT=5433
      - POSTGRES_USER=account_center
      - POSTGRES_DATABASE=account_center
      - POSTGRES_PASSWORD=account_center123
@@ -37,7 +37,7 @@ web:
      - EMAIL_HOST_PASSWORD=techupangu2015
      - EMAIL_PORT=994
      - POSTGRES_HOST=db_proxy
-     - POSTGRES_PORT=5432
+     - POSTGRES_PORT=5433
      - POSTGRES_PASSWORD=account_center123
      - POSTGRES_USER=account_center
      - POSTGRES_DATABASE=account_center
@@ -45,22 +45,11 @@ web:
      - MEMCACHED_PORT=11211
      - SMS_SERVICE_URL=http://sms.zuoyetong.com.cn
      - XPLATFORM_SERVICE_URL=https://dev.login.yunxiaoyuan.com
-     - CELERY_BROKER_URL=redis://redis
      - POLICY_LOGIN_COUNT=20
      - POLICY_LOGIN_FLUSH_SECONDS=3600
 
-db_proxy:
-    image: "docker.zuoyetong.com.cn/account_center/account_db_proxy:latest"
-    restart: always
-    volumes:
-     - /etc/localtime:/etc/localtime:ro
-     - /etc/timezone:/etc/timezone:ro
-    log_opt:
-        max-size: "10m"
-        max-file: "5"
-
 db:
-    image: "docker.zuoyetong.com.cn/postgres:9.4"
+    image: "docker.zuoyetong.com.cn/postgres-proxy:9.4"
     restart: always
     environment:
      - POSTGRES_PASSWORD=account_center123

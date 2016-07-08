@@ -6,6 +6,9 @@ VERSION="`date +%Y%m%d%H%M`"
 
 IMAGE="${REGISTRY}${IMAGE_NAME}:${VERSION}"
 
+# copy site static file
+bash extract_statics.sh
+
 docker build -t ${IMAGE} .
 if [ "$?" != "0" ]; then
     echo "${IMAGE} build fail"
