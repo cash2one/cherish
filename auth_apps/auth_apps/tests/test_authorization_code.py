@@ -35,7 +35,7 @@ class ApplicationClient(object):
         # passive means we are already in the login page
         if not passive:
             self.driver.get(self.base_url + '/accounts/login/')
-        name_elem = self.driver.find_element_by_name('username')
+        name_elem = self.driver.find_element_by_name('identity')
         pwd_elem = self.driver.find_element_by_name('password')
         name_elem.send_keys(self.username)
         pwd_elem.send_keys(self.password)
@@ -115,7 +115,7 @@ class ApplicationHelper(object):
         application[u'client_id'] = client_id
         application[u'client_secret'] = client_secret
         # register confirm
-        register_elem = cli.driver.find_element_by_tag_name('button')
+        register_elem = cli.driver.find_element_by_id('id_save')
         register_elem.click()
         logger.info('Create new application : {app}'.format(app=application))
         return application
