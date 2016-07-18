@@ -27,7 +27,8 @@ web:
         max-size: "5m"
         max-file: "5"
     environment:
-     - DJANGO_DEBUG=0
+     - DJANGO_DEBUG=1
+     - DJANGO_LOG_LEVEL=INFO
      - DJANGO_HOST=localhost
      - EMAIL_USE_SSL=1
      - EMAIL_USE_TLS=0

@@ -23,7 +23,7 @@ class TechUUserAdmin(UserAdmin):
         (_('Profile Info'), {
             'fields': (
                 'birth_date', 'qq', 'remark', 'mobile', 'phone', 'address',
-                'avatar',  # 'edu_profile'
+                'avatar', 'source', 'context',  # 'edu_profile'
             )
         }),
     )

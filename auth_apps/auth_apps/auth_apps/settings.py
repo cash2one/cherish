@@ -205,38 +205,70 @@ REST_FRAMEWORK = {
 }
 
 # loggings
+LOG_LEVEL = os.getenv('DJANGO_LOG_LEVEL')
+if not LOG_LEVEL:
+    LOG_LEVEL = 'DEBUG' if DEBUG else 'INFO'
 LOGGING = {
     'version': 1,
     'handlers': {
-        'console': {
-            'level': 'DEBUG',
+        'verbose_console': {
+            'level': LOG_LEVEL,
             'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+        'simple_console': {
+            'level': LOG_LEVEL,
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+    },
+    'formatters': {
+        'verbose': {
+            'format': '[%(levelname)s][%(asctime)s][%(module)s pid:(%(process)d) tid:(%(thread)d)] %(message)s'
+        },
+        'simple': {
+            'format': '[%(levelname)s] %(message)s'
         },
     },
     'loggers': {
         'oauthlib': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
+            'handlers': ['simple_console'],
+            'level': LOG_LEVEL,
             'propagate': True,
         },
-        'django': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
+        'django.request': {
+            'handlers': ['verbose_console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'django.db.backends': {
+            'handlers': ['simple_console'],
+            'level': LOG_LEVEL,
             'propagate': True,
         },
         'auth_user': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
+            'handlers': ['verbose_console'],
+            'level': LOG_LEVEL,
             'propagate': True,
         },
         'custom_oauth2': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
+            'handlers': ['verbose_console'],
+            'level': LOG_LEVEL,
             'propagate': True,
         },
         'common': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
+            'handlers': ['verbose_console'],
+            'level': LOG_LEVEL,
+            'propagate': True,
+        },
+        'edu_info': {
+            'handlers': ['verbose_console'],
+            'level': LOG_LEVEL,
+            'propagate': True,
+        },
+        'loc_service': {
+            'handlers': ['verbose_console'],
+            'level': LOG_LEVEL,
             'propagate': True,
         },
     },
@@ -244,7 +276,7 @@ LOGGING = {
 
 # security setting
 # SECURE_SSL_REDIRECT = True
-#if TEST:
+# if TEST:
 #    SECURE_SSL_REDIRECT = False
 ENABLE_MOBILE_PASSWORD_VERIFY = True
 TECHU_FRONTEND_SALT = 'cloud_homework-'
@@ -290,4 +322,3 @@ CELERY_ENABLE_UTC = True
 CELERY_TIMEZONE = TIME_ZONE
 if TEST:
     CELERY_ALWAYS_EAGER = True
-
