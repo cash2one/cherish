@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-06 07:38+0000\n"
+"POT-Creation-Date: 2016-05-06 15:28+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -79,7 +79,7 @@ msgstr ""
 msgid "This account is inactive."
 msgstr ""
 
-#: auth_user/forms.py:216
+#: auth_user/forms.py:216 custom_oauth2/views.py:96
 msgid "Too many times, You've limited to login"
 msgstr ""
 
@@ -312,55 +312,55 @@ msgstr ""
 msgid "username cannot be all digits."
 msgstr ""
 
-#: auth_user/views.py:76 auth_user/views.py:85
+#: auth_user/views.py:79 auth_user/views.py:88
 msgid "Password reset"
 msgstr ""
 
-#: auth_user/views.py:115
+#: auth_user/views.py:118
 msgid "Enter new password"
 msgstr ""
 
-#: auth_user/views.py:125
+#: auth_user/views.py:128
 msgid "verify code invalid"
 msgstr ""
 
-#: auth_user/views.py:131
+#: auth_user/views.py:134
 msgid "Password reset unsuccessful"
 msgstr ""
 
-#: auth_user/views.py:156
+#: auth_user/views.py:159
 msgid "Password reset by mobile complete"
 msgstr ""
 
-#: auth_user/views.py:166
+#: auth_user/views.py:169
 msgid "Password reset by email complete"
 msgstr ""
 
-#: auth_user/views.py:223
+#: auth_user/views.py:226
 msgid "need both new and old password"
 msgstr ""
 
-#: auth_user/views.py:229 auth_user/views.py:258
+#: auth_user/views.py:232 auth_user/views.py:261
 msgid "invalid password"
 msgstr ""
 
-#: auth_user/views.py:232
+#: auth_user/views.py:235
 msgid "old password error"
 msgstr ""
 
-#: auth_user/views.py:251
+#: auth_user/views.py:254
 msgid "need new password, mobile"
 msgstr ""
 
-#: auth_user/views.py:254 auth_user/views.py:279
+#: auth_user/views.py:257 auth_user/views.py:282
 msgid "mobile number not exist"
 msgstr ""
 
-#: auth_user/views.py:276 auth_user/views.py:310
+#: auth_user/views.py:279 auth_user/views.py:313
 msgid "mobile number invalid"
 msgstr ""
 
-#: auth_user/views.py:313
+#: auth_user/views.py:316
 msgid "mobile already exist"
 msgstr ""
 
@@ -455,7 +455,7 @@ msgstr ""
 msgid "There are no authorized tokens yet."
 msgstr ""
 
-#: custom_oauth2/views.py:33
+#: custom_oauth2/views.py:35
 msgid "Invalid credentials give."
 msgstr ""
 
@@ -487,15 +487,19 @@ msgstr ""
 msgid "School Name"
 msgstr ""
 
-#: edu_info/models.py:30
+#: edu_info/models.py:28
+msgid "Scool PinYin"
+msgstr ""
+
+#: edu_info/models.py:31
 msgid "School Category"
 msgstr ""
 
-#: edu_info/models.py:42
+#: edu_info/models.py:43
 msgid "Subject ID"
 msgstr ""
 
-#: edu_info/models.py:43
+#: edu_info/models.py:44
 msgid "Subject Name"
 msgstr ""
 

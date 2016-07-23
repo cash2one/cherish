@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-06 07:38+0000\n"
+"POT-Creation-Date: 2016-05-06 15:28+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: lanbijia <lbj.world@gmaile.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -78,7 +78,7 @@ msgstr "请输入正确的用户标识和密码，注意区分大小写"
 msgid "This account is inactive."
 msgstr "账号未激活"
 
-#: auth_user/forms.py:216
+#: auth_user/forms.py:216 custom_oauth2/views.py:96
 msgid "Too many times, You've limited to login"
 msgstr "尝试登陆的次数过多，您被限制登陆"
 
@@ -311,55 +311,55 @@ msgstr "请输入有效的用户名，仅由字母，数字和@/./+/-/_组成"
 msgid "username cannot be all digits."
 msgstr "用户名不能全为数字"
 
-#: auth_user/views.py:76 auth_user/views.py:85
+#: auth_user/views.py:79 auth_user/views.py:88
 msgid "Password reset"
 msgstr "密码重置"
 
-#: auth_user/views.py:115
+#: auth_user/views.py:118
 msgid "Enter new password"
 msgstr "输入新密码"
 
-#: auth_user/views.py:125
+#: auth_user/views.py:128
 msgid "verify code invalid"
 msgstr "无效验证码"
 
-#: auth_user/views.py:131
+#: auth_user/views.py:134
 msgid "Password reset unsuccessful"
 msgstr "密码重置失败"
 
-#: auth_user/views.py:156
+#: auth_user/views.py:159
 msgid "Password reset by mobile complete"
 msgstr "通过手机号重置密码完成"
 
-#: auth_user/views.py:166
+#: auth_user/views.py:169
 msgid "Password reset by email complete"
 msgstr "通过邮箱重置密码完成"
 
-#: auth_user/views.py:223
+#: auth_user/views.py:226
 msgid "need both new and old password"
 msgstr "需要同时输入新旧密码"
 
-#: auth_user/views.py:229 auth_user/views.py:258
+#: auth_user/views.py:232 auth_user/views.py:261
 msgid "invalid password"
 msgstr "无效密码"
 
-#: auth_user/views.py:232
+#: auth_user/views.py:235
 msgid "old password error"
 msgstr "旧密码错误"
 
-#: auth_user/views.py:251
+#: auth_user/views.py:254
 msgid "need new password, mobile"
 msgstr "需要新密码和手机号"
 
-#: auth_user/views.py:254 auth_user/views.py:279
+#: auth_user/views.py:257 auth_user/views.py:282
 msgid "mobile number not exist"
 msgstr "手机号码不存在"
 
-#: auth_user/views.py:276 auth_user/views.py:310
+#: auth_user/views.py:279 auth_user/views.py:313
 msgid "mobile number invalid"
 msgstr "无效的手机号码"
 
-#: auth_user/views.py:313
+#: auth_user/views.py:316
 msgid "mobile already exist"
 msgstr "该邮箱已被使用"
 
@@ -454,7 +454,7 @@ msgstr ""
 msgid "There are no authorized tokens yet."
 msgstr "无授权token"
 
-#: custom_oauth2/views.py:33
+#: custom_oauth2/views.py:35
 msgid "Invalid credentials give."
 msgstr "用户名或密码错误"
 
@@ -486,15 +486,19 @@ msgstr "学校名称"
 msgid "School Name"
 msgstr "学校名称"
 
-#: edu_info/models.py:30
+#: edu_info/models.py:28
+msgid "Scool PinYin"
+msgstr "学校拼音名称"
+
+#: edu_info/models.py:31
 msgid "School Category"
 msgstr "学校类别"
 
-#: edu_info/models.py:42
+#: edu_info/models.py:43
 msgid "Subject ID"
 msgstr "学科ID"
 
-#: edu_info/models.py:43
+#: edu_info/models.py:44
 msgid "Subject Name"
 msgstr "学科"
 
