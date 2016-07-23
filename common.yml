@@ -27,8 +27,8 @@ web:
         max-size: "5m"
         max-file: "5"
     environment:
-     - DJANGO_DEBUG=1
-     - DJANGO_HOST=auth-center.domain.com.cn
+     - DJANGO_DEBUG=0
+     - DJANGO_HOST=localhost
      - EMAIL_USE_SSL=1
      - EMAIL_USE_TLS=0
      - EMAIL_HOST=smtp.126.com
@@ -45,6 +45,8 @@ web:
      - SMS_SERVICE_URL=http://sms.zuoyetong.com.cn
      - XPLATFORM_SERVICE_URL=https://dev.login.yunxiaoyuan.com
      - CELERY_BROKER_URL=redis://redis
+     - POLICY_LOGIN_COUNT=20
+     - POLICY_LOGIN_FLUSH_SECONDS=3600
 
 db_proxy:
     image: "docker.zuoyetong.com.cn:8888/account_db_proxy:latest"

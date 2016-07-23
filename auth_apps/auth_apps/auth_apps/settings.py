@@ -28,7 +28,7 @@ DEBUG = int(os.getenv('DJANGO_DEBUG', 0))
 TEST = int(os.getenv('DJANGO_TEST', 0))
 TEMPLATE_DEBUG = False
 
-ALLOWED_HOSTS = [os.getenv('DJANGO_HOST')]
+ALLOWED_HOSTS = os.getenv('DJANGO_HOST').split(',') if os.getenv('DJANGO_HOST') else []
 
 
 # Application definition
@@ -251,6 +251,10 @@ TECHU_FRONTEND_SALT = 'cloud_homework-'
 TECHU_BACKEND_SALT = 'yzy-'
 DEFAULT_REQUEST_TIMEOUT = 3
 MOBILE_CODE_COUNTDOWN = 60  # seconds
+
+# policy setting
+POLICY_LOGIN_COUNT = int(os.getenv('POLICY_LOGIN_COUNT'))
+POLICY_LOGIN_FLUSH_SECONDS = int(os.getenv('POLICY_LOGIN_FLUSH_SECONDS'))
 
 # cache setting
 CACHES = {

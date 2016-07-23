@@ -43,12 +43,7 @@ class EduProfile(models.Model):
         (USER_ROLE.PARENT, _('Parent')),
     ]
 
-    role = ArrayField(
-        models.IntegerField(
-            _('Role'), choices=USER_ROLE_TYPES
-        ),
-        size=len(USER_ROLE_TYPES)
-    )
+    role = models.IntegerField(_('Role'), choices=USER_ROLE_TYPES)
     school = models.ForeignKey(
         School, on_delete=models.PROTECT, related_name='+', null=True)
     subject = models.ForeignKey(
