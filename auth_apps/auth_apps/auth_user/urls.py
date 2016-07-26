@@ -11,6 +11,7 @@ from .views import (
     MobileCodeResetPasswordAPIView,
     UserRegisterAPIView,
     ChangePasswordAPIView,
+    UserRegisterBackendAPIView,
     # page views
     UserRegisterView,
     UserRegisterDoneView,
@@ -25,6 +26,11 @@ from .tokens import email_token_generator
 
 
 api_urlpatterns = [
+    url(
+        r'^user/register/backend/$',
+        UserRegisterBackendAPIView.as_view(),
+        name='api_user_register_backend'
+    ),
     url(
         r'^user/register/mobile/$',
         UserRegisterAPIView.as_view(),
@@ -56,7 +62,7 @@ api_urlpatterns = [
         name='api_mobile_code'
     ),
     url(
-        r'^register/mobile_code/$', 
+        r'^register/mobile_code/$',
         RegisterMobileCodeAPIView.as_view(),
         name='api_register_mobile_code'
     ),

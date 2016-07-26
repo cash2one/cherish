@@ -5,6 +5,7 @@ from django.conf import settings
 from oauth2_provider.models import get_application_model
 
 from .utils import sync_send_mobile, sync_send_email
+from common.xplatform_service import xplatform_service
 
 app = Celery()
 logger = get_task_logger(__name__)
@@ -22,7 +23,7 @@ def send_mobile_task(self, to_mobile, context, mobile_template_name):
 
 @app.task(bind=True)
 def send_email_task(
-        self, to_email, context, from_email, subject_template_name, 
+        self, to_email, context, from_email, subject_template_name,
         email_template_name):
     try:
         sync_send_email(
@@ -48,3 +49,18 @@ def application_notify(self, client_id, context):
     except Exception as exc:
         raise self.retry(exc=exc)
 
+
+@app.task(bind=True)
+def xplatform_register(self, register_entries):
+    try:
+        xplatform_service.backend_batch_username_register(register_entries)
+    except Exception as exc:
+        raise self.retry(exc=exc)
+
+
+@app.task(bind=True)
+def xplatform_changepwd(self, userid, username, raw_password):
+    try:
+        xplatform_service.backend_changepwd(userid, username, raw_password)
+    except Exception as exc:
+        raise self.retry(exc=exc)

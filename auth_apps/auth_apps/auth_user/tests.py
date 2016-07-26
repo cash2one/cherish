@@ -66,6 +66,27 @@ class RegisterMobileUserTestCase(APITestCase):
         self.assertTrue(TechUUser.objects.get().username)
 
 
+class RegisterBackendUserTestCase(APITestCase):
+    def setUp(self):
+        cache.clear()
+        self.register_url = reverse_lazy('v1:api_user_register_backend')
+
+    def tearDown(self):
+        cache.clear()
+
+    def test_minimal_register(self):
+        username = 'accountcenter'
+        data = {
+            'username': username,
+            'email': 'accountcenter@163.com',
+            'password': '123456'
+        }
+        response = self.client.post(self.register_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(TechUUser.objects.count(), 1)
+        self.assertEqual(TechUUser.objects.get().username, username)
+
+
 class MobileCodeResetPasswordTestCase(OAuth2APITestCase):
     def setUp(self):
         cache.clear()

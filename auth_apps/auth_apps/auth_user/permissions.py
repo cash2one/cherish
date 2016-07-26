@@ -1,5 +1,6 @@
 import logging
 
+from django.conf import settings
 from rest_framework import permissions
 
 from .tokens import user_mobile_token_generator, general_mobile_token_generator
@@ -48,3 +49,13 @@ class OnceGeneralMobileCodeCheck(permissions.BasePermission):
             return general_mobile_token_generator.check_token(mobile, code)
         return False
 
+
+class IPRestriction(permissions.BasePermission):
+    message = 'ip invalid'
+
+    def has_permission(self, request, view):
+        ip_addr = request.META['REMOTE_ADDR']
+        status = ip_addr in settings.IP_WHITE_LIST
+        if not status:
+            logger.debug('[IPRestriction] ip_addr:{ip}'.format(ip=ip_addr))
+        return status
