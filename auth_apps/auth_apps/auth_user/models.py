@@ -28,32 +28,6 @@ from .hashers import TechUPasswordHasher
 logger = logging.getLogger(__name__)
 
 
-class EduProfile(models.Model):
-    USER_ROLE = enum(
-        UNKNOWN=0,
-        SCHOOL_ADMIN=1,
-        TEACHER=2,
-        STUDENT=3,
-        PARENT=4
-    )
-    USER_ROLE_TYPES = [
-        (USER_ROLE.UNKNOWN, _('Unknown')),
-        (USER_ROLE.SCHOOL_ADMIN, _('School Admin')),
-        (USER_ROLE.TEACHER, _('Teacher')),
-        (USER_ROLE.STUDENT, _('Student')),
-        (USER_ROLE.PARENT, _('Parent')),
-    ]
-
-    role = models.IntegerField(_('Role'), choices=USER_ROLE_TYPES)
-    school = models.ForeignKey(
-        School, on_delete=models.PROTECT, related_name='+', null=True)
-    subject = models.ForeignKey(
-        Subject, on_delete=models.PROTECT, related_name='+', null=True)
-
-    class Meta:
-        required_db_vendor = 'postgresql'
-
-
 class DatabaseFile(models.Model):
     data = models.TextField()
     filename = models.CharField(max_length=255)
@@ -193,9 +167,6 @@ class TechUUser(AbstractUser):
     avatar = models.ImageField(
         upload_to='auth_user.DatabaseFile/data/filename/mimetype',
         null=True, blank=True)
-    edu_profile = models.OneToOneField(
-        EduProfile, on_delete=models.CASCADE, related_name='user',
-        null=True, blank=True)
     context = JSONField(null=True, blank=True)
     source = models.SmallIntegerField(
         _('User Source'), default=USER_SOURCE.TECHU, choices=USER_SOURCES)
@@ -263,6 +234,7 @@ class TechUUser(AbstractUser):
 
     # override
     def save(self, *args, **kwargs):
+        self.full_clean()
         delete_file_if_needed(self, 'avatar')
         super(TechUUser, self).save(*args, **kwargs)
 
@@ -320,3 +292,32 @@ class TechUUser(AbstractUser):
         else:
             pk = self.pk
         return self.source, pk
+
+
+class EduProfile(models.Model):
+    USER_ROLE = enum(
+        UNKNOWN=0,
+        SCHOOL_ADMIN=1,
+        TEACHER=2,
+        STUDENT=3,
+        PARENT=4
+    )
+    USER_ROLE_TYPES = [
+        (USER_ROLE.UNKNOWN, _('Unknown')),
+        (USER_ROLE.SCHOOL_ADMIN, _('School Admin')),
+        (USER_ROLE.TEACHER, _('Teacher')),
+        (USER_ROLE.STUDENT, _('Student')),
+        (USER_ROLE.PARENT, _('Parent')),
+    ]
+
+    user = models.OneToOneField(
+        TechUUser, on_delete=models.CASCADE, related_name='edu_profile',
+        null=True, blank=True)
+    role = models.IntegerField(_('Role'), choices=USER_ROLE_TYPES)
+    school = models.ForeignKey(
+        School, on_delete=models.PROTECT, related_name='+', null=True)
+    subject = models.ForeignKey(
+        Subject, on_delete=models.PROTECT, related_name='+', null=True)
+
+    class Meta:
+        required_db_vendor = 'postgresql'

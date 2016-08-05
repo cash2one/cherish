@@ -1,7 +1,7 @@
 from django.conf.urls import url, include
 from rest_framework.urlpatterns import format_suffix_patterns
 
-from .views import GetSchoolAPIView
+from .views import GetSchoolAPIView, GetSchoolIDNameAPIView
 
 
 api_urlpatterns = [
@@ -9,7 +9,12 @@ api_urlpatterns = [
         r'^loc/school/(?P<pk>\d+)/$',
         GetSchoolAPIView.as_view(),
         name='api_get_school'
-    )
+    ),
+    url(
+        r'^loc/schools/(?P<pk>\d+)/$',
+        GetSchoolIDNameAPIView.as_view(),
+        name='api_get_school_id_name'
+    ),
 ]
 
 versioned_api_urlpatterns = [
