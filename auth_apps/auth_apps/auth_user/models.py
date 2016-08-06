@@ -216,7 +216,7 @@ class TechUUser(AbstractUser):
         self.password = make_password(
             raw_password, salt=self.BACKEND_SALT + self.username)
         # NOTICE: ONCE_XPLATFORM use None password
-        if not raw_password:
+        if raw_password:
             user_set_password_signal.send_robust(sender=self.__class__, user=self,
                                                  raw_password=raw_password)
 
