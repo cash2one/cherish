@@ -47,7 +47,6 @@ class MobileTokenGenerator(object):
 
     def check_token(self, obj, token):
         if not self._is_code(token):
-            logger.debug('mobile token invalid')
             return False
         key = self.get_key(obj)
         _token = cache.get(key)
@@ -62,7 +61,8 @@ class MobileTokenGenerator(object):
     def _is_code(self, code):
         # check all numbers, and DEFAULT_CODE_LENGTH
         try:
-            return validate_mobile_code(code)
+            validate_mobile_code(code)
+            return True
         except:
             return False
 
