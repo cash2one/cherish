@@ -10,5 +10,3 @@ class ParameterError(APIException):
 class OperationError(APIException):
     status_code = 405
     default_detail = _('Operation fail')
-
-

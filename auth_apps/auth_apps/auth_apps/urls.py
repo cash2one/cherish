@@ -16,8 +16,11 @@ Including another URLconf
 import functools
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.utils.translation import ugettext_lazy as _
 
 from auth_user.views import HomePageView
+
+admin.site.site_header = _('user center administration')
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),

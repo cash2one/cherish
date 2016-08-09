@@ -22,3 +22,11 @@ class SchoolSerializer(serializers.ModelSerializer):
         fields = (
             'name', 'pinyin', 'category', 'id', 'areaCode'
         )
+
+
+class SchoolIDNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = School
+        fields = (
+            'id', 'name'
+        )

@@ -98,6 +98,42 @@ class RegisterMobileUserTestCase(APITestCase):
             register_entries)
 
 
+class RegisterExistUserTestCase(MockCreateUserMixin, APITestCase):
+    def setUp(self):
+        cache.clear()
+        self.register_url = reverse_lazy('v1:api_user_register_mobile')
+        self.register_code_url = reverse_lazy('v1:api_register_mobile_code')
+        self.mobile = '15911186897'
+        test_user = {
+            'username': 'test',
+            'mobile': self.mobile,
+            'password': 'test'
+        }
+        self.test_user = test_user
+        self.create_user(**test_user)
+
+    def tearDown(self):
+        cache.clear()
+
+    @mock.patch('auth_user.views.send_mobile_task')
+    @mock.patch('auth_user.signals.xplatform_register')
+    def test_minimal_register(self, mock_task, mock_mobile_task):
+        data = {
+            'mobile': self.mobile
+        }
+        response = self.client.post(
+            self.register_code_url, data, format='json')
+        mobile_code = response.data.get('code')
+        data = {
+            'mobile': self.mobile,
+            'password': '123456',
+            'code': mobile_code
+        }
+        response = self.client.post(self.register_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(TechUUser.objects.count(), 1)
+
+
 class RegisterBackendUserTestCase(APITestCase):
     def setUp(self):
         cache.clear()
@@ -336,8 +372,9 @@ class ChangePasswordTestCase(MockCreateUserMixin, OAuth2APITestCase):
 class UserRetrieveUpdateTestCase(MockCreateUserMixin, OAuth2APITestCase):
     def setUp(self):
         cache.clear()
+        self.username = 'test'
         test_user = {
-            'username': 'test',
+            'username': self.username,
             'mobile': '15911186897',
             'password': 'test',
         }
@@ -347,7 +384,7 @@ class UserRetrieveUpdateTestCase(MockCreateUserMixin, OAuth2APITestCase):
 
     def tearDown(self):
         cache.clear()
-       
+
     def test_update_user(self):
         self.assertEqual(TechUUser.objects.count(), 1)
         user = TechUUser.objects.get()
@@ -372,7 +409,32 @@ class UserRetrieveUpdateTestCase(MockCreateUserMixin, OAuth2APITestCase):
         self.assertEqual(user.gender, data.get('gender'))
         self.assertEqual(user.nickname, data.get('nickname'))
 
-    def test_retrive_user(self):
+    def test_update_exists_user(self):
+        self.exists_mobile = '15724729700'
+        exists_user = {
+            'username': 'test1',
+            'mobile': self.exists_mobile,
+            'password': 'test1'
+        }
+        self.create_user(**exists_user)
+        user = TechUUser.objects.get(username=self.username)
+        self.assertTrue(user)
+        # generate access token
+        access_token = '123455655'
+        scope = 'user'
+        token = self.generate_token(user, access_token, scope)
+        self.assertTrue(token.is_valid())
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + token.token)
+        # update user info
+        user_url = reverse_lazy(
+            'v1:api_user_resource', kwargs={'pk': user.pk})
+        data = {
+            'mobile': self.exists_mobile
+        }
+        response = self.client.patch(user_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_retrieve_user(self):
         self.assertEqual(TechUUser.objects.count(), 1)
         user = TechUUser.objects.get()
         self.assertTrue(user)
@@ -386,13 +448,11 @@ class UserRetrieveUpdateTestCase(MockCreateUserMixin, OAuth2APITestCase):
         user_url = reverse_lazy(
             'v1:api_user_resource', kwargs={'pk': user.pk})
         response = self.client.get(user_url, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK) 
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             response.data.get('username'), self.test_user.get('username'))
         self.assertEqual(
             response.data.get('mobile'), self.test_user.get('mobile'))
-
-
 
 
 class XPlatformNotifyAPITestCase(LiveServerTestCase):

@@ -45,6 +45,7 @@ from .utils import get_user_by_mobile
 from .exceptions import ParameterError, OperationError
 from .tasks import send_mobile_task
 from .validators import validate_mobile
+from .throttle import BackendAPIThrottle
 
 logger = logging.getLogger(__name__)
 
@@ -195,6 +196,15 @@ class UserRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
     queryset = TechUUser.objects.all()
     serializer_class = TechUUserSerializer
 
+    # override
+    def update(self, request, *args, **kwargs):
+        try:
+            response = super(UserRetrieveUpdateAPIView, self).update(request, *args, **kwargs)
+        except ValidationError:
+            raise ParameterError(_('mobile already exist'))
+        return response
+
+
 
 class GroupRetrieveAPIView(generics.RetrieveAPIView):
     """
@@ -247,6 +257,7 @@ class ResetPasswordBackendAPIView(APIView):
     permission_classes = [
         IPRestriction,
     ]
+    throttle_classes = BackendAPIThrottle
 
     def post(self, request, *args, **kwargs):
         identity = request.data.get('identity')
@@ -341,7 +352,7 @@ class RegisterMobileCodeAPIView(APIView):
             raise ParameterError(_('mobile number invalid'))
         user = get_user_by_mobile(mobile)
         if user:
-            raise self.OperationError(_('mobile already exist'))
+            raise OperationError(_('mobile already exist'))
         current_site = get_current_site(request)
         code = general_mobile_token_generator.make_token(mobile)
         send_mobile_task.delay(
@@ -372,6 +383,14 @@ class UserRegisterAPIView(generics.CreateAPIView):
     queryset = TechUUser.objects.all()
     serializer_class = TechUMobileUserRegisterSerializer
 
+    # override CreateModelMixin
+    def create(self, request, *args, **kwargs):
+        try:
+            response = super(UserRegisterAPIView, self).create(request, *args, **kwargs)
+        except ValidationError:
+            raise ParameterError(_('mobile already exist'))
+        return response
+
 
 class UserRegisterBackendAPIView(generics.CreateAPIView):
     """
@@ -382,6 +401,7 @@ class UserRegisterBackendAPIView(generics.CreateAPIView):
     ]
     queryset = TechUUser.objects.all()
     serializer_class = TechUBackendUserRegisterSerializer
+    throttle_classes = BackendAPIThrottle
 
 
 class XPlatformNotifyAPIView(APIView):
