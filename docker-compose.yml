@@ -67,6 +67,26 @@ celery_worker:
 celery_redis:
     image: "docker.zuoyetong.com.cn:8888/redis:3"
 
+component:
+    image: "ficusio/openresty"
+    ports:
+     - "8080:8080"
+    volumes:
+     - ./component/conf:/opt/openresty/nginx/conf
+     - ./component/lua:/opt/openresty/nginx/lua
+    environment:
+     - MYSQL_HOST=db
+     - MYSQL_PORT=3306
+     - MYSQL_USER=mysql
+     - MYSQL_DATABASE=account_center
+     - MYSQL_PASSWORD=account_center123
+     - MEMCACHED_ADDR=cache
+     - MEMCACHED_PORT=11211
+     - DB_CONN_TIMEOUT=1000
+    links:
+     - db:db
+     - cache:cache
+
 cache:
     image: "docker.zuoyetong.com.cn:8888/memcached:1.4"
     log_opt:
