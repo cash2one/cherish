@@ -17,6 +17,7 @@ logger.addHandler(out_hdlr)
 logger.setLevel(logging.DEBUG)
 
 BASE_URL = u'https://localhost:5000'
+AUTH_PROXY_URL = u'https://localhost:5001'
 ADMIN_USERNAME = u'admin'
 ADMIN_PASSWORD = u'admin'
 ADMIN_USER_PK = 1
@@ -90,7 +91,19 @@ class TestPassword(unittest.TestCase):
             self.app.get(u'client_id'), self.app.get(u'client_secret')
             ), verify=False)
         self.assertEqual(r.status_code, 200)
-        return True 
+        return True
+
+    def _auth_proxy_test(self, token_info):
+        url = AUTH_PROXY_URL + '/'
+        headers = {
+            u'X-TECHU-AUTH': u'{token_type} {access_token}'.format(
+                token_type=token_info.get(u'token_type'),
+                access_token=token_info.get(u'access_token')
+            )
+        }
+        r = requests.get(url, headers=headers, verify=False)
+        self.assertEqual(r.status_code, 200)
+
 
     def test_password(self):
         import time
@@ -100,6 +113,8 @@ class TestPassword(unittest.TestCase):
         user_info = self._application_requests_resource(
             access_token_info, LOGIN_USER_PK)
         self.assertTrue(user_info)
+        time.sleep(5)
+        self._auth_proxy_test(access_token_info)
         res = self._application_revoke_token(access_token_info)
         self.assertTrue(res)
 
