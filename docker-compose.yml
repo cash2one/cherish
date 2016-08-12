@@ -1,5 +1,5 @@
 rproxy:
-    image: "docker.zuoyetong.com.cn:8888/nginx:1.9"
+    image: "docker.zuoyetong.com.cn:8888/techu_openresty:latest"
     ports:
      - "5000:443"
      - "5001:445"
