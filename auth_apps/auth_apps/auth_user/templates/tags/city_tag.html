@@ -1,0 +1,11 @@
+{% load select_school %}
+
+<ul>
+  {% for c in city %}
+  <li class="has-children">
+    <input type="checkbox" name="{{c.pk}}" id="{{c.pk}}">
+    <label for="{{c.pk}}">{{c.name}}</label>
+    {% location_area c.pk %}
+  </li>
+  {% endfor %}
+</ul>

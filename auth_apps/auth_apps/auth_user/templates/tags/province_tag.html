@@ -1,0 +1,11 @@
+{% load select_school %}
+
+<ul class="cd-accordion-menu animated">
+  {% for p in province %}
+  <li class="has-children">
+    <input type="checkbox" name="{{p.pk}}" id="{{p.pk}}">
+    <label for="{{p.pk}}">{{p.name}}</label>
+    {% location_city p.pk %}
+  </li>
+  {% endfor %}
+</ul>
