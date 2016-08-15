@@ -139,6 +139,11 @@ LOCALE_PATHS = [
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
+# fixture
+FIXTURE_DIRS = (
+    os.path.join(BASE_DIR, 'fixtures/'),
+)
+
 DEFAULT_FILE_STORAGE = 'db_file_storage.storage.DatabaseFileStorage'
 
 # email settings

@@ -1,0 +1,17 @@
+[
+{
+  "model": "custom_oauth2.techuapplication",
+  "pk": 1,
+  "fields": {
+    "client_id": "wvPgnn1d5zoRJPSMmyr106n5DV70fS95sgTjrh0z",
+    "user": 2,
+    "redirect_uris": "https://baidu.com/",
+    "client_type": "confidential",
+    "authorization_grant_type": "password",
+    "client_secret": "l927kHhefalV2e4rBDOj2oPlOW6v92IjngIi2AYAoOd92OjOTlQhOSx1qWDmmmpUxvVzza05bES0GGDTAhBkCCmweemntbfuZ1hrJp5GRFzV13ZSHGpx2vc9E1ImJp2C",
+    "name": "test_application",
+    "skip_authorization": false,
+    "notify_uris": ""
+  }
+}
+]

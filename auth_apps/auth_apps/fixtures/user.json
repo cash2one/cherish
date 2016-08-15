@@ -1,0 +1,62 @@
+[
+{
+  "model": "auth_user.techuuser",
+  "pk": 1,
+  "fields": {
+    "password": "techu$yzy-admin$067bdd6168316f78990234e7549fffe1",
+    "last_login": "2016-05-12T09:01:14.204Z",
+    "is_superuser": true,
+    "username": "admin",
+    "first_name": "",
+    "last_name": "",
+    "email": "admin@talkweb.com.cn",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2016-05-12T08:59:41.354Z",
+    "nickname": null,
+    "gender": 0,
+    "birth_date": null,
+    "qq": null,
+    "remark": null,
+    "mobile": null,
+    "phone": null,
+    "address": null,
+    "avatar": "",
+    "context": null,
+    "source": 0,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth_user.techuuser",
+  "pk": 2,
+  "fields": {
+    "password": "techu$yzy-user1$d13fc7def18ab0dafacf87d018bc9db7",
+    "last_login": "2016-05-13T02:43:41.812Z",
+    "is_superuser": false,
+    "username": "user1",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2016-05-12T09:00:57Z",
+    "nickname": null,
+    "gender": 0,
+    "birth_date": null,
+    "qq": null,
+    "remark": "",
+    "mobile": "",
+    "phone": "",
+    "address": "",
+    "avatar": "",
+    "context": null,
+    "source": 0,
+    "groups": [
+      1
+    ],
+    "user_permissions": []
+  }
+}
+]
