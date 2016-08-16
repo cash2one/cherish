@@ -11,7 +11,7 @@ api_urlpatterns = [
         name='api_get_school'
     ),
     url(
-        r'^loc/schools/(?P<pk>\d+)/$',
+        r'^loc/school/name/(?P<pk>\d+)/$',
         GetSchoolIDNameAPIView.as_view(),
         name='api_get_school_id_name'
     ),
