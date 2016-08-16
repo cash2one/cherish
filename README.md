@@ -356,7 +356,7 @@ Response:
 * url: `accounts/api/v1/user/(?P\<pk\>[0-9]+)/`
 * url: `accounts/api/v1/user/(?P\<pk\>[0-9]+)\.(?P\<format\>[a-z0-9]+)/?`
 
-* method: GET, UPDATE
+* method: GET, PUT
 
 > 用户OAuth2登陆
 > TOKEN SCOPE: user

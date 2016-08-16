@@ -247,7 +247,7 @@ class ResetPasswordBackendAPIView(APIView):
     permission_classes = [
         IPRestriction,
     ]
-    
+
     def post(self, request, *args, **kwargs):
         identity = request.data.get('identity')
         hashed_password = request.data.get('hashed_password')
@@ -428,4 +428,3 @@ class XPlatformNotifyAPIView(APIView):
                 i=identity, op=op_type
             ))
         return 1
-
