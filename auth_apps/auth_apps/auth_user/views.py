@@ -214,6 +214,8 @@ class UserRetrieveUpdateAPIView(
             self.techu_update(user=instance, data=request.data)
             self.perform_update(serializer)
         except ValidationError as e:
+            import traceback
+            logger.warning('[USER UPDATE] Traceback: %s' % traceback.format_exc())
             logger.warning('[USER UPDATE] ValidationError: %s' % e.message)
             raise ParameterError(e.message)
         return Response(serializer.data)
