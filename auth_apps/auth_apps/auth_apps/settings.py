@@ -186,6 +186,8 @@ OAUTH2_PROVIDER = {
     'DEFAULT_SCOPES': ['user', 'group'],
     'OAUTH2_VALIDATOR_CLASS': 'custom_oauth2.oauth2_validators.TechUOAuth2Validator',
     'APPLICATION_MODEL': 'custom_oauth2.TechUApplication',
+    'ACCESS_TOKEN_EXPIRE_SECONDS': 3600*24*7*2,
+    'REFRESH_TOKEN_EXPIRE_SECONDS': 3600*24*365,
 }
 
 # rest framework settings
