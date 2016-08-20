@@ -1,36 +1,13 @@
 # -*- coding: utf-8 -*-
 
-import os
-import sys
-import urllib
 import logging
-from urlparse import urlparse, parse_qs
 
 import requests
-import django
-from django.conf import settings
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 from auth_user.models import TechUUser
 from custom_oauth2.models import TechUApplication
 from common.xplatform_service import xplatform_service
-
-
-sys.path.append(os.path.abspath(os.path.dirname(__name__) + '..'))
-
-if not os.getenv('DJANGO_SETTINGS_MODULE'):
-    # NOTICE : call django setting first to allow define models
-    settings.configure(
-        XPLATFORM_SERVICE={
-            'URL': 'https://dev.login.yunxiaoyuan.com',
-            'APP_ID': '98008',
-            'SERVER_KEY': 'C6F653399B9A15E053469A66',
-            'CLIENT_KEY': '9852C11D7FF63FDE5732A4BA',
-            'TIMEOUT': 3,
-        }
-    )
-    # Calling django.setup() is required for "standalone" Django usage
-    django.setup()
 
 logger = logging.getLogger(__name__)
 
