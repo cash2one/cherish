@@ -471,7 +471,7 @@ Response:
 * url: `accounts/api/v1/user/(?P\<pk\>[0-9]+)\.(?P\<format\>[a-z0-9]+)/?`
 
 * method: GET, PATCH
-* Content-Type: 
+* Content-Type:
     * application/json (当format为json)
     * application/x-www-form-urlencoded (当format为html)
 
@@ -489,7 +489,7 @@ Response:
 * url: `accounts/api/v1/group/(?P\<pk\>[0-9]+)\.(?P\<format\>[a-z0-9]+)/?`
 
 * method: GET
-* Content-Type: 
+* Content-Type:
     * application/json (当format为json)
     * application/x-www-form-urlencoded (当format为html)
 
@@ -620,5 +620,200 @@ Response:
     "city_code": 4221,
     "area_code": 12344,
     "school_id": 60
+}
+```
+
+# Location Service
+
+#### 获取所有省份
+
+* url: `location/api/v1/loc/pro/`
+* method: GET
+
+Response:
+```
+{
+    "msg": "success",
+    "code": 1,
+    "data": [
+        {
+            "id": 1,
+            "code": 110000,
+            "name": "北京市"
+        },
+        ...
+    ]
+}
+```
+
+#### 获取所有城市
+
+* url: `location/api/v1/loc/city/<province_code>/`
+* method: GET
+
+Response:
+```
+{
+    "msg": "success",
+    "code": 1,
+    "data": [
+        {
+            "code": 10000287,
+            "name": "北京市",
+            "id": 2,
+            "fatherCode": 110000,
+            "count":4369
+        }
+    ]
+}
+```
+
+#### 获取所有地区
+
+* url: `location/api/v1/loc/area/<city_code>/`
+* method: GET
+
+Response:
+```
+{
+    "msg": "success",
+    "code": 1,
+    "data": [
+        {
+            "code": 10000288,
+            "name": "东城区",
+            "id": 3,
+            "fatherCode": 10000287
+        },
+        {
+            "code": 10000289,
+            "name": "西城区",
+            "id": 5,
+            "fatherCode": 10000287
+        },
+        ...
+    ]
+}
+```
+
+#### 获取某个区的所有学校列表
+
+* url: `education/api/v1/loc/school/<districtCode>?category=stage`
+* method: GET
+
+**stage: 1: 小学, 2: 初中, 3: 高中, -1: 所有**
+
+Response:
+```
+{
+    "msg": "success",
+    "code": 1,
+    "data": [
+        {
+            "areaCode": 10000288,
+            "category": 2,
+            "id": 230525,
+            "name": "翔宇中学",
+            "pinyin": "XiangYuZhongXue"
+        },
+        {
+            "areaCode": 10000288,
+            "category": 2,
+            "id": 233038,
+            "name": "景山学校",
+            "pinyin": "JingShanXueXiao"
+        },
+        ...
+    ]
+}
+```
+
+#### 在某个区增加一个学校
+
+* url: `education/api/v1/loc/school/add?district=<districtCode>&name=<name>&key=<key>`
+* method: GET
+
+**key 需要验证, 验证方法保持一致**
+
+
+#### 根据区， 学校名字， 学段精确查找一个学校
+
+* url: `education/api/v1/loc/school/find?district=<districtCode>&name=<name>&category=<stage>`
+* method: GET
+
+**stage : 学段, 1=小学, 2=初中, 3=高中, -1=所有, 0=用户新建**
+
+Response:
+```
+{
+    "code": 1,
+    "msg": "查找成功",
+    "id": 289152
+}
+or
+{
+    "code": 0,
+    "msg": "查找失败"
+}
+```
+
+#### 根据学校名字来模糊查找包含该名字的学校
+
+* url: `education/api/v1/loc/school/find/fuzzle?name=<name>&district=<districtCode>&category=<stage>`
+* method: GET
+
+**districtCode : 学校所在的区的编码, 如果为-1, 为空则在所有学校中查找**
+
+**stage : 学段, 1=小学, 2=初中, 3=高中, -1=所有, 0=用户新建**
+
+Response:
+```
+{
+    "code": 1,
+    "msg": "查找成功",
+    "count": 29,
+    "schools": [
+        {
+            "areaCode": 10000288,
+            "category": 2,
+            "id": 289179,
+            "name": "北京一七一中"
+        },
+        {
+            "areaCode": 10000288,
+            "category": 2,
+            "id": 289152,
+            "name": "北京一七七中"
+        },
+        ...
+    ]
+}
+or
+{
+    "code": 1,
+    "msg": "查找成功",
+    "count": 0,
+    "schools": []
+}
+```
+
+#### 模糊查询地理位置
+
+* url: `location/api/v1/loc/fuzzle/?keyword=<keyword>`
+* method: GET
+
+Response:
+```
+{
+    "msg": "success",
+    "code": 1,
+    "data": [
+        {
+            "code_name":["110000","北京市"]
+        },
+        {
+            "code_name":["110000,10000287","北京市-北京市"]
+        }
+    ]
 }
 ```

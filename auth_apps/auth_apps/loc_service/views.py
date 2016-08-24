@@ -5,7 +5,10 @@ from rest_framework.response import Response
 
 from common.utils import enum
 from .models import Location
-from .serializers import ProvinceSerializer, CitySerializer, AreaSerializer
+from .serializers import (
+    ProvinceSerializer, CitySerializer, AreaSerializer,
+    LocationFuzzleSerializer
+)
 
 logger = logging.getLogger(__name__)
 
@@ -50,6 +53,19 @@ class GetAreaAPIView(generics.GenericAPIView):
             'parent_id': pk
         })
         serializer = AreaSerializer(queryset, many=True)
+        response = {
+            'data': serializer.data,
+            'code': 1,
+            'msg': 'success'
+        }
+        return Response(response)
+
+
+class GetLocationFuzzleAPIView(generics.GenericAPIView):
+    def get(self, request, *args, **kwargs):
+        keyword = request.query_params.get('keyword')
+        queryset = Location.objects.filter(name__contains=keyword)
+        serializer = LocationFuzzleSerializer(queryset, many=True)
         response = {
             'data': serializer.data,
             'code': 1,
