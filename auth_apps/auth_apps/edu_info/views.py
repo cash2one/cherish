@@ -62,14 +62,14 @@ class AddSchoolAPIView(generics.GenericAPIView):
                      for k, v in urlparse.parse_qs(decrypt_body).items()])
             if d['district'] == area_code and d['name'] == school_name:
                 area = Location.objects.get(pk=area_code)
-                School.objects.create(name=school_name, area_code_id=area.pk)
+                School.objects.create(name=school_name,
+                                      area_code_id=area.pk,
+                                      source=School.SCHOOL_SOURCE.USER)
         except:
-            pass
-
-        return Response({
-            'code': 1,
-            'msg': 'success'
-        })
+            response = {'code': 0, 'msg': 'fail'}
+        else:
+            response = {'code': 1, 'msg': 'success'}
+        return Response(response)
 
 
 class GetSchoolIDAPIView(generics.GenericAPIView):

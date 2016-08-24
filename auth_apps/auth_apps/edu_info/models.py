@@ -22,6 +22,14 @@ class School(models.Model):
         (SCHOOL_CATEGORY.HIGH, _('high school')),
         (SCHOOL_CATEGORY.UNIVERSITY, _('university')),
     ]
+    SCHOOL_SOURCE = enum(
+        TECHU=0,
+        USER=1,
+    )
+    SCHOOL_SOURCES = [
+        (SCHOOL_SOURCE.TECHU, _('techu')),
+        (SCHOOL_SOURCE.USER, _('user')),
+    ]
 
     school_id = models.AutoField(_('School ID'), primary_key=True)
     name = models.CharField(_('School Name'), max_length=255)
@@ -31,6 +39,9 @@ class School(models.Model):
         _('School Category'),
         choices=SCHOOL_CATEGORIES,
         default=SCHOOL_CATEGORY.UNKNOWN)
+    source = models.PositiveSmallIntegerField(_('School Source'),
+                                              choices=SCHOOL_SOURCES,
+                                              default=SCHOOL_SOURCE.TECHU)
 
     def __unicode__(self):
         return '{name}'.format(name=self.name)
