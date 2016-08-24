@@ -701,7 +701,7 @@ Response:
 * url: `location/api/v1/loc/school/<districtCode>?category=stage`
 * method: GET
 
-stage: 1: 小学, 2: 初中, 3: 高中, -1: 所有
+**stage: 1: 小学, 2: 初中, 3: 高中, -1: 所有**
 
 Response:
 ```
@@ -735,21 +735,64 @@ Response:
 
 **key 需要验证, 验证方法保持一致**
 
-**不用指定学段之类的?**
 
 #### 根据区， 学校名字， 学段精确查找一个学校
 
 * url: `location/api/v1/loc/school/find?district=<districtCode>&name=<name>&category=<stage>`
 * method: GET
 
-stage : 学段, 1=小学, 2=初中, 3=高中, -1=所有, 0=用户新建
+**stage : 学段, 1=小学, 2=初中, 3=高中, -1=所有, 0=用户新建**
 
-**用户新建指什么?**
+Response:
+```
+{
+    "code": 1,
+    "msg": "查找成功",
+    "id": 289152
+}
+or
+{
+    "code": 0,
+    "msg": "查找失败"
+}
+```
 
 #### 根据学校名字来模糊查找包含该名字的学校
 
-* url: `location/api/v1/loc/school/fuzzle?name=<name>&district=<districtCode>&category=<stage>`
+* url: `location/api/v1/loc/school/find/fuzzle?name=<name>&district=<districtCode>&category=<stage>`
 * method: GET
 
-**districtCode : 学校所在的区的编码, 如果为-1则在所有学校中查找** 但 LocationService.java 中看到可以为空.
+**districtCode : 学校所在的区的编码, 如果为-1, 为空则在所有学校中查找**
+
 **stage : 学段, 1=小学, 2=初中, 3=高中, -1=所有, 0=用户新建**
+
+Response:
+```
+{
+    "code": 1,
+    "msg": "查找成功",
+    "count": 29,
+    "schools": [
+        {
+            "areaCode": 10000288,
+            "category": 2,
+            "id": 289179,
+            "name": "北京一七一中"
+        },
+        {
+            "areaCode": 10000288,
+            "category": 2,
+            "id": 289152,
+            "name": "北京一七七中"
+        },
+        ...
+    ]
+}
+or
+{
+    "code": 1,
+    "msg": "查找成功",
+    "count": 0,
+    "schools": []
+}
+```

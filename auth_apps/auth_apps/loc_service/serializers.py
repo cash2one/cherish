@@ -41,3 +41,23 @@ class CitySerializer(AreaSerializer):
 
     class Meta(AreaSerializer.Meta):
         fields = AreaSerializer.Meta.fields + ('count', )
+
+
+class LocationFuzzleSerializer(serializers.ModelSerializer):
+
+    code = serializers.SerializerMethodField('custom_get_full_code')
+    name = serializers.SerializerMethodField('custom_get_full_name')
+
+    def custom_get_full_name(self, instance):
+        names = instance.get_ancestors(include_self=True).values('name')
+        full_name = '-'.join(map(lambda x: x['name'], names))
+        return full_name
+
+    def custom_get_full_code(self, instance):
+        codes = instance.get_ancestors(include_self=True).values('code')
+        full_code = ','.join(map(str, map(lambda x: x['code'], codes)))
+        return full_code
+
+    class Meta:
+        model = Location
+        fields = ('code', 'name')
