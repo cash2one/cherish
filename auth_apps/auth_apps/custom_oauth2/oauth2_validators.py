@@ -50,7 +50,7 @@ class TechUOAuth2Validator(OAuth2Validator):
                 expires=expires,
                 token=token['access_token'],
                 application=request.client)
-            access_token.save()
+        access_token.save()
 
         if not access_token.pk and 'refresh_token' in token:
             refresh_token = RefreshToken(
