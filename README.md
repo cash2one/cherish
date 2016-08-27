@@ -152,9 +152,9 @@ Response status code:
 
 #### ^accounts/api/v1/user/register/backend/$
 
-HTTP Method: *POST*
+HTTP Method: POST
 
-用户注册接口
+后台用户注册接口
 
 Request:
 ```
