@@ -57,6 +57,8 @@ class TestUniqueToken(StaticLiveServerTestCase):
     def test_unique_token(self):
         token_info = self._application_requests_access_token()
         self.assertTrue(token_info)
+        self.assertNotEqual(token_info.get('access_token'),
+                            token_info.get('refresh_token'))
         twice_token_info = self._application_requests_access_token()
         self.assertTrue(twice_token_info)
         self.assertEqual(token_info.get('access_token'),

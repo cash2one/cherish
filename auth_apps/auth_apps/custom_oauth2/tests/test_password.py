@@ -12,7 +12,8 @@ logger = logging.getLogger(__name__)
 
 USER = {
     'username': 'user1',
-    'password': 'user1'
+    'password': 'user1',
+    'mobile': 13800138000
 }
 
 APPLICATION = {
@@ -88,6 +89,9 @@ class TestPassword(StaticLiveServerTestCase):
     def test_password(self):
         access_token_info = self._application_requests_access_token()
         self.assertTrue(access_token_info)
+        self.assertEqual(access_token_info.get('user_id'), self.user.pk)
+        self.assertEqual(access_token_info.get('user_mobile'), self.user.mobile)
+        self.assertEqual(access_token_info.get('user_username'), self.user.username)
         user_info = self._application_requests_resource(access_token_info)
         self.assertTrue(user_info)
         res = self._application_revoke_token(access_token_info)
