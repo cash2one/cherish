@@ -32,7 +32,7 @@ class School(models.Model):
         default=SCHOOL_CATEGORY.UNKNOWN)
 
     def __unicode__(self):
-        return self.name
+        return '<id:{id}>{name}'.format(id=self.school_id, name=self.name)
 
     class Meta:
         ordering = ['name']
@@ -41,3 +41,6 @@ class School(models.Model):
 class Subject(models.Model):
     subject_id = models.IntegerField(_('Subject ID'))
     name = models.CharField(_('Subject Name'), max_length=32)
+
+    def __unicode__(self):
+        return '<id:{id}>{name}'.format(id=self.subject_id, name=self.name)
