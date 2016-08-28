@@ -172,7 +172,7 @@ Request:
 ```
 
 Response status code:
-* 200 注册成功
+* 201 注册成功
 * 其他 失败
 
 #### ^accounts/api/v1/user/change_password/$
