@@ -5,6 +5,9 @@ rproxy:
     volumes:
      - ./rproxy/nginx.conf:/etc/nginx/nginx.conf:ro
      - ./rproxy/sslkey:/etc/nginx/sslkey:ro
+    log_opt:
+        max-size: "5m"
+        max-file: "5"
     volumes_from:
      - web:ro
     links:
@@ -14,6 +17,9 @@ web:
     image: "docker.zuoyetong.com.cn:8888/account_web:latest"
     volumes:
      - /code/static
+    log_opt:
+        max-size: "5m"
+        max-file: "5"
     environment:
      - DJANGO_DEBUG=1
      - DJANGO_HOST=auth-center.domain.com.cn
@@ -33,11 +39,17 @@ web:
 
 cache:
     image: "docker.zuoyetong.com.cn:8888/memcached:1.4"
+    log_opt:
+        max-size: "5m"
+        max-file: "1"
 
 db:
     image: "docker.zuoyetong.com.cn:8888/mysql:5.6"
     volumes:
      - ./db/data:/var/lib/mysql
+    log_opt:
+        max-size: "5m"
+        max-file: "1"
     environment:
      - MYSQL_USER=mysql
      - MYSQL_PASSWORD=account_center123
