@@ -180,7 +180,7 @@ class TechUUser(AbstractUser):
         super(TechUUser, self).__init__(*args, **kwargs)
         self._meta.get_field('username').validators = [
             validate_username,
-            username_not_digits,
+            # username_not_digits,
         ]
 
     # override
@@ -269,7 +269,7 @@ class TechUUser(AbstractUser):
             pass
         try:
             validate_username(identity)
-            username_not_digits(identity)
+            # username_not_digits(identity)
             return cls.IDENTITY_TYPE.USERNAME
         except ValidationError:
             pass
