@@ -70,6 +70,15 @@ class TokenViewWrapper(views.TokenView, ErrorMsgTranslationMixin):
         return server_class(validator_class(), token_generator=techu_token_generator,
                             refresh_token_generator=techu_refresh_token_generator)
 
+    def _get_xplatform_authority(self, user):
+        ticket = None
+        if user.context and user.context.get('accountId') and user.context.get('refreshToken'):
+            ticket = {
+                'accountId': user.context['accountId'],
+                'refreshToken': user.context['refreshToken']
+            }
+        return ticket
+
     def _add_user_info(self, body):
         access_token = None
         try:
@@ -85,6 +94,9 @@ class TokenViewWrapper(views.TokenView, ErrorMsgTranslationMixin):
                 jbody['user_mobile'] = token_obj.user.mobile
                 jbody['user_username'] = token_obj.user.username
                 jbody['server_timestamp'] = int(time.time())
+                xplatform_ticket = self._get_xplatform_authority(token_obj.user)
+                if xplatform_ticket:
+                    jbody['xplatform'] = xplatform_ticket
                 body = json.dumps(jbody, ensure_ascii=False)
             except AccessToken.DoesNotExist:
                 logger.warning('fail to get user by access_token({t})'.format(
