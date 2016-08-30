@@ -28,45 +28,39 @@
 
 ### 应用管理页面
 
+---
 > 需要登陆，需要用户在`app_dev`用户组中
 
----
 #### ^/oauth/applications/$
 
 列出当前用户注册的应用
 
----
 #### ^/oauth/applications/register/$
 
 为当前用户注册新应用
 
----
 #### ^/oauth/applications/(?P\<pk\>\d+)/$
 
 查看应用授权详情
 
 > pk为应用ID
 
----
 #### ^/oauth/applications/(?P\<pk\>\d+)/delete/$
 
 删除应用授权
 
 > pk为应用ID
 
----
 #### ^/oauth/applications/(?P\<pk\>\d+)/update/$
 
 更新应用授权信息
 
 > pk为应用ID
 
----
 #### ^/oauth/authorized_tokens/$
 
 查看当前用户已经授权的有效token
 
----
 #### ^/oauth/authorized_tokens/(?P\<pk\>\d+)/delete/$',
 
 删除指定token
@@ -84,12 +78,10 @@
 * first receive a `GET` request from user asking authorization for a certain client application, a form is served possibly showing some useful info and prompting for authorize/do not authorize.
 * then receive a `POST` request possibly after user authorized the access
 
----
 #### ^/oauth/token/$
 
 token接口
 
----
 #### ^/oauth/revoke_token/$
 
 刷新token接口
@@ -97,6 +89,7 @@ token接口
 
 ### 资源API
 
+---
 #### ^accounts/resource/user/(?P\<pk\>[0-9]+)/$
 #### ^accounts/resource/user/(?P\<pk\>[0-9]+)\.(?P\<format\>[a-z0-9]+)/?$
 
@@ -119,6 +112,7 @@ HTTP Method: GET
 
 ## OAuth角色
 
+---
 * Resource Owner
 * Client
 * Resource Server
