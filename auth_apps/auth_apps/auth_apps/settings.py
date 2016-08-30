@@ -248,7 +248,7 @@ SMS_REQUEST_TIMEOUT = 3  # seconds
 
 # XPLATFORM SERVICE setting
 XPLATFORM_SERVICE = {
-    'URL': 'https://dev.login.yunxiaoyuan.com' if DEBUG else 'https://login.yunxiaoyuan.com',
+    'URL': os.getenv('XPLATFORM_SERVICE_URL') # 'https://dev.login.yunxiaoyuan.com' if DEBUG else 'https://login.yunxiaoyuan.com',
     'APP_ID': '98008',
     'SERVER_KEY': 'C6F653399B9A15E053469A66',
     'CLIENT_KEY': '9852C11D7FF63FDE5732A4BA',

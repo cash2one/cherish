@@ -147,7 +147,8 @@ HTTP Method: POST
 Request:
 ```
     {
-        "code": "123456" # 手机验证码 required
+        "mobile": "15911186897",
+        "code": "123456", # 手机验证码 required
         "new_password": "xxxxxx", # required
     }
 ```
