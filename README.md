@@ -160,7 +160,7 @@ The `authorization code` grant type is the most commonly used because it is opti
 3. Application Receives Authorization Code
 4. Application Requests Access Token
 
-详细应用实例[参考代码](https://github.com/lbjworld/auth_center/tree/master/auth_apps/auth_apps/tests/test_authorization_code.py)
+详细应用实例[参考代码](http://git.zuoyetong.com.cn/common_service/account_center/blob/master/auth_apps/auth_apps/tests/test_authorization_code.py)
 
 ### Implicit
 ---
