@@ -90,6 +90,8 @@ class TechUUserManager(UserManager):
 
 
 class TechUUser(AbstractUser):
+    AUTO_USERNAME_PREFIX = 'auto_'
+    AUTO_USERNAME_LENGTH = 16
     FRONTEND_SALT = settings.TECHU_FRONTEND_SALT
     BACKEND_SALT = settings.TECHU_BACKEND_SALT
     ERROR_MESSAGES = {
@@ -200,10 +202,10 @@ class TechUUser(AbstractUser):
     @classmethod
     def autogen_username(cls):
         # TODO: need some policy here?
-        length = 16
-        return ''.join(
+        length = cls.AUTO_USERNAME_LENGTH
+        return cls.AUTO_USERNAME_PREFIX + ''.join(
             random.choice(string.lowercase + string.digits)
-            for i in range(length)
+            for i in range(length-1)
         )
 
     @classmethod
@@ -223,7 +225,7 @@ class TechUUser(AbstractUser):
             pass
         try:
             validate_username(identity)
-            username_not_mobile(identity)
+            username_not_digits(identity)
             return cls.IDENTITY_TYPE.USERNAME
         except ValidationError:
             pass
