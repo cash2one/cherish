@@ -1,5 +1,6 @@
 import re
 import logging
+import datetime
 from django import forms
 from django.template import loader
 from django.core.exceptions import ValidationError
@@ -97,17 +98,19 @@ class UserRegisterForm(UserCreationForm):
 class UserProfileForm(forms.ModelForm):
     # set username and password to read-only
     username = forms.CharField(disabled=True)
-    email = forms.EmailField(disabled=True)
+    email = forms.EmailField(required=False, disabled=True)
     # set birth_date date selector
     birth_date = forms.DateField(
-        required=False, widget=forms.SelectDateWidget()
+        required=False, widget=forms.SelectDateWidget(
+            years=range(datetime.date.today().year, 1930, -1)
+        )
     )
 
     class Meta:
         model = TechUUser
         fields = [
-            'username', 'email', 'mobile', 'birth_date', 'qq',
-            'phone', 'address', 'remark',
+            'username', 'email', 'mobile', 'first_name', 'last_name',
+            'birth_date', 'qq', 'phone', 'address', 'remark',
         ]
 
 

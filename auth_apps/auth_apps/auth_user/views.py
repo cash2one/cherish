@@ -185,9 +185,7 @@ class UserProfileView(View):
 
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
-        auth_user = TechUUser.objects.get(pk=request.user.pk)
-        assert(auth_user)
-        form = self.form_class(instance=auth_user)
+        form = self.form_class(instance=request.user)
         return render(request, self.template_name, {
             'form': form,
         })
@@ -195,14 +193,12 @@ class UserProfileView(View):
     @method_decorator(login_required)
     @method_decorator(csrf_protect)
     def post(self, request, *args, **kwargs):
-        auth_user = TechUUser.objects.get(pk=request.user.pk)
-        assert(auth_user)
-        form = self.form_class(instance=auth_user)
+        form = self.form_class(request.POST, instance=request.user)
         message = None
         if form.is_valid():
-            # add new user
+            # updated user profile
             form.save()
-            message = _('profile updated !')
+            message = _('user profile updated !')
 
         return render(request, self.template_name, {
             'message': message,
