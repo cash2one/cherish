@@ -2,12 +2,13 @@ import logging
 
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.views.generic import View
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic.base import TemplateView
+from django.views.generic.edit import CreateView, UpdateView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.utils.http import urlsafe_base64_decode
@@ -18,6 +19,7 @@ from django.db import transaction
 from django.contrib.auth.models import Group
 from rest_framework import permissions, generics
 from oauth2_provider.ext.rest_framework import TokenHasScope
+from braces.views import LoginRequiredMixin
 
 from .models import TechUUser
 from .forms import (
@@ -35,40 +37,15 @@ class HomePageView(TemplateView):
     template_name = 'home.html'
 
 
-class UserRegisterView(View):
+class UserRegisterView(CreateView):
+    model = TechUUser
+    success_url = reverse_lazy('register_done')
     form_class = UserRegisterForm
     template_name = 'accounts/register.html'
 
-    @method_decorator(never_cache)
-    def get(self, request, *args, **kwargs):
-        form = self.form_class()
-        return render(request, self.template_name, {
-            'form': form,
-        })
-
-    @method_decorator(sensitive_post_parameters())
-    @method_decorator(csrf_protect)
-    @method_decorator(never_cache)
-    @method_decorator(transaction.atomic)
-    def post(self, request, *args, **kwargs):
-        form = self.form_class(data=request.POST)
-        if form.is_valid():
-            # add new user
-            user = form.save()
-            logger.info('[ADD USER] {user}'.format(user=user))
-            return HttpResponseRedirect(reverse('register_done'))
-
-        return render(request, self.template_name, {
-            'form': form,
-        })
-
-
-class UserRegisterDoneView(View):
+    
+class UserRegisterDoneView(TemplateView):
     template_name = 'accounts/register_done.html'
-
-    @method_decorator(never_cache)
-    def get(self, request, *args, **kwargs):
-        return render(request, self.template_name)
 
 
 # general password reset entry
@@ -176,33 +153,15 @@ class EmailPasswordResetComplete(View):
         return render(request, self.template_name, context)
 
 
-class UserProfileView(View):
+class UserProfileView(LoginRequiredMixin, UpdateView):
+    model = TechUUser
+    success_url = reverse_lazy('profile')
     form_class = UserProfileForm
     template_name = 'accounts/profile.html'
 
-    @method_decorator(login_required)
-    def get(self, request, *args, **kwargs):
-        instance = get_object_or_404(TechUUser, id=request.user.id)
-        form = self.form_class(instance=instance)
-        return render(request, self.template_name, {
-            'form': form,
-        })
-
-    @method_decorator(login_required)
-    @method_decorator(csrf_protect)
-    def post(self, request, *args, **kwargs):
-        instance = get_object_or_404(TechUUser, id=request.user.id)
-        form = self.form_class(request.POST or None, instance=instance)
-        message = None
-        if form.is_valid():
-            # updated user profile
-            form.save()
-            message = _('user profile updated !')
-
-        return render(request, self.template_name, {
-            'message': message,
-            'form': form,
-        })
+    # override
+    def get_object(self):
+        return get_object_or_404(self.model, pk=self.request.user.pk)
 
 
 class UserRetrieveAPIView(generics.RetrieveAPIView):

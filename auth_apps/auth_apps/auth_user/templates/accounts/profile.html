@@ -1,16 +1,20 @@
 {% extends "site_base.html" %}
 
 {% load i18n %}
+{% load widget_tweaks %}
 
 {% block title %}{% trans "User Profile" %}{% endblock %}
 
-{% load widget_tweaks %}
+{% block pre_script %}
+<script src="https://staticfile.qnssl.com/moment.js/2.10.6/moment-with-locales.min.js"></script>
+<script src="https://staticfile.qnssl.com/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
+{% endblock pre_script %}
+
+{% block css %}
+<link rel="stylesheet" href="https://staticfile.qnssl.com/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css">
+{% endblock css %}
 
 {% block content %}
-
-{% for error in form.non_field_errors %}
-<strong class="alert alert-danger">{{ error }}</strong>
-{% endfor %}
 
 {% if message %}
 <div class="alert alert-warning" role="alert">
@@ -19,7 +23,6 @@
 {% endif %}
 
 <div class="block-center">
-    
     <form class="form-profile" method="post" action="{% url 'profile' %}">
         {% csrf_token %}
 
@@ -32,6 +35,12 @@
                 {% endfor %}
             </div>
         {% endfor %}
+
+        <div class="control-group {% if form.non_field_errors %}error{% endif %}">
+            {% for error in form.non_field_errors %}
+                <span class="help-inline">{{ error }}</span>
+            {% endfor %}
+        </div>
         
         <div class="control-group">
             <div class="controls">
@@ -40,5 +49,4 @@
         </div>
     </form>
 </div>
-
 {% endblock %}

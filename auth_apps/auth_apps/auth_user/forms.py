@@ -1,6 +1,5 @@
 import re
 import logging
-import datetime
 from django import forms
 from django.template import loader
 from django.core.exceptions import ValidationError
@@ -14,6 +13,8 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.forms import UserCreationForm, SetPasswordForm
+from django.conf import settings
+from datetimewidget.widgets import DateWidget
 
 from common.sms_service import sms_service
 from .models import TechUUser
@@ -34,37 +35,39 @@ def validate_mobile(value):
 
 
 class UserRegisterForm(UserCreationForm):
-    birth_date = forms.DateField(
-        required=False, widget=forms.SelectDateWidget(
-            years=range(datetime.date.today().year, 1930, -1)
-        )
-    )
-
-    class Meta:
-        model = TechUUser
-        fields = [
-            'username', 'email', 'mobile', 'birth_date', 'qq',
-            'phone', 'address', 'remark',
-        ]
-
-    
-class UserProfileForm(forms.ModelForm):
-    # set username to read-only
-    username = forms.CharField(disabled=True)
-    email = forms.EmailField(required=False)
-    # set birth_date date selector
-    birth_date = forms.DateField(
-        required=False, widget=forms.SelectDateWidget(
-            years=range(datetime.date.today().year, 1930, -1)
-        )
-    )
-
     class Meta:
         model = TechUUser
         fields = [
             'username', 'email', 'mobile', 'first_name', 'last_name',
             'birth_date', 'qq', 'phone', 'address', 'remark',
         ]
+        widgets = {
+            'birth_date': DateWidget(
+                options={
+                    'locale': 'zh-cn',
+                    'viewMode': 'years',
+                }
+            )
+        }
+
+
+class UserProfileForm(forms.ModelForm):
+    email = forms.EmailField(required=False)
+
+    class Meta:
+        model = TechUUser
+        fields = [
+            'email', 'mobile', 'first_name', 'last_name',
+            'birth_date', 'qq', 'phone', 'address', 'remark',
+        ]
+        widgets = {
+            'birth_date': DateWidget(
+                options={
+                    'locale': 'zh-cn',
+                    'viewMode': 'years',
+                }
+            )
+        }
 
 
 class PasswordResetForm(forms.Form):
@@ -183,7 +186,7 @@ class PasswordResetForm(forms.Form):
 
             self.post_reset_redirect = reverse(
                 'mobile_password_reset_confirm',
-                kwargs = {
+                kwargs={
                     'uidb64': urlsafe_base64_encode(force_bytes(user.pk))
                 }
             )
@@ -252,9 +255,11 @@ class LoginForm(forms.Form):
     identity = forms.CharField(
         label=_('Identity'),
         max_length=254,
-        widget=forms.TextInput(attrs={'placeholder': _('Username/Email/Mobile')}))
+        widget=forms.TextInput(
+            attrs={'placeholder': _('Username/Email/Mobile')}
+        ))
     password = forms.CharField(
-        label=_("Password"), 
+        label=_("Password"),
         widget=forms.PasswordInput(attrs={'placeholder': _('Password')}))
 
     error_messages = {
@@ -320,4 +325,3 @@ class LoginForm(forms.Form):
 
     def get_user(self):
         return self.user_cache
-

@@ -1,19 +1,20 @@
 {% extends "site_base.html" %}
 
 {% load i18n %}
+{% load widget_tweaks %}
 
 {% block title %}{% trans "Sign up" %}{% endblock %}
 
-{% load widget_tweaks %}
+{% block pre_script %}
+<script src="https://staticfile.qnssl.com/moment.js/2.10.6/moment-with-locales.min.js"></script>
+<script src="https://staticfile.qnssl.com/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
+{% endblock pre_script %}
+
+{% block css %}
+<link rel="stylesheet" href="https://staticfile.qnssl.com/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css">
+{% endblock css %}
 
 {% block content %}
-
-{% for error in form.non_field_errors %}
-<div class="alert alert-danger" role="alert">
-    <strong>{{ error }}</strong>
-</div>
-{% endfor %}
-
 <div class="block-center">
     <form class="form-profile" method="post" onsubmit="encrypt_password('id_password1');encrypt_password('id_password2')" action="{% url 'register' %}">
         {% csrf_token %}
@@ -21,14 +22,20 @@
         {% for field in form %}
             <div class="control-group {% if field.errors %}error{% endif %}">
                 <label class="control-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
-                {{ field|attr:"class:form-control" }} 
-                {% for error in field.errors %}
-                <div class="alert alert-danger" role="alert">
-                    <strong>{{ error }}</strong>
+                <div class="controls">
+                    {{ field|attr:"class:form-control" }} 
+                    {% for error in field.errors %}
+                        <span class="help-inline">{{ error }}</span>
+                    {% endfor %}
                 </div>
-                {% endfor %}
             </div>
         {% endfor %}
+
+        <div class="control-group {% if form.non_field_errors %}error{% endif %}">
+            {% for error in form.non_field_errors %}
+                <span class="help-inline">{{ error }}</span>
+            {% endfor %}
+        </div>
 
         <div class="control-group">
             <div class="controls">
@@ -39,3 +46,5 @@
     </form>
 </div>
 {% endblock %}
+
+

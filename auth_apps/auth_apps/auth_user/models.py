@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.db.models import Q
 from django.core import validators
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import AbstractUser
@@ -56,13 +57,14 @@ class TechUUser(AbstractUser):
 
     # override
     def clean(self):
-        if self.email and TechUUser.objects.filter(email=self.email).exists():
+        if self.email and TechUUser.objects.filter(
+                ~Q(pk=self.pk), email=self.email).exists():
             raise ValidationError(
                 self.ERROR_MESSAGES['email_exist'],
                 code='email_exist',
             )
         if self.mobile and TechUUser.objects.filter(
-            mobile=self.mobile).exists():
+                ~Q(pk=self.pk), mobile=self.mobile).exists():
             raise ValidationError(
                 self.ERROR_MESSAGES['mobile_exist'],
                 code='mobile_exist',

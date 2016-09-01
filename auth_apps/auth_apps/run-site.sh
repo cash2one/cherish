@@ -21,6 +21,8 @@ wait_tcp_dependency ${DB_PORT_3306_TCP_ADDR} ${DB_PORT_3306_TCP_PORT}
 # do database migration
 python manage.py makemigrations
 python manage.py migrate
+# do translation
+python manage.py compilemessages
 # collect static files
 python manage.py collectstatic --noinput
 # run server

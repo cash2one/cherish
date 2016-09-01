@@ -1,10 +1,11 @@
 {% extends "oauth2_provider/base.html" %}
 
 {% load i18n %}
+{% load widget_tweaks %}
 {% load url from compat %}
 {% block content %}
     <div class="block-center">
-        <form class="form-horizontal" method="post" action="{% block app-form-action-url %}{% url 'oauth2_provider:update' application.id %}{% endblock app-form-action-url %}">
+        <form class="form-profile" method="post" action="{% block app-form-action-url %}{% url 'oauth2_provider:update' application.id %}{% endblock app-form-action-url %}">
             <h3 class="block-center-heading">
                 {% block app-form-title %}
                     {% trans "Edit application" %} {{ application.name }}
@@ -16,7 +17,7 @@
                 <div class="control-group {% if field.errors %}error{% endif %}">
                     <label class="control-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
                     <div class="controls">
-                        {{ field }}
+                        {{ field|attr:"class:form-control" }}
                         {% for error in field.errors %}
                             <span class="help-inline">{{ error }}</span>
                         {% endfor %}
