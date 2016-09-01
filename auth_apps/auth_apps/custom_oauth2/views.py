@@ -10,7 +10,7 @@ APP_DEV_GROUP = 'app_dev'
 class AppDevTagContextMixin(ContextMixin):
     def get_context_data(self, **kwargs):
         context = super(AppDevTagContextMixin, self).get_context_data(**kwargs)
-        context['app_dev'] = True 
+        context[APP_DEV_GROUP] = True 
         return context
 
 
@@ -51,6 +51,8 @@ class ApplicationDeleteWrapper(
 class ApplicationUpdateWrapper(
         GroupRequiredMixin, AppDevTagContextMixin, views.ApplicationUpdate):
     group_required = APP_DEV_GROUP
+    fields = ['name', 'client_id', 'client_secret', 'client_type', 
+        'authorization_grant_type', 'redirect_uris']
 
 
 # oauth2 token management 
