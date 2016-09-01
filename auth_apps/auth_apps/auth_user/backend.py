@@ -4,6 +4,8 @@ from __future__ import unicode_literals
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
 
+from common.xplatform_service import xplatform_service
+
 
 class LoginPolicy(object):
     CACHE_KEY_PREFIX = 'LC-'
@@ -90,3 +92,57 @@ class TechUBackend(object):
             return UserModel.objects.get(pk=user_id)
         except UserModel.DoesNotExist:
             return None
+
+
+class XPlatformBackend(object):
+
+    # Create a User object if not already in the database?
+    create_unknown_user = True
+
+    def authenticate(self, identity=None, password=None, request=None):
+        if not identity:
+            return
+        user = None
+        username = self.clean_username(identity)
+        res = xplatform_service.backend_login(username, password)
+        if res:
+            UserModel = get_user_model()
+            # login success
+            if self.create_unknown_user:
+                user, created = UserModel._default_manager.get_or_create(**{
+                    UserModel.USERNAME_FIELD: username,
+                    'context': res 
+                })
+                if created:
+                    user = self.configure_user(user)
+            else:
+                try:
+                    user = UserModel._default_manager.get_by_natural_key(username)
+                except UserModel.DoesNotExist:
+                    pass
+        return user
+
+    def get_user(self, user_id):
+        UserModel = get_user_model()
+        try:
+            return UserModel.objects.get(pk=user_id)
+        except UserModel.DoesNotExist:
+            return None
+
+
+    def clean_username(self, username):
+        """
+        Performs any cleaning on the "username" prior to using it to get or
+        create the user object.  Returns the cleaned username.
+
+        By default, returns the username unchanged.
+        """
+        return username
+
+    def configure_user(self, user):
+        """
+        Configures a user after creation and returns the updated user.
+
+        By default, returns the user unmodified.
+        """
+        return user

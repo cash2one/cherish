@@ -1,12 +1,16 @@
 # coding: utf-8
 import string
 import random
+import logging
 
 from django.core.cache import cache
+from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from django.conf import settings
 
+from .utils import validate_code
 from .backend import LoginPolicy
+
+logger = logging.getLogger(__name__)
 
 
 class EmailTokenGenerator(PasswordResetTokenGenerator):
@@ -22,41 +26,63 @@ class EmailTokenGenerator(PasswordResetTokenGenerator):
 class MobileTokenGenerator(object):
     CACHE_KEY_PREFIX = 'MTG-'
     DEFAULT_CODE_LENGTH = 6
-    DEFAULT_PASSWORD_RESET_TIMEOUT_SECONDS = 180
+    DEFAULT_TIMEOUT_SECONDS = 180
     """
     Strategy object used to generate and check tokens for the password
     reset mechanism.
     """
     def __init__(self):
-        self.timeout = self.DEFAULT_PASSWORD_RESET_TIMEOUT_SECONDS
+        self.timeout = self.DEFAULT_TIMEOUT_SECONDS
 
-    def get_key(self, user):
-        return self.CACHE_KEY_PREFIX + unicode(user.pk)
+    def get_key(self, obj):
+        return self.CACHE_KEY_PREFIX + unicode(obj)
 
-    def make_token(self, user):
+    def make_token(self, obj):
         """
         Returns a token that can be used once to do a password reset
         for the given user.
         """
-        return self._make_token(user)
+        key = self.get_key(obj)
+        return cache.get_or_set(key, self._random_code(), self.timeout)
 
-    def check_token(self, user, token):
-        key = self.get_key(user)
-        user_token = cache.get(key)
-        if user_token == token:
+    def check_token(self, obj, token):
+        if not self._is_code(token):
+            logger.debug('mobile token invalid')
+            return False
+        key = self.get_key(obj)
+        _token = cache.get(key)
+        if _token == token:
             cache.delete(key)
-            # reset login constraint
-            LoginPolicy.flush_constraint(user)
             return True
         return False
-
-    def _make_token(self, user):
-        key = self.get_key(user)
-        return cache.get_or_set(key, self._random_code(), self.timeout)
 
     def _random_code(self, length=DEFAULT_CODE_LENGTH):
         return ''.join(random.choice(string.digits) for _ in range(length))
 
+    def _is_code(self, code):
+        # check all numbers, and DEFAULT_CODE_LENGTH
+        try:
+            return validate_code(code)
+        except:
+            return False
 
-mobile_token_generator = MobileTokenGenerator()
+
+class UserMobileTokenGenerator(MobileTokenGenerator):
+    CACHE_KEY_PREFIX = 'UMTG-'
+
+    def get_key(self, obj):
+        assert(isinstance(obj, get_user_model()))
+        return self.CACHE_KEY_PREFIX + unicode(obj.pk)
+
+    def check_token(self, obj, token):
+        check_res = super(
+            UserMobileTokenGenerator, self).check_token(obj, token)
+        if check_res:
+            # reset login constraint
+            LoginPolicy.flush_constraint(user=obj)
+        return check_res
+
+# export generators
+general_mobile_token_generator = MobileTokenGenerator()
+user_mobile_token_generator = UserMobileTokenGenerator()
 email_token_generator = EmailTokenGenerator()

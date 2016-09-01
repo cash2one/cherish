@@ -1,37 +1,28 @@
-import re
 import logging
 from django import forms
-from django.template import loader
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
-from django.contrib.auth import get_user_model, authenticate
+from django.contrib.auth import authenticate
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth.tokens import default_token_generator
 from django.core.validators import validate_email
-from django.core.mail import EmailMultiAlternatives
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.forms import UserCreationForm, SetPasswordForm
-from django.conf import settings
 from datetimewidget.widgets import DateWidget
+# from db_file_storage.form_widgets import DBClearableFileInput
 
-from common.sms_service import sms_service
+from .utils import (
+    validate_mobile, send_mail, send_mobile,
+    get_users_by_email, get_users_by_mobile
+)
 from .models import TechUUser
-from .tokens import mobile_token_generator
+from .tokens import user_mobile_token_generator
 from .backend import LoginPolicy
+from .widgets import DBAdminImageWidget
 
 logger = logging.getLogger(__name__)
-
-
-def validate_mobile(value):
-    """ Raise a ValidationError if the value looks like a mobile telephone number.
-    """
-    rule = re.compile(r'^[0-9]{10,14}$')
-
-    if not rule.search(value):
-        msg = u"Invalid mobile number."
-        raise ValidationError(msg)
 
 
 class UserRegisterForm(UserCreationForm):
@@ -39,15 +30,18 @@ class UserRegisterForm(UserCreationForm):
         model = TechUUser
         fields = [
             'username', 'email', 'mobile', 'first_name', 'last_name',
+            'gender', 'avatar', 'edu_profile',
             'birth_date', 'qq', 'phone', 'address', 'remark',
         ]
         widgets = {
             'birth_date': DateWidget(
                 options={
                     'locale': 'zh-cn',
+                    'format': 'YYYY-MM-DD',
                     'viewMode': 'years',
                 }
-            )
+            ),
+            'avatar': DBAdminImageWidget,
         }
 
 
@@ -58,15 +52,18 @@ class UserProfileForm(forms.ModelForm):
         model = TechUUser
         fields = [
             'email', 'mobile', 'first_name', 'last_name',
+            'gender', 'avatar', 'edu_profile',
             'birth_date', 'qq', 'phone', 'address', 'remark',
         ]
         widgets = {
             'birth_date': DateWidget(
                 options={
                     'locale': 'zh-cn',
+                    'format': 'YYYY-MM-DD',
                     'viewMode': 'years',
                 }
-            )
+            ),
+            'avatar': DBAdminImageWidget,
         }
 
 
@@ -81,61 +78,16 @@ class PasswordResetForm(forms.Form):
         super(PasswordResetForm, self).__init__(*args, **kwargs)
         self.post_reset_redirect = None
 
-    def send_mail(self, subject_template_name, email_template_name,
-                  context, from_email, to_email,
-                  html_email_template_name=None):
-        """
-        Sends a django.core.mail.EmailMultiAlternatives to `to_email`.
-        """
-        subject = loader.render_to_string(subject_template_name, context)
-        # Email subject *must not* contain newlines
-        subject = ''.join(subject.splitlines())
-        body = loader.render_to_string(email_template_name, context)
-
-        email_message = EmailMultiAlternatives(
-            subject, body, from_email, [to_email])
-        if html_email_template_name is not None:
-            html_email = loader.render_to_string(
-                html_email_template_name, context)
-            email_message.attach_alternative(html_email, 'text/html')
-
-        email_message.send()
-
-    def send_mobile(self, mobile_template_name, context, to_mobile):
-        body = loader.render_to_string(mobile_template_name, context)
-        # send sms message to mobile
-        sms_service.send_message([to_mobile], body, context.get('token'))
-        logger.debug('send sms : {body}'.format(body=body))
-
-    def get_users_by_email(self, email):
-        """Given an email, return matching user(s) who should receive a reset.
-
-        This allows subclasses to more easily customize the default policies
-        that prevent inactive users and users with unusable passwords from
-        resetting their password.
-
-        """
-        active_users = get_user_model()._default_manager.filter(
-            email__iexact=email, is_active=True)
-        return (u for u in active_users if u.has_usable_password())
-
-    def get_users_by_mobile(self, mobile):
-        active_users = get_user_model()._default_manager.filter(
-            mobile__iexact=mobile, is_active=True)
-        return (u for u in active_users if u.has_usable_password())
-
     def save_email(
             self, domain_override=None,
-            subject_template_name='accounts/email/password_reset_subject.txt',
-            email_template_name='accounts/email/password_reset_email.html',
             use_https=False, token_generator=default_token_generator,
-            from_email=None, request=None, html_email_template_name=None):
+            from_email=None, request=None):
         """
         Generates a one-use only link for resetting password and sends to the
         user.
         """
         email = self.cleaned_data["entry"]
-        for user in self.get_users_by_email(email):
+        for user in get_users_by_email(email):
             logger.info('{user} reset password by email'.format(user=user))
             if not domain_override:
                 current_site = get_current_site(request)
@@ -154,21 +106,22 @@ class PasswordResetForm(forms.Form):
             }
 
             self.post_reset_redirect = reverse('email_password_reset_done')
-            self.send_mail(subject_template_name, email_template_name,
-                           context, from_email, user.email,
-                           html_email_template_name=html_email_template_name)
+            send_mail(
+                user.email, context, from_email,
+                subject_template_name='accounts/email/password_reset_subject.txt',
+                email_template_name='accounts/email/password_reset_email.html')
 
     def save_mobile(
             self, domain_override=None,
             mobile_template_name='accounts/mobile/password_reset_mobile.html',
-            token_generator=mobile_token_generator,
+            token_generator=user_mobile_token_generator,
             use_https=False, request=None):
         """
         Generates a one-use code for resetting password and sends to the
         user.
         """
         mobile = self.cleaned_data["entry"]
-        for user in self.get_users_by_mobile(mobile):
+        for user in get_users_by_mobile(mobile):
             logger.info('{user} reset password by mobile'.format(user=user))
             if not domain_override:
                 current_site = get_current_site(request)
@@ -190,7 +143,7 @@ class PasswordResetForm(forms.Form):
                     'uidb64': urlsafe_base64_encode(force_bytes(user.pk))
                 }
             )
-            self.send_mobile(mobile_template_name, context, user.mobile)
+            send_mobile(user.mobile, context, mobile_template_name)
 
     def clean_entry(self):
         self.is_email = False
@@ -237,13 +190,13 @@ class PasswordResetForm(forms.Form):
             logger.error('password reset error')
 
 
-class ValidCodeSetPasswordForm(SetPasswordForm):
+class MobileCodeSetPasswordForm(SetPasswordForm):
     code = forms.RegexField(
         label=_('Code'),
         help_text=_('mobile verify code'),
         regex=r'^[0-9]+$', strip=True,
         required=True,
-        max_length=mobile_token_generator.DEFAULT_CODE_LENGTH,
+        max_length=user_mobile_token_generator.DEFAULT_CODE_LENGTH,
         widget=forms.TextInput(attrs={'placeholder': _('Code')}))
 
 

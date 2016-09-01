@@ -22,6 +22,8 @@ ADMIN_PASSWORD = u'admin'
 ADMIN_USER_PK = 1
 LOGIN_USERNAME = u'user1'
 LOGIN_PASSWORD = u'user1'
+# LOGIN_USERNAME = u'15911186897'
+# LOGIN_PASSWORD = u'724534'
 LOGIN_USER_PK = 2
 
 
@@ -54,6 +56,7 @@ class TestPassword(unittest.TestCase):
         r = requests.post(url, data=payload, auth=(
             self.app.get(u'client_id'), self.app.get(u'client_secret')
             ), verify=False)
+        print r.content
         self.assertEqual(r.status_code, 200)
         token_info = r.json()
         logger.info(u'Get token info : {res}'.format(res=token_info))
@@ -61,7 +64,7 @@ class TestPassword(unittest.TestCase):
 
     # 2 Application requests resource by using access token
     def _application_requests_resource(self, token_info, user_pk):
-        url = self.base_url + '/accounts/resource/user/{pk}/'.format(
+        url = self.base_url + '/accounts/api/v1/user/{pk}/'.format(
             pk=user_pk)
         headers = {
             u'Authorization': u'{token_type} {access_token}'.format(
@@ -99,6 +102,7 @@ class TestPassword(unittest.TestCase):
         self.assertTrue(user_info)
         res = self._application_revoke_token(access_token_info)
         self.assertTrue(res)
+
 
 if __name__ == '__main__':
     unittest.main()

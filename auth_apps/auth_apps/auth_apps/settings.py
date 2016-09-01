@@ -43,8 +43,10 @@ INSTALLED_APPS = (
     'corsheaders',
     'widget_tweaks',
     'datetimewidget',
+    'db_file_storage',
     # my apps
     'common',
+    'edu_info',
     'auth_user',
     'custom_oauth2',
 )
@@ -97,6 +99,10 @@ DATABASES = {
         'PASSWORD': os.getenv('DB_ENV_MYSQL_PASSWORD'),
         'HOST': os.getenv('DB_PORT_3306_TCP_ADDR'),
         'PORT': os.getenv('DB_PORT_3306_TCP_PORT'),
+        'OPTIONS': {
+            'charset': 'utf8',
+            'init_command': 'SET storage_engine=InnoDB,character_set_connection=utf8,collation_connection=utf8_unicode_ci',
+        },
     }
 }
 
@@ -128,6 +134,8 @@ LOCALE_PATHS = [
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
+DEFAULT_FILE_STORAGE = 'db_file_storage.storage.DatabaseFileStorage'
+
 # email settings
 EMAIL_USE_SSL = int(os.getenv('EMAIL_USE_SSL'))
 EMAIL_USE_TLS = int(os.getenv('EMAIL_USE_TLS'))
@@ -140,13 +148,15 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 # auth setting
 AUTH_USER_MODEL = 'auth_user.TechUUser'
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',  # use for admin site
-    'auth_user.backend.TechUBackend',
+    # 'oauth_provider.backends.OAuth2Backend', # for OAuth2 login users
+    'auth_user.backend.TechUBackend', # for account center site
+    'auth_user.backend.XPlatformBackend', # for users from xplatform
+    'django.contrib.auth.backends.ModelBackend', # for admin site
 ]
 
 # password settings
 PASSWORD_HASHERS = [
-    'django.contrib.auth.hashers.MD5PasswordHasher',
+    'auth_user.hashers.TechUPasswordHasher',
 ]
 
 # CORS settings
@@ -159,13 +169,21 @@ OAUTH2_PROVIDER = {
         'group': 'Read group info scope',
     },
     'DEFAULT_SCOPES': ['user', 'group'],
+    'OAUTH2_VALIDATOR_CLASS': 'custom_oauth2.oauth2_validators.TechUOAuth2Validator',
 }
 
 # rest framework settings
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'oauth2_provider.ext.rest_framework.OAuth2Authentication',
-    )
+    ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    ),
+    'DEFAULT_PARSER_CLASSES': (
+        'rest_framework.parsers.JSONParser',
+    ),
+    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.NamespaceVersioning',
 }
 
 # loggings
@@ -198,6 +216,9 @@ LOGGING = {
 
 # security setting
 SECURE_SSL_REDIRECT = True
+ENABLE_MOBILE_PASSWORD_VERIFY = True
+TECHU_FRONTEND_SALT = 'cloud_homework-'
+TECHU_BACKEND_SALT = 'yzy-'
 
 # cache setting
 CACHES = {
@@ -210,3 +231,12 @@ CACHES = {
 # SMS service setting
 SMS_SERVICE_URL = os.getenv('SMS_SERVICE_URL')
 SMS_REQUEST_TIMEOUT = 3  # seconds
+
+# XPLATFORM SERVICE setting
+XPLATFORM_SERVICE = {
+    'URL': 'https://dev.login.yunxiaoyuan.com' if DEBUG else 'https://login.yunxiaoyuan.com',
+    'APP_ID': '98008',
+    'SERVER_KEY': 'C6F653399B9A15E053469A66',
+    'CLIENT_KEY': '9852C11D7FF63FDE5732A4BA',
+    'TIMEOUT': 3,
+}

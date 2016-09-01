@@ -9,3 +9,7 @@ python-memcached
 requests
 django_braces==1.8.1
 git+https://github.com/lbjworld/django-datetime-widget.git
+django-db-file-storage
+Pillow
+jsonfield==1.0.3
+http://twhiteman.netfirms.com/pyDES/pyDes-2.0.1.zip

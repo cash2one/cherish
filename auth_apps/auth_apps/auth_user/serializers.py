@@ -9,7 +9,7 @@ class TechUUserSerializer(serializers.ModelSerializer):
         model = TechUUser
         fields = (
             'username', 'email', 'birth_date', 'qq', 'remark', 
-            'mobile', 'phone', 'address'
+            'mobile', 'phone', 'address', 'avatar', 'context'
         )
 
 

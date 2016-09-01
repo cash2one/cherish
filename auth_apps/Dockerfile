@@ -10,10 +10,11 @@ RUN apt-get update \
                           libmysqlclient-dev \
                           gettext \
                           git \
+                          libjpeg-dev \
     && pip install -r /requirements.txt \
     && apt-get purge -y build-essential git \
     && apt-get autoremove -y \
-    && apt-get remove -y libmysqlclient-dev \
+    && apt-get remove -y libmysqlclient-dev libjpeg-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # setup env
