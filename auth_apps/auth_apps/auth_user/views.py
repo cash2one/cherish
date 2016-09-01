@@ -1,22 +1,20 @@
 import logging
 
-from django.conf import settings
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.views.generic import View
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
+from django.views.generic.base import TemplateView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_text
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
-from django.shortcuts import resolve_url
 from django.db import transaction
-from django.views.generic.base import TemplateView
 from django.contrib.auth.models import Group
 from rest_framework import permissions, generics
 from oauth2_provider.ext.rest_framework import TokenHasScope
@@ -100,7 +98,6 @@ class PasswordResetView(View):
                 'use_https': request.is_secure(),
             }
             form.save(**opts)
-            logger.debug('form url: {url}'.format(url=form.post_reset_redirect))
             return HttpResponseRedirect(form.post_reset_redirect)
         return render(request, self.template_name, context)
 
@@ -185,7 +182,8 @@ class UserProfileView(View):
 
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
-        form = self.form_class(instance=request.user)
+        instance = get_object_or_404(TechUUser, id=request.user.id)
+        form = self.form_class(instance=instance)
         return render(request, self.template_name, {
             'form': form,
         })
@@ -193,7 +191,8 @@ class UserProfileView(View):
     @method_decorator(login_required)
     @method_decorator(csrf_protect)
     def post(self, request, *args, **kwargs):
-        form = self.form_class(request.POST, instance=request.user)
+        instance = get_object_or_404(TechUUser, id=request.user.id)
+        form = self.form_class(request.POST or None, instance=instance)
         message = None
         if form.is_valid():
             # updated user profile

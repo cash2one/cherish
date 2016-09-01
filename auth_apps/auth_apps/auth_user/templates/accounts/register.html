@@ -9,9 +9,10 @@
 {% block content %}
 
 {% for error in form.non_field_errors %}
-    <strong class="alert alert-danger">{{ error }}</strong>
+<div class="alert alert-danger" role="alert">
+    <strong>{{ error }}</strong>
+</div>
 {% endfor %}
-
 
 <div class="block-center">
     <form class="form-profile" method="post" onsubmit="encrypt_password('id_password1');encrypt_password('id_password2')" action="{% url 'register' %}">
@@ -22,7 +23,9 @@
                 <label class="control-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
                 {{ field|attr:"class:form-control" }} 
                 {% for error in field.errors %}
-                    <strong class="alert alert-danger">{{ error }}</strong>
+                <div class="alert alert-danger" role="alert">
+                    <strong>{{ error }}</strong>
+                </div>
                 {% endfor %}
             </div>
         {% endfor %}

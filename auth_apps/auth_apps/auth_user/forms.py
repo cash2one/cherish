@@ -34,20 +34,10 @@ def validate_mobile(value):
 
 
 class UserRegisterForm(UserCreationForm):
-    error_messages = {
-        'email_exist': _('The email already exist in system.'),
-        'username_exist': _('Username existed, try another name please.'),
-        'mobile_exist': _('Mobile number existed, try another one please.'),
-        'need_reset_password_entry': _(
-            'We need a reset password entry,'
-            'please set email or mobile for password reset'
-        ),
-    }
-    is_email = False
-    is_mobile = False
-
     birth_date = forms.DateField(
-        required=False, widget=forms.SelectDateWidget()
+        required=False, widget=forms.SelectDateWidget(
+            years=range(datetime.date.today().year, 1930, -1)
+        )
     )
 
     class Meta:
@@ -57,48 +47,11 @@ class UserRegisterForm(UserCreationForm):
             'phone', 'address', 'remark',
         ]
 
-    def clean_username(self):
-        username = self.cleaned_data.get("username")
-        if username and TechUUser.objects.filter(username=username).exists():
-            raise forms.ValidationError(
-                self.error_messages['username_exist'],
-                code='username_exist',
-            )
-        return username
-
-    def clean_email(self):
-        email = self.cleaned_data.get("email")
-        if email and TechUUser.objects.filter(email=email).exists():
-            raise forms.ValidationError(
-                self.error_messages['email_exist'],
-                code='email_exist',
-            )
-        return email
-
-    def clean_mobile(self):
-        mobile = self.cleaned_data.get('mobile')
-        if mobile and TechUUser.objects.filter(mobile=mobile).exists():
-            raise forms.ValidationError(
-                self.error_messages['mobile_exist'],
-                code='mobile_exist',
-            )
-        return mobile
-
-    def clean(self):
-        cleaned_data = super(UserRegisterForm, self).clean()
-        # required either email or mobile
-        if not (cleaned_data.get('email') or cleaned_data.get('mobile')):
-            raise forms.ValidationError(
-                self.error_messages['need_reset_password_entry'],
-                code='need_reset_password_entry',
-            )
-        return cleaned_data
-
-
+    
 class UserProfileForm(forms.ModelForm):
-    # set username and password to read-only
+    # set username to read-only
     username = forms.CharField(disabled=True)
-    email = forms.EmailField(required=False, disabled=True)
+    email = forms.EmailField(required=False)
     # set birth_date date selector
     birth_date = forms.DateField(
         required=False, widget=forms.SelectDateWidget(
