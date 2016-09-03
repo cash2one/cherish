@@ -30,7 +30,8 @@ end
 if not v then
     local db_conn = db:get_connection()
     res, err, errno, sqlstate =
-        db_conn:query(string.format([[select * from cats where name = '%s']], access_token))
+        db_conn:query(string.format([[select * from cats where name = %s]],
+                                    ngx.quote_sql_str(access_token)))
     db_conn:close()
     if not res or 0 == table.getn(res) then
         err = "bad result: ", err, ": ", errno, ": ", sqlstate, "."
