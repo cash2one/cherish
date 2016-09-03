@@ -30,4 +30,4 @@ class SMSService(object):
         return True
 
 
-sms_service = SMSService(settings.SMS_SERVICE_URL)
+techu_sms_service = SMSService(settings.SMS_SERVICE_URL)

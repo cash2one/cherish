@@ -25,8 +25,9 @@ SECRET_KEY = 'a&5^-%7tpg1d%8ti9&qw7i)m19xv%mo*q^ej6+4max2+5sz-jx'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = int(os.getenv('DJANGO_DEBUG', 0))
+TEST = int(os.getenv('DJANGO_TEST', 0))
 
-ALLOWED_HOSTS = [ os.getenv('DJANGO_HOST') ]
+ALLOWED_HOSTS = [os.getenv('DJANGO_HOST')]
 
 
 # Application definition
@@ -44,6 +45,7 @@ INSTALLED_APPS = (
     'widget_tweaks',
     'datetimewidget',
     'db_file_storage',
+    'djcelery',
     # my apps
     'common',
     'edu_info',
@@ -103,6 +105,9 @@ DATABASES = {
             'charset': 'utf8',
             'init_command': 'SET storage_engine=InnoDB,character_set_connection=utf8,collation_connection=utf8_unicode_ci',
         },
+        'TEST': {
+            'NAME': 'test_account_center',
+        },
     }
 }
 
@@ -137,21 +142,21 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 DEFAULT_FILE_STORAGE = 'db_file_storage.storage.DatabaseFileStorage'
 
 # email settings
-EMAIL_USE_SSL = int(os.getenv('EMAIL_USE_SSL'))
-EMAIL_USE_TLS = int(os.getenv('EMAIL_USE_TLS'))
-EMAIL_HOST = os.getenv('EMAIL_HOST')
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-EMAIL_PORT = int(os.getenv('EMAIL_PORT'))
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER 
+EMAIL_USE_SSL = int(os.getenv('EMAIL_USE_SSL', 0))
+EMAIL_USE_TLS = int(os.getenv('EMAIL_USE_TLS', 0))
+EMAIL_HOST = os.getenv('EMAIL_HOST', None)
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', None)
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', None)
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', 0))
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # auth setting
 AUTH_USER_MODEL = 'auth_user.TechUUser'
 AUTHENTICATION_BACKENDS = [
-    # 'oauth_provider.backends.OAuth2Backend', # for OAuth2 login users
-    'auth_user.backend.TechUBackend', # for account center site
-    'auth_user.backend.XPlatformBackend', # for users from xplatform
-    'django.contrib.auth.backends.ModelBackend', # for admin site
+    # 'oauth_provider.backends.OAuth2Backend',  # for OAuth2 login users
+    'auth_user.backend.TechUBackend',  # for account center site
+    'auth_user.backend.XPlatformBackend',  # for users from xplatform
+    'django.contrib.auth.backends.ModelBackend',  # for admin site
 ]
 
 # password settings
@@ -163,6 +168,7 @@ PASSWORD_HASHERS = [
 CORS_ORIGIN_ALLOW_ALL = True
 
 # django oauth toolkit settings
+OAUTH2_PROVIDER_APPLICATION_MODEL = 'custom_oauth2.TechUApplication'
 OAUTH2_PROVIDER = {
     'SCOPES': {
         'user': 'Read user info scope',
@@ -170,6 +176,7 @@ OAUTH2_PROVIDER = {
     },
     'DEFAULT_SCOPES': ['user', 'group'],
     'OAUTH2_VALIDATOR_CLASS': 'custom_oauth2.oauth2_validators.TechUOAuth2Validator',
+    'APPLICATION_MODEL': 'custom_oauth2.TechUApplication',
 }
 
 # rest framework settings
@@ -216,9 +223,13 @@ LOGGING = {
 
 # security setting
 SECURE_SSL_REDIRECT = True
+if TEST:
+    SECURE_SSL_REDIRECT = False 
 ENABLE_MOBILE_PASSWORD_VERIFY = True
 TECHU_FRONTEND_SALT = 'cloud_homework-'
 TECHU_BACKEND_SALT = 'yzy-'
+DEFAULT_REQUEST_TIMEOUT = 3
+MOBILE_CODE_COUNTDOWN = 60  # seconds
 
 # cache setting
 CACHES = {
@@ -229,14 +240,25 @@ CACHES = {
 }
 
 # SMS service setting
+SENDSMS_BACKEND = 'common.sms_backends.TechUSMSBackend'
+if TEST:
+    SENDSMS_BACKEND='sendsms.backends.locmem.SmsBackend'
 SMS_SERVICE_URL = os.getenv('SMS_SERVICE_URL')
 SMS_REQUEST_TIMEOUT = 3  # seconds
 
 # XPLATFORM SERVICE setting
 XPLATFORM_SERVICE = {
-    'URL': 'https://dev.login.yunxiaoyuan.com' if DEBUG else 'https://login.yunxiaoyuan.com',
+    'URL': os.getenv('XPLATFORM_SERVICE_URL') # 'https://dev.login.yunxiaoyuan.com' if DEBUG else 'https://login.yunxiaoyuan.com',
     'APP_ID': '98008',
     'SERVER_KEY': 'C6F653399B9A15E053469A66',
     'CLIENT_KEY': '9852C11D7FF63FDE5732A4BA',
     'TIMEOUT': 3,
 }
+
+# celery settings
+BROKER_URL = os.getenv('CELERY_BROKER_URL') 
+# CELERY_RESULT_BACKEND = 'djcelery.backends.cache:CacheBackend'
+CELERY_ENABLE_UTC = True
+CELERY_TIMEZONE = TIME_ZONE
+if TEST:
+    CELERY_ALWAYS_EAGER=True

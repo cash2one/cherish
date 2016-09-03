@@ -17,6 +17,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import Group
 from django.contrib.sites.shortcuts import get_current_site
+from django.conf import settings
 from rest_framework import permissions, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -28,13 +29,16 @@ from .forms import (
     UserProfileForm, UserRegisterForm, PasswordResetForm,
     MobileCodeSetPasswordForm
 )
-from .serializers import TechUUserSerializer, GroupSerializer
+from .serializers import (
+    TechUUserSerializer, GroupSerializer, TechUMobileUserRegisterSerializer
+)
 from .permissions import (
     IsTokenOwnerPermission, OnceUserMobileCodeCheck, OnceGeneralMobileCodeCheck
 )
 from .tokens import user_mobile_token_generator, general_mobile_token_generator
-from .utils import validate_mobile, send_mobile, get_user_by_mobile
+from .utils import validate_mobile, get_user_by_mobile
 from .exceptions import ParameterError, OperationError
+from .tasks import send_mobile_task
 
 logger = logging.getLogger(__name__)
 
@@ -234,18 +238,17 @@ class MobileCodeResetPasswordAPIView(APIView):
         reset password by offering mobile code
     """
     permission_classes = [
-        permissions.IsAuthenticated,
-        TokenHasScope,
-        IsTokenOwnerPermission,
-        OnceUserMobileCodeCheck,
+        OnceGeneralMobileCodeCheck,
     ]
-    required_scopes = ['user']
 
     def post(self, request, *args, **kwargs):
+        mobile = request.data.get('mobile')
         new_password = request.data.get('new_password')
-        if not new_password:
-            raise ParameterError(_('need new password'))
-        user = request.user
+        if not (new_password and mobile):
+            raise ParameterError(_('need new password, mobile'))
+        user = get_user_by_mobile(mobile)
+        if not user:
+            raise ParameterError(_('mobile number not exist'))
         try:
             password_validation.validate_password(new_password, user)
         except:
@@ -270,11 +273,10 @@ class MobileCodeAPIView(APIView):
             raise ParameterError(_('mobile number invalid'))
         user = get_user_by_mobile(mobile)
         if not user:
-            raise self.ParameterError(_('mobile number not exist'))
+            raise ParameterError(_('mobile number not exist'))
         current_site = get_current_site(request)
-        code = user_mobile_token_generator.make_token(user)
-        # TODO: async send here ?
-        send_mobile(
+        code = general_mobile_token_generator.make_token(mobile)
+        send_mobile_task.delay(
             mobile,
             context={
                 'mobile': mobile,
@@ -287,6 +289,7 @@ class MobileCodeAPIView(APIView):
         response = {
             'mobile': mobile,
             'code': code,
+            'countdown': settings.MOBILE_CODE_COUNTDOWN,
         }
         return Response(response)
 
@@ -307,8 +310,7 @@ class RegisterMobileCodeAPIView(APIView):
             raise self.OperationError(_('mobile already exist'))
         current_site = get_current_site(request)
         code = general_mobile_token_generator.make_token(mobile)
-        # TODO: async send here ?
-        send_mobile(
+        send_mobile_task.delay(
             mobile,
             context={
                 'mobile': mobile,
@@ -319,7 +321,9 @@ class RegisterMobileCodeAPIView(APIView):
             mobile_template_name='accounts/mobile/verify_code.html'
             )
         response = {
+            'mobile': mobile,
             'code': code,
+            'countdown': settings.MOBILE_CODE_COUNTDOWN,
         }
         return Response(response)
 
@@ -332,4 +336,4 @@ class UserRegisterAPIView(generics.CreateAPIView):
         OnceGeneralMobileCodeCheck,
     ]
     queryset = TechUUser.objects.all()
-    serializer_class = TechUUserSerializer
+    serializer_class = TechUMobileUserRegisterSerializer

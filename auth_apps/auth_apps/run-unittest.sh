@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # input: tcp_addr, tcp_port
 wait_tcp_dependency()
 {
@@ -22,13 +21,4 @@ wait_tcp_dependency ${REDIS_PORT_6379_TCP_ADDR} ${REDIS_PORT_6379_TCP_PORT}
 echo "connecting to db ..."
 wait_tcp_dependency ${DB_PORT_3306_TCP_ADDR} ${DB_PORT_3306_TCP_PORT}
 
-# do database migration
-python manage.py makemigrations
-python manage.py migrate
-# do translation
-python manage.py compilemessages
-# collect static files
-python manage.py collectstatic --noinput
-# run server
-# python manage.py runserver 0.0.0.0:${SERVICE_PORT}
-uwsgi --ini uwsgi.ini
+python manage.py test 

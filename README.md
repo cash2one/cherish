@@ -7,7 +7,7 @@
 ---
 1. 用户操作（注册、登录、账号找回）
 2. OAuth第三方应用授权管理
-3. 用户账号资源API（用于授权第三方应用访问用户信息）
+3. 用户账号API（用于授权第三方应用访问用户信息，注册，找回密码等）
 
 ### 用户操作页面
 
@@ -75,42 +75,169 @@
 ---
 #### ^/oauth/authorize/$
 
-应用授权接口
+应用授权API接口
 
 * first receive a `GET` request from user asking authorization for a certain client application, a form is served possibly showing some useful info and prompting for authorize/do not authorize.
 * then receive a `POST` request possibly after user authorized the access
 
 #### ^/oauth/token/$
 
+HTTP Method: POST 
 token接口
 
 #### ^/oauth/revoke_token/$
 
+HTTP Method: POST 
 刷新token接口
 
 
-### 资源API
+### 用户资源API
 
 ---
-#### ^accounts/resource/user/(?P\<pk\>[0-9]+)/$
-#### ^accounts/resource/user/(?P\<pk\>[0-9]+)\.(?P\<format\>[a-z0-9]+)/?$
+#### ^accounts/api/v1/user/register/mobile/$
+
+HTTP Method: POST 
+用户注册接口
+
+Request:
+```
+    {
+        "mobile": "15911186897", # required
+        "code": "123456", # required
+        "password": "xxxxx", # required
+        "birth_date": "1990-01-01",
+        "qq": "123456789",
+        "remark": "xxxxx",
+        "phone": "010-6234567",
+        "address": "xxxxxx",
+        "context": <context_json_object>
+    }
+```
+
+Response status code:
+200 注册成功
+其他 失败
+
+#### ^accounts/api/v1/user/change_password/$
+
+HTTP Method: POST 
+用户修改密码接口（需要提供原始密码）
+条件：
+* 用户OAuth2登陆
+* TOKEN SCOPE: user
+
+Request:
+```
+    {
+        "old_password": "xxxxxx", # required
+        "new_password": "xxxxxx", # required
+    }
+```
+
+Response status code:
+200 修改密码成功
+其他 失败
+
+
+#### ^accounts/api/v1/user/reset_password/mobile/$
+
+HTTP Method: POST 
+用户重置密码接口
+
+Request:
+```
+    {
+        "mobile": "15911186897",
+        "code": "123456", # 手机验证码 required
+        "new_password": "xxxxxx", # required
+    }
+```
+
+Response status code:
+200 重置密码成功
+其他 失败
+
+
+#### ^accounts/api/v1/mobile_code/$
+
+HTTP Method: POST
+获取手机验证码接口
+
+Request:
+```
+    {
+        "mobile": "15911186897" # required
+    }
+```
+
+Response status code:
+200 获取手机验证码成功
+其他 失败
+
+Response:
+```
+    {
+        "mobile": "xxxxxxx",
+        "code": "123456",
+        "countdown": 60
+    }
+```
+
+
+#### ^accounts/api/v1/register/mobile_code/$
+
+HTTP Method: POST
+注册阶段获取手机验证码接口
+
+Request:
+```
+    {
+        "mobile": "15911186897" # required
+    }
+```
+
+Response status code:
+200 获取手机验证码成功
+其他 失败
+
+Response:
+```
+    {
+        "mobile": "xxxxxxx",
+        "code": "123456",
+        "countdown": 60
+    }
+```
+
+
+
+#### ^accounts/user/(?P\<pk\>[0-9]+)/$
+#### ^accounts/user/(?P\<pk\>[0-9]+)\.(?P\<format\>[a-z0-9]+)/?$
 
 HTTP Method: GET
 获取平台用户详情接口
+条件：
+* 用户OAuth2登陆
+* TOKEN SCOPE: user
 
 > pk为应用ID
 > format为格式设置，可取值: json, html 
 
 > 注意：该接口只能获取到授权用户信息
 
-#### ^accounts/resource/group/(?P\<pk\>[0-9]+)/$
-#### ^accounts/resource/group/(?P\<pk\>[0-9]+)\.(?P\<format\>[a-z0-9]+)/?$
+#### ^accounts/group/(?P\<pk\>[0-9]+)/$
+#### ^accounts/group/(?P\<pk\>[0-9]+)\.(?P\<format\>[a-z0-9]+)/?$
 
 HTTP Method: GET
 获取平台用户组详情接口
+条件：
+* 用户OAuth2登陆
+* TOKEN SCOPE: group 
 
 > pk为应用ID
 > format为格式设置，可取值: json, html 
+
+
 
 ## OAuth角色
 

@@ -1,44 +1,20 @@
-rproxy:
-    image: "docker.zuoyetong.com.cn:8888/nginx:1.9"
-    ports:
-     - "5000:443"
-    volumes:
-     - ./rproxy/nginx.conf:/etc/nginx/nginx.conf:ro
-     - ./rproxy/sslkey:/etc/nginx/sslkey:ro
-    log_opt:
-        max-size: "5m"
-        max-file: "5"
-    volumes_from:
-     - web:ro
-    links:
-     - web:web
-
 web:
     image: "docker.zuoyetong.com.cn:8888/account_web:latest"
     volumes:
-     - /code/static
-    log_opt:
-        max-size: "5m"
-        max-file: "5"
+     - ./auth_apps/auth_apps:/code
     environment:
      - DJANGO_DEBUG=1
+     - DJANGO_TEST=1
      - DJANGO_HOST=auth-center.domain.com.cn
-     - EMAIL_USE_SSL=1
-     - EMAIL_USE_TLS=0
-     - EMAIL_HOST=stmp.163.com
-     - EMAIL_HOST_USER=<your email account>
-     - EMAIL_HOST_PASSWORD=<your email password>
-     - EMAIL_PORT=994
      - MEMCACHED_ADDR=cache
      - MEMCACHED_PORT=11211
-     - SMS_SERVICE_URL=http://test.com
-     - XPLATFORM_SERVICE_URL=https://dev.login.yunxiaoyuan.com
+     - SMS_SERVICE_URL=http://sms.zuoyetong.com.cn
      - CELERY_BROKER_URL=redis://redis
     links:
      - db:db
      - cache:cache
      - celery_redis:redis
-    command: ./run-site.sh 
+    command: ./run-unittest.sh
 
 celery_worker:
     image: "docker.zuoyetong.com.cn:8888/account_web:latest"
@@ -46,17 +22,11 @@ celery_worker:
      - ./auth_apps/auth_apps:/code
     environment:
      - DJANGO_DEBUG=1
+     - DJANGO_TEST=1
      - DJANGO_HOST=auth-center.domain.com.cn
-     - EMAIL_USE_SSL=1
-     - EMAIL_USE_TLS=0
-     - EMAIL_HOST=smtp.163.com
-     - EMAIL_HOST_USER=lbj_world@163.com
-     - EMAIL_HOST_PASSWORD=dream829!@#
-     - EMAIL_PORT=994
      - MEMCACHED_ADDR=cache
      - MEMCACHED_PORT=11211
      - SMS_SERVICE_URL=http://sms.zuoyetong.com.cn
-     - XPLATFORM_SERVICE_URL=https://dev.login.yunxiaoyuan.com
      - CELERY_BROKER_URL=redis://redis
     links:
      - db:db
@@ -69,18 +39,12 @@ celery_redis:
 
 cache:
     image: "docker.zuoyetong.com.cn:8888/memcached:1.4"
-    log_opt:
-        max-size: "5m"
-        max-file: "1"
 
 db:
     image: "docker.zuoyetong.com.cn:8888/mysql:5.6"
     volumes:
      - ./db/data:/var/lib/mysql
-     - ./mysql/my.cnf:/etc/mysql/my.cnf
-    log_opt:
-        max-size: "5m"
-        max-file: "1"
+     - ./mysql/:/etc/mysql/conf.d:ro
     environment:
      - MYSQL_USER=mysql
      - MYSQL_PASSWORD=account_center123
