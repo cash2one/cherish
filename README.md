@@ -12,7 +12,7 @@
 ## 关于第三方应用接入
 
 ---
-1. 内部应用通过grant:password方式接入
+1. 内部应用通过`resource owner password credentials`方式接入
     * 通过后台转发用户登陆请求至/oauth/token接口，接口返回access_token
     * 应用后台通过`加密通道`将access_token返回给前端应用（APP或前端网页）
 
@@ -95,12 +95,14 @@
 
 #### ^/oauth/token/$
 
-HTTP Method: POST 
+HTTP Method: POST
+
 token接口
 
 #### ^/oauth/revoke_token/$
 
-HTTP Method: POST 
+HTTP Method: POST
+
 刷新token接口
 
 
@@ -109,7 +111,8 @@ HTTP Method: POST
 ---
 #### ^accounts/api/v1/user/register/mobile/$
 
-HTTP Method: POST 
+HTTP Method: POST
+
 用户注册接口
 
 Request:
@@ -128,13 +131,15 @@ Request:
 ```
 
 Response status code:
-200 注册成功
-其他 失败
+* 200 注册成功
+* 其他 失败
 
 #### ^accounts/api/v1/user/change_password/$
 
-HTTP Method: POST 
+HTTP Method: POST
+
 用户修改密码接口（需要提供原始密码）
+
 条件：
 * 用户OAuth2登陆
 * TOKEN SCOPE: user
@@ -148,13 +153,14 @@ Request:
 ```
 
 Response status code:
-200 修改密码成功
-其他 失败
+* 200 修改密码成功
+* 其他 失败
 
 
 #### ^accounts/api/v1/user/reset_password/mobile/$
 
-HTTP Method: POST 
+HTTP Method: POST
+
 用户重置密码接口
 
 Request:
@@ -167,13 +173,14 @@ Request:
 ```
 
 Response status code:
-200 重置密码成功
-其他 失败
+* 200 重置密码成功
+* 其他 失败
 
 
 #### ^accounts/api/v1/mobile_code/$
 
 HTTP Method: POST
+
 获取手机验证码接口
 
 Request:
@@ -184,8 +191,8 @@ Request:
 ```
 
 Response status code:
-200 获取手机验证码成功
-其他 失败
+* 200 获取手机验证码成功
+* 其他 失败
 
 Response:
 ```
@@ -200,6 +207,7 @@ Response:
 #### ^accounts/api/v1/register/mobile_code/$
 
 HTTP Method: POST
+
 注册阶段获取手机验证码接口
 
 Request:
@@ -210,8 +218,8 @@ Request:
 ```
 
 Response status code:
-200 获取手机验证码成功
-其他 失败
+* 200 获取手机验证码成功
+* 其他 失败
 
 Response:
 ```
@@ -227,8 +235,10 @@ Response:
 #### ^accounts/user/(?P\<pk\>[0-9]+)/$
 #### ^accounts/user/(?P\<pk\>[0-9]+)\.(?P\<format\>[a-z0-9]+)/?$
 
-HTTP Method: GET
-获取平台用户详情接口
+HTTP Method: GET, UPDATE 
+
+获取/更新平台用户详情接口
+
 条件：
 * 用户OAuth2登陆
 * TOKEN SCOPE: user
@@ -242,7 +252,9 @@ HTTP Method: GET
 #### ^accounts/group/(?P\<pk\>[0-9]+)\.(?P\<format\>[a-z0-9]+)/?$
 
 HTTP Method: GET
+
 获取平台用户组详情接口
+
 条件：
 * 用户OAuth2登陆
 * TOKEN SCOPE: group 
@@ -315,6 +327,7 @@ The `implicit` grant type is used for mobile apps and web applications (i.e. app
 5. Application Sends Access Token Extraction Script
 6. Access Token Passed to Application
 
+详细应用实例[参考代码](http://git.zuoyetong.com.cn/common_service/account_center/blob/master/auth_apps/auth_apps/tests/test_implicit.py)
 
 ### Resource Owner Password Credentials
 ---
@@ -322,6 +335,7 @@ With the `resource owner password credentials` grant type, the user provides the
 
 After the user gives their credentials to the application, the application will then request an access token from the authorization server.
 
+详细应用实例[参考代码](http://git.zuoyetong.com.cn/common_service/account_center/blob/master/auth_apps/auth_apps/tests/test_password.py)
 
 ### Client Credentials
 ---
