@@ -13,7 +13,7 @@ function _M.get_connection()
         ngx.log(ngx.ERR, "failed to instantiate mysql: ", err)
     end
 
-    db:set_timeout(1000)  -- 1 sec
+    db:set_timeout(os.getenv("DB_CONN_TIMEOUT"))
 
     local ip = resolver.find_ip_by_host("db")
     if not ip then
@@ -22,10 +22,10 @@ function _M.get_connection()
 
     local ok, err, errno, sqlstate = db:connect{
         host = ip,
-        port = 3306,
-        database = 'account_center',
-        user = 'mysql',
-        password = 'account_center123',
+        port = os.getenv("MYSQL_PORT"),
+        database = os.getenv("MYSQL_DATABASE"),
+        user = os.getenv("MYSQL_USER"),
+        password = os.getenv("MYSQL_PASSWORD"),
         max_packet_size = 1024 * 1024}
 
     if not ok then

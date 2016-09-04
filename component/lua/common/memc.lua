@@ -13,14 +13,14 @@ function _M.get_connection()
         ngx.log(ngx.ERR, "failed to instantiate memc: ", err)
     end
 
-    memc:set_timeout(1000)  -- 1 sec
+    memc:set_timeout(os.getenv("DB_CONN_TIMEOUT"))
 
     local ip = resolver.find_ip_by_host('cache')
     if not ip then
         ngx.log(ngx.ERR, "failed to found ip addr")
     end
 
-    local ok, err = memc:connect(ip, 11211)
+    local ok, err = memc:connect(ip, os.getenv("MEMCACHED_PORT"))
     if not ok then
         ngx.log(ngx.ERR, "failed to connect: " .. err)
     end
