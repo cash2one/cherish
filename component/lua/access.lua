@@ -9,7 +9,7 @@ function separate_token(v, from)
     if v == nil or v:find(" ") == nil then
         ngx.log(ngx.WARN, "no Authorization " .. from .. " found")
     else
-        token_type, access_token = field:match("([^,]+) ([^,]+)")
+        token_type, access_token = v:match("([^,]+) ([^,]+)")
     end
 
     return token_type, access_token
