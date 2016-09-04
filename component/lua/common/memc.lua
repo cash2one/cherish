@@ -31,11 +31,10 @@ end
 
 function _M.close()
     if ngx.ctx['memc_conn'] then
-        local ok, err = ngx.ctx['memc_conn']:set_keepalive(0, 100)
+        local ok, err = ngx.ctx['memc_conn']:set_keepalive()
         if not ok then
             ngx.log(ngx.ERR, "cannot set keepalive: ", err)
         end
-        -- ngx.ctx['memc_conn'] = nil
     end
 end
 

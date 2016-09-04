@@ -38,8 +38,7 @@ end
 
 function _M.close()
     if ngx.ctx['db_conn'] then
-        ngx.ctx['db_conn']:set_keepalive(0, 100)
-        -- ngx.ctx['db_conn'] = nil
+        ngx.ctx['db_conn']:set_keepalive()
     end
 end
 
