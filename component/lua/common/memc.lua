@@ -15,7 +15,7 @@ function _M.get_connection()
 
     memc:set_timeout(os.getenv("DB_CONN_TIMEOUT"))
 
-    local ip = resolver.find_ip_by_host('cache')
+    local ip = resolver.find_ip_by_host(os.getenv("MEMCACHED_ADDR"))
     if not ip then
         ngx.log(ngx.ERR, "failed to found ip addr")
     end

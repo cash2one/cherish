@@ -15,7 +15,7 @@ function _M.get_connection()
 
     db:set_timeout(os.getenv("DB_CONN_TIMEOUT"))
 
-    local ip = resolver.find_ip_by_host("db")
+    local ip = resolver.find_ip_by_host(os.getenv("MYSQL_HOST"))
     if not ip then
         ngx.log(ngx.ERR, "failed to found ip addr")
     end

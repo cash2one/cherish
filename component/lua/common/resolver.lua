@@ -3,6 +3,10 @@ local _M = {}
 local cache = require "common.cache"
 
 function _M.find_ip_by_host(host)
+    local chunks = {host:match("(%d+)%.(%d+)%.(%d+)%.(%d+)")}
+    if #chunks == 4 then
+        return host
+    end
     local cache_key = 'HOST-' .. string.upper(host)
     local ip = cache.get(cache_key)
     if not ip then

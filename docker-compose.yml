@@ -75,10 +75,12 @@ component:
      - ./component/conf:/opt/openresty/nginx/conf
      - ./component/lua:/opt/openresty/nginx/lua
     environment:
+     - MYSQL_HOST=db
      - MYSQL_PORT=3306
      - MYSQL_USER=mysql
      - MYSQL_DATABASE=account_center
      - MYSQL_PASSWORD=account_center123
+     - MEMCACHED_ADDR=cache
      - MEMCACHED_PORT=11211
      - DB_CONN_TIMEOUT=1000
     links:
