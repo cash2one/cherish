@@ -1,13 +1,6 @@
 FROM docker.zuoyetong.com.cn:8888/debian:jessie
 MAINTAINER "Bijia Lan <lbj.world@gmail.com>"
 
-ADD http://docker.zuoyetong.com.cn/build/jessie-sources.list /etc/apt/sources.list
-RUN apt-get update \
- && apt-get install -y --no-install-recommends \
-    curl perl make build-essential procps \
-    libreadline-dev libncurses5-dev libpcre3-dev libssl-dev \
- && rm -rf /var/lib/apt/lists/*
-
 ENV OPENRESTY_VERSION 1.9.7.3
 ENV OPENRESTY_PREFIX /opt/openresty
 ENV NGINX_PREFIX /opt/openresty/nginx
@@ -16,7 +9,12 @@ ENV VAR_PREFIX /var/nginx
 # NginX prefix is automatically set by OpenResty to $OPENRESTY_PREFIX/nginx
 # look for $ngx_prefix in https://github.com/openresty/ngx_openresty/blob/master/util/configure
 
-RUN cd /root \
+ADD http://docker.zuoyetong.com.cn/build/jessie-sources.list /etc/apt/sources.list
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+    curl perl make build-essential procps \
+    libreadline-dev libncurses5-dev libpcre3-dev libssl-dev \
+ && cd /root \
  && echo "==> Downloading OpenResty..." \
  && curl -sSL http://openresty.org/download/openresty-${OPENRESTY_VERSION}.tar.gz | tar -xvz \
  && echo "==> Configuring OpenResty..." \
@@ -50,11 +48,15 @@ RUN cd /root \
  && ln -sf $OPENRESTY_PREFIX/bin/resty /usr/local/bin/resty \
  && ln -sf $OPENRESTY_PREFIX/luajit/bin/luajit-* $OPENRESTY_PREFIX/luajit/bin/lua \
  && ln -sf $OPENRESTY_PREFIX/luajit/bin/luajit-* /usr/local/bin/lua \
- && rm -rf /root/ngx_openresty*
+ && rm -rf /root/ngx_openresty* \
+ && apt-get purge -y build-essential make curl perl procps \
+ && apt-get autoremove -y \
+ && apt-get remove -y libreadline-dev libncurses5-dev libpcre3-dev libssl-dev \
+ && rm -rf /var/lib/apt/lists/*
+ 
 
 WORKDIR $NGINX_PREFIX/
 
-ONBUILD RUN rm -rf conf/* html/*
-# ONBUILD COPY nginx $NGINX_PREFIX/
+COPY ./middleware $NGINX_PREFIX/middleware 
 
 CMD ["nginx", "-g", "daemon off; error_log /dev/stderr info;"]
