@@ -1,10 +1,21 @@
 rproxy:
-    image: "docker.zuoyetong.com.cn:8888/nginx:1.9"
+    image: "docker.zuoyetong.com.cn:8888/techu_openresty:latest"
     ports:
      - "5000:443"
+     - "5001:445"
     volumes:
-     - ./rproxy/nginx.conf:/etc/nginx/nginx.conf:ro
-     - ./rproxy/sslkey:/etc/nginx/sslkey:ro
+     - ./rproxy/nginx/nginx.conf:/opt/openresty/nginx/conf/nginx.conf:ro
+     - ./rproxy/nginx/sslkey:/opt/openresty/nginx/conf/sslkey:ro
+     - ./rproxy/middleware/:/opt/openresty/nginx/middleware:ro
+    environment:
+     - MYSQL_HOST=db
+     - MYSQL_PORT=3306
+     - MYSQL_USER=mysql
+     - MYSQL_DATABASE=account_center
+     - MYSQL_PASSWORD=account_center123
+     - MEMCACHED_ADDR=cache
+     - MEMCACHED_PORT=11211
+     - DB_CONN_TIMEOUT=500
     log_opt:
         max-size: "5m"
         max-file: "5"
@@ -12,6 +23,8 @@ rproxy:
      - web:ro
     links:
      - web:web
+     - db:db
+     - cache:cache
 
 web:
     image: "docker.zuoyetong.com.cn:8888/account_web:latest"
@@ -66,26 +79,6 @@ celery_worker:
 
 celery_redis:
     image: "docker.zuoyetong.com.cn:8888/redis:3"
-
-component:
-    image: "ficusio/openresty"
-    ports:
-     - "8080:8080"
-    volumes:
-     - ./component/conf:/opt/openresty/nginx/conf
-     - ./component/lua:/opt/openresty/nginx/lua
-    environment:
-     - MYSQL_HOST=db
-     - MYSQL_PORT=3306
-     - MYSQL_USER=mysql
-     - MYSQL_DATABASE=account_center
-     - MYSQL_PASSWORD=account_center123
-     - MEMCACHED_ADDR=cache
-     - MEMCACHED_PORT=11211
-     - DB_CONN_TIMEOUT=1000
-    links:
-     - db:db
-     - cache:cache
 
 cache:
     image: "docker.zuoyetong.com.cn:8888/memcached:1.4"

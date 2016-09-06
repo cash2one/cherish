@@ -2,11 +2,12 @@ from __future__ import unicode_literals
 
 import string
 import random
-from django.db import models
+import logging
+from django.db import models, transaction
 from django.db.models import Q
 from django.core import validators
 from django.core.exceptions import ValidationError
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, UserManager
 from django.contrib.auth.hashers import make_password
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
@@ -16,6 +17,12 @@ from jsonfield import JSONField
 from edu_info.models import School, Subject
 from common.utils import enum
 from .tokens import user_mobile_token_generator
+from .validators import (
+    validate_mobile, validate_phone, validate_username,
+    username_not_digits
+)
+
+logger = logging.getLogger(__name__)
 
 
 class EduProfile(models.Model):
@@ -45,8 +52,47 @@ class DatabaseFile(models.Model):
     mimetype = models.CharField(max_length=32)
 
 
+class TechUUserManager(UserManager):
+    def create_techu_user(self, **extra_fields):
+        try:
+            username = extra_fields.pop('username')
+        except KeyError:
+            username = self.model.autogen_username()
+        try:
+            email = extra_fields.pop('email')
+        except KeyError:
+            email = None
+        try:
+            password = extra_fields.pop('password')
+        except KeyError:
+            password = None
+        return self.create_user(username, email, password, **extra_fields)
+
+    def get_or_create_techu_user(self, **extra_fields):
+        user = None
+        created = False
+        query_fields = dict([
+            (k, v) for k, v in extra_fields.items()
+            if k in self.model.IDENTITY_FIELDS
+        ])
+        logger.debug('[get_or_create] user query: {fields}'.format(
+            fields=query_fields))
+        with transaction.atomic():
+            try:
+                user = self.get_queryset().get(**query_fields)
+            except self.model.DoesNotExist:
+                created = True
+                user = self.create_techu_user(**extra_fields)
+            except self.model.MultipleObjectsReturned:
+                logger.error('cannot identify user: {fields}'.format(
+                    fields=query_fields))
+        return user, created
+
+
 class TechUUser(AbstractUser):
-    FRONTEND_SALT = settings.TECHU_FRONTEND_SALT 
+    AUTO_USERNAME_PREFIX = 'auto_'
+    AUTO_USERNAME_LENGTH = 16
+    FRONTEND_SALT = settings.TECHU_FRONTEND_SALT
     BACKEND_SALT = settings.TECHU_BACKEND_SALT
     ERROR_MESSAGES = {
         'email_exist': _('The email already exist in system.'),
@@ -61,29 +107,31 @@ class TechUUser(AbstractUser):
         (1, _('Male')),
         (2, _('Female')),
     ]
+    IDENTITY_TYPE = enum(
+        USERNAME=1,
+        EMAIL=2,
+        MOBILE=3
+    )
+    IDENTITY_TYPE_MAP = {
+        IDENTITY_TYPE.USERNAME: 'username',
+        IDENTITY_TYPE.EMAIL: 'email',
+        IDENTITY_TYPE.MOBILE: 'mobile',
+    }
+    IDENTITY_FIELDS = IDENTITY_TYPE_MAP.values()
 
-    gender = models.SmallIntegerField(_('Gender'), default=0, choices=GENDER_TYPES)
+    gender = models.SmallIntegerField(
+        _('Gender'), default=0, choices=GENDER_TYPES)
     birth_date = models.DateField(_('Birthday'), null=True, blank=True)
     qq = models.BigIntegerField(_('QQ'), null=True, blank=True)
     remark = models.CharField(
         _('Remark'), max_length=256, null=True, blank=True)
     mobile = models.CharField(
         _('Mobile'), max_length=32,
-        validators=[
-            validators.RegexValidator(r'^[\d]+$',
-                                      _('Enter a valid mobile number. '
-                                        'This value may contain only numbers'),
-                                      'invalid'),
-        ],
+        validators=[validate_mobile],
         null=True, blank=True)
     phone = models.CharField(
         _('Phone'), max_length=32,
-        validators=[
-            validators.RegexValidator(r'^[\d-]+$',
-                                      _('Enter a valid phone number. '
-                                        'This value may contain only numbers '
-                                        'and - characters'), 'invalid'),
-        ],
+        validators=[validate_phone],
         null=True, blank=True)
     address = models.CharField(
         _('Address'), max_length=512, null=True, blank=True)
@@ -94,6 +142,15 @@ class TechUUser(AbstractUser):
         EduProfile, on_delete=models.CASCADE, related_name='user',
         null=True, blank=True)
     context = JSONField(null=True, blank=True)
+
+    objects = TechUUserManager()
+
+    def __init__(self, *args, **kwargs):
+        super(TechUUser, self).__init__(*args, **kwargs)
+        self._meta.get_field('username').validators = [
+            validate_username,
+            username_not_digits,
+        ]
 
     # override
     def set_password(self, raw_password):
@@ -128,6 +185,9 @@ class TechUUser(AbstractUser):
                 self.ERROR_MESSAGES['mobile_exist'],
                 code='mobile_exist',
             )
+        if not self.username:
+            # auto-gen username
+            self.autogen_username()
 
     # override
     def save(self, *args, **kwargs):
@@ -142,6 +202,39 @@ class TechUUser(AbstractUser):
     @classmethod
     def autogen_username(cls):
         # TODO: need some policy here?
-        length = 24 
-        return ''.join(random.choice(string.lowercase) for i in range(length))
+        length = cls.AUTO_USERNAME_LENGTH
+        return cls.AUTO_USERNAME_PREFIX + ''.join(
+            random.choice(string.lowercase + string.digits)
+            for i in range(length-1)
+        )
 
+    @classmethod
+    def identity_type(cls, identity):
+        """
+            Get identity type by validation
+        """
+        try:
+            validators.validate_email(identity)
+            return cls.IDENTITY_TYPE.EMAIL
+        except ValidationError:
+            pass
+        try:
+            validate_mobile(identity)
+            return cls.IDENTITY_TYPE.MOBILE
+        except ValidationError:
+            pass
+        try:
+            validate_username(identity)
+            username_not_digits(identity)
+            return cls.IDENTITY_TYPE.USERNAME
+        except ValidationError:
+            pass
+        return None
+
+    @classmethod
+    def get_identity_field(cls, identity):
+        """
+            Get field name by identity type
+        """
+        itype = cls.identity_type(identity)
+        return cls.IDENTITY_TYPE_MAP.get(itype)

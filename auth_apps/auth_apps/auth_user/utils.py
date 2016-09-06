@@ -1,36 +1,11 @@
 import logging
-import re
 
 from django.template import loader
-from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from django.core.mail import EmailMultiAlternatives
 from sendsms.message import SmsMessage
 
 logger = logging.getLogger(__name__)
-
-
-def validate_code(code):
-    """
-        Raise a ValidationError if the value doesn't look like a mobile code.
-    """
-    rule = re.compile(r'^[0-9]{6}$')
-    if not (code and rule.search(code)):
-        msg = u"Invalid code."
-        raise ValidationError(msg)
-    return True
-
-
-def validate_mobile(value):
-    """
-        Raise a ValidationError if the value doesn't 
-        look like a mobile telephone number.
-    """
-    rule = re.compile(r'^[0-9]{10,14}$')
-    if not (value and rule.search(value)):
-        msg = u"Invalid mobile number."
-        raise ValidationError(msg)
-    return True
 
 
 def sync_send_email(
@@ -81,7 +56,7 @@ def get_users_by_email(email):
 
 def get_user_by_mobile(mobile):
     user = None
-    users = get_users_by_mobile(mobile) 
+    users = get_users_by_mobile(mobile)
     try:
         user = users.next()
     except StopIteration:
@@ -91,16 +66,18 @@ def get_user_by_mobile(mobile):
 
 def get_user_by_email(email):
     user = None
-    users = get_users_by_email(email) 
+    users = get_users_by_email(email)
     try:
         user = users.next()
     except StopIteration:
         return None
-    return user 
+    return user
+
 
 def check_mobile(mobile):
     return get_user_model()._default_manager.filter(
         mobile__iexact=mobile, is_active=True).exists()
+
 
 def check_email(email):
     return get_user_model()._default_manager.filter(
