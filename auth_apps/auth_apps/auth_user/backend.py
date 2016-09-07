@@ -187,6 +187,9 @@ class XPlatformOnceTokenBackend(object):
                 'context': user_info,
                 'source': UserModel.USER_SOURCE.ONCE_XPLATFORM
             })
+            if not created:
+                user.context = user_info
+                user.save()
         return user
 
     def get_user(self, user_id):
