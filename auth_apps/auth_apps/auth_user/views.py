@@ -30,10 +30,12 @@ from .forms import (
     MobileCodeSetPasswordForm
 )
 from .serializers import (
-    TechUUserSerializer, GroupSerializer, TechUMobileUserRegisterSerializer
+    TechUUserSerializer, GroupSerializer, TechUMobileUserRegisterSerializer,
+    TechUBackendUserRegisterSerializer
 )
 from .permissions import (
-    IsTokenOwnerPermission, OnceUserMobileCodeCheck, OnceGeneralMobileCodeCheck
+    IsTokenOwnerPermission, OnceUserMobileCodeCheck, OnceGeneralMobileCodeCheck,
+    IPRestriction
 )
 from .tokens import user_mobile_token_generator, general_mobile_token_generator
 from .utils import get_user_by_mobile
@@ -338,3 +340,14 @@ class UserRegisterAPIView(generics.CreateAPIView):
     ]
     queryset = TechUUser.objects.all()
     serializer_class = TechUMobileUserRegisterSerializer
+
+
+class UserRegisterBackendAPIView(generics.CreateAPIView):
+    """
+        Register new user by backend api
+    """
+    permission_classes = [
+        IPRestriction,
+    ]
+    queryset = TechUUser.objects.all()
+    serializer_class = TechUBackendUserRegisterSerializer

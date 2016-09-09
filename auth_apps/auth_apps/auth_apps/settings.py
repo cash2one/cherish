@@ -268,6 +268,9 @@ XPLATFORM_SERVICE = {
     'TIMEOUT': 3,
 }
 
+# ip whitelist
+IP_WHITE_LIST = os.getenv('IP_WHITE_LIST', '').split(',')
+
 # celery settings
 BROKER_URL = os.getenv('CELERY_BROKER_URL')
 # CELERY_RESULT_BACKEND = 'djcelery.backends.cache:CacheBackend'

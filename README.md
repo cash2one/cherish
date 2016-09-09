@@ -150,6 +150,31 @@ Response status code:
 * 200 注册成功
 * 其他 失败
 
+#### ^accounts/api/v1/user/register/backend/$
+
+HTTP Method: POST
+
+后台用户注册接口
+
+Request:
+```
+    {
+        "username": "jingyou", # required
+        "email": "jingyou@jy.cn", # required
+        "password": "xxxxxx", # required
+        "birth_date": "1990-01-01",
+        "qq": "123456789",
+        "remark": "xxxxx",
+        "phone": "010-6234567",
+        "address": "xxxxxx",
+        "context": <context_json_object>
+    }
+```
+
+Response status code:
+* 201 注册成功
+* 其他 失败
+
 #### ^accounts/api/v1/user/change_password/$
 
 HTTP Method: POST
