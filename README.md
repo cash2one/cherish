@@ -160,7 +160,7 @@ Request:
 ```
     {
         "username": "jingyou", # required
-        "email": "jingyou@jy.cn", # required
+        "email": "jingyou@jy.cn",
         "password": "xxxxxx", # required
         "birth_date": "1990-01-01",
         "qq": "123456789",
