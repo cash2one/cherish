@@ -9,7 +9,7 @@ function separate_token(v, from)
     if v == nil or v:find(" ") == nil then
         ngx.log(ngx.WARN, "no Authorization " .. from .. " found")
     else
-        token_type, access_token = v:match("([^,]+) ([^,]+)")
+        token_type, access_token = v:match("([%w]+) ([%w]+)")
     end
 
     return token_type, access_token
@@ -45,6 +45,8 @@ function main()
     -- if not found access_token return 403
     if token_type == nil or access_token == nil then
         ngx.exit(403)
+    else
+        ngx.log(ngx.WARN, 'received token_type: ' .. token_type .. ' access_token: ' .. access_token)
     end
 
     local memc_conn = nil
@@ -67,9 +69,8 @@ function main()
             db_conn:query(string.format([[select * from oauth2_provider_accesstoken where token = %s]],
                                         ngx.quote_sql_str(access_token)))
         db_conn:close()
-        if not res or 0 == table.getn(res) or table.getn(res) > 1 then
-            err = "bad result: ", err, ": ", errno, ": ", sqlstate, "."
-            ngx.log(ngx.ERR, err)
+        if not res or 0 == table.getn(res) then
+            ngx.log(ngx.ERR, "bad result: " .. err)
             ngx.exit(403)
         else
             local expires = res[1].expires
