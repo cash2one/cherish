@@ -14,6 +14,7 @@ from .views import (
     UserRegisterAPIView,
     ChangePasswordAPIView,
     UserRegisterBackendAPIView,
+    UserUpdateBackendAPIView,
     XPlatformNotifyAPIView,
     # page views
     UserRegisterView,
@@ -53,6 +54,11 @@ api_urlpatterns = [
         r'^user/reset_password/backend/$',
         ResetPasswordBackendAPIView.as_view(),
         name='api_user_reset_password_backend'
+    ),
+    url(
+        r'^user/update/backend/(?P<pk>[0-9]+)/$',
+        UserUpdateBackendAPIView.as_view(),
+        name='api_user_update_backend'
     ),
     url(
         r'^user/destroy/backend/$',

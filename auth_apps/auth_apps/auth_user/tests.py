@@ -5,7 +5,7 @@ import mock
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.core.cache import cache
 from django.conf import settings
-from django.test import LiveServerTestCase
+from django.test import LiveServerTestCase, TestCase
 # from django.test import override_settings
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -505,3 +505,73 @@ class XPlatformNotifyAPITestCase(LiveServerTestCase):
         response = self.client.post(self.test_url, head={}, body=body)
         # TODO : finish this unittest ?
         self.assertNotEqual(response.status_code, status.HTTP_200_OK)
+
+
+class IPRestrictionPermissionTestCase(TestCase):
+    def setUp(self):
+        white_list = "1.2.3.0/24,4.3.2.1"
+        self.ip_list = white_list.split(',')
+
+    def test_ip_restriction(self):
+        from .permissions import IPRestriction
+        instance = IPRestriction()
+        ban_ip = "1.2.4.10"
+        self.assertFalse(instance.check_ip(ban_ip, self.ip_list))
+        allow_ip = "1.2.3.9"
+        self.assertTrue(instance.check_ip(allow_ip, self.ip_list))
+        allow_ip = "4.3.2.1"
+        self.assertTrue(instance.check_ip(allow_ip, self.ip_list))
+
+
+class UserUpdateBackendTestCase(MockCreateUserMixin, APITestCase):
+    def setUp(self):
+        cache.clear()
+        self.test_username = 'user1'
+        self.test_user = self.create_user(**{
+            'username': 'test',
+            'password': 'test',
+            'mobile': '15900001111',
+            'nickname': 'test_nickname',
+            'context': {
+                'accountId': 1
+            }
+        })
+
+    def tearDown(self):
+        cache.clear()
+
+    @mock.patch('auth_user.views.xplatform_update_account')
+    def test_update_identity_success(self, mock_xplatform_update):
+        update_url = reverse_lazy(
+            'v1:api_user_update_backend', kwargs={'pk':self.test_user.pk})
+        new_mobile = '13300000000'
+        data = {
+            'mobile': new_mobile,
+        }
+        response = self.client.patch(update_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        updated_user = TechUUser.objects.get()
+        self.assertTrue(updated_user)
+        self.assertEqual(updated_user.mobile, new_mobile)
+
+        mock_xplatform_update.delay.assert_called_once_with(
+            userid=1,
+            username=None,
+            mobile=updated_user.mobile
+        )
+
+
+    def test_update_attribute_success(self):
+        update_url = reverse_lazy(
+            'v1:api_user_update_backend', kwargs={'pk':self.test_user.pk})
+        new_nickname = 'new_nickname'
+        data = {
+            'nickname': new_nickname,
+        }
+        response = self.client.patch(update_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        updated_user = TechUUser.objects.get()
+        self.assertTrue(updated_user)
+        self.assertEqual(updated_user.nickname, new_nickname)
+

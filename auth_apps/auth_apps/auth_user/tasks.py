@@ -56,7 +56,10 @@ def xplatform_register(self, register_entries):
     try:
         logger.debug('register user entries: {entries}'.format(
                      entries=register_entries))
-        xplatform_service.backend_batch_username_register(register_entries)
+        if register_entries.get('mobile'):
+            xplatform_service.backend_batch_mobile_register(register_entries)
+        else:
+            xplatform_service.backend_batch_username_register(register_entries)
     except Exception as exc:
         raise self.retry(exc=exc)
 
@@ -67,6 +70,17 @@ def xplatform_changepwd(self, userid, username, raw_password):
         logger.debug('change password userid: {uid}, username: {uname}'.format(
                      uid=userid, uname=username))
         xplatform_service.backend_changepwd(userid, username, raw_password)
+    except Exception as exc:
+        raise self.retry(exc=exc)
+
+
+@app.task(bind=True)
+def xplatform_update_account(self, userid, username=None, mobile=None, nickname=None):
+    try:
+        logger.debug('update account info, userid: {uid}, \
+            username: {uname}, mobile: {mobile}'.format(
+            uid=userid, uname=username, mobile=mobile))
+        xplatform_service.update_account_info(userid, username, mobile, nickname)
     except Exception as exc:
         raise self.retry(exc=exc)
 

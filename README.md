@@ -229,6 +229,32 @@ Response status code:
 * 201 注册成功
 * 其他 失败
 
+#### 后台用户更新接口
+
+* url: `accounts/api/v1/user/update/backend/(?P\<pk\>[0-9]+)/`
+* method: PUT, PATCH
+* Content-Type: application/json
+
+Request:
+```
+{
+    "username": "jingyou",
+    "email": "jingyou@jy.cn",
+    "mobile": "15911186897",
+    "birth_date": "1990-01-01",
+    "qq": "123456789",
+    "remark": "xxxxx",
+    "phone": "010-6234567",
+    "address": "xxxxxx",
+}
+```
+
+Response status code:
+* 200 更新成功
+* 其他 失败
+
+
+
 #### 后台用户删除接口
 
 * url: `accounts/api/v1/user/destroy/backend/`

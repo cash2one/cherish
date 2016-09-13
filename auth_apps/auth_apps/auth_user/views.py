@@ -1,3 +1,4 @@
+# coding: utf-8
 import json
 import logging
 
@@ -44,7 +45,7 @@ from .permissions import (
 from .tokens import user_mobile_token_generator, general_mobile_token_generator
 from .utils import get_user_by_mobile
 from .exceptions import ParameterError, OperationError
-from .tasks import send_mobile_task
+from .tasks import send_mobile_task, xplatform_update_account
 from .validators import validate_mobile
 from .throttle import BackendAPIThrottle
 
@@ -206,7 +207,6 @@ class UserRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
         return response
 
 
-
 class GroupRetrieveAPIView(generics.RetrieveAPIView):
     """
         Get user group info
@@ -254,6 +254,11 @@ class ResetPasswordBackendAPIView(APIView):
     """
         reset password from backend service
         NOTICE : use `hashed_password` to update password
+        NOTE: 老客户端可能无法获得用户原始密码，因此使用hash之后的密码进行更新，
+              在更新密码之后并没有向xplatform同步修改（因为不知道明文密码），
+              这样导致用户在更新密码之后使用新/旧密码都可以登陆的情况：
+              1. 使用新密码登陆，在xplatform验证失败，但是在本平台可以验证通过
+              2. 使用老密码登陆，在xplatform验证通过
     """
     permission_classes = [
         IPRestriction,
@@ -284,6 +289,8 @@ class ResetPasswordBackendAPIView(APIView):
 class UserDestroyBackendAPIView(APIView):
     """
         destroy user from backend service
+        NOTE: 删除只针对本平台用户数据，并不会删除xplatform用户，
+              之后的xplatform用户登陆会视同新同步用户处理
     """
     permission_classes = [
         IPRestriction,
@@ -311,6 +318,48 @@ class UserDestroyBackendAPIView(APIView):
             'destroyed': destroyed
         }
         return Response(response, status=status.HTTP_200_OK)
+
+
+class UserUpdateBackendAPIView(generics.UpdateAPIView):
+    """
+        update user info from backend service
+        NOTE: 修改属性分为两种：
+              1. 用户标识信息：用户名，手机号（需要到xplatform重新注册）
+              2. 其他用户属性修改
+
+    """
+    permission_classes = [
+        IPRestriction,
+    ]
+    throttle_classes = [
+        BackendAPIThrottle,
+    ]
+    queryset = TechUUser.objects.all()
+    serializer_class = TechUUserSerializer
+
+    # override
+    # NOTICE : only support partial update
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if not instance:
+            raise ParameterError(_('user identity not found.'))
+        if request.data.get('username') or request.data.get('mobile'):
+            self._register_to_xplatform(user=instance, data=request.data)
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
+
+    def _register_to_xplatform(self, user, data):
+        if settings.ENABLE_XPLATFORM:
+            xplatform_userid = user.context and user.context.get(u'accountId')
+            if xplatform_userid:
+                # update account info to xplatform
+                xplatform_update_account.delay(
+                    userid=xplatform_userid,
+                    username=data.get('username'),
+                    mobile=data.get('mobile')
+                )
 
 
 class MobileCodeResetPasswordAPIView(APIView):
@@ -422,8 +471,8 @@ class UserRegisterAPIView(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         try:
             response = super(UserRegisterAPIView, self).create(request, *args, **kwargs)
-        except ValidationError:
-            raise ParameterError(_('mobile already exist'))
+        except ValidationError as e:
+            raise ParameterError(e)
         return response
 
 
@@ -444,8 +493,8 @@ class UserRegisterBackendAPIView(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         try:
             response = super(UserRegisterBackendAPIView, self).create(request, *args, **kwargs)
-        except ValidationError:
-            raise ParameterError(_('mobile already exist'))
+        except ValidationError as e:
+            raise ParameterError(e)
         return response
 
 

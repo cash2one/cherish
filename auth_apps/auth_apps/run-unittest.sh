@@ -21,5 +21,5 @@ wait_tcp_dependency ${MEMCACHED_ADDR} ${MEMCACHED_PORT}
 echo "connecting to db ..."
 wait_tcp_dependency ${DB_PROXY_PORT_5432_TCP_ADDR} ${DB_PROXY_PORT_5432_TCP_PORT}
 
-# python manage.py test --noinput auth_user.tests.UserRetrieveUpdateTestCase
-python manage.py test --noinput
+python manage.py test --noinput auth_user.tests.UserUpdateBackendTestCase
+# python manage.py test --noinput
