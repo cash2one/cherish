@@ -58,13 +58,11 @@ class IPRestriction(permissions.BasePermission):
     net_list = settings.IP_WHITE_LIST
 
     def has_permission(self, request, view):
-        if settings.TEST:
-            return True
         ip_addr = request.META['REMOTE_ADDR']
         status = self.check_ip(ip_addr, self.net_list)
         if not status:
             logger.debug('[IPRestriction] ip_addr:{ip}'.format(ip=ip_addr))
-            return settings.TEST
+            return False
         return status
 
     def check_ip(self, ip, net_list):
