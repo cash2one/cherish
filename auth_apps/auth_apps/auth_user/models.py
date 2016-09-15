@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+import json
 import string
 import random
 import logging
@@ -146,6 +147,14 @@ class TechUUser(AbstractUser):
         IDENTITY_TYPE.MOBILE: 'mobile',
     }
     IDENTITY_FIELDS = IDENTITY_TYPE_MAP.values()
+    USER_SOURCE = enum(
+        TECHU=0,
+        XPLATFORM=1,
+    )
+    USER_SOURCES = [
+        (USER_SOURCE.TECHU, _('techu')),
+        (USER_SOURCE.XPLATFORM, _('xplatform')),
+    ]
 
     nickname = models.CharField(
         _('Nickname'), max_length=64, null=True, blank=True)
@@ -172,6 +181,8 @@ class TechUUser(AbstractUser):
         EduProfile, on_delete=models.CASCADE, related_name='user',
         null=True, blank=True)
     context = JSONField(null=True, blank=True)
+    source = models.SmallIntegerField(
+        _('User Source'), default=USER_SOURCE.TECHU, choices=USER_SOURCES)
 
     objects = TechUUserManager()
 
@@ -270,3 +281,7 @@ class TechUUser(AbstractUser):
         """
         itype = cls.identity_type(identity)
         return cls.IDENTITY_TYPE_MAP.get(itype)
+
+    @property
+    def xplatform_identity(self):
+        return self.context and json.loads(self.context).get(u'accountId')

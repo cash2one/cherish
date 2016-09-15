@@ -113,6 +113,7 @@ class XPlatformBackend(object):
                     UserModel.get_identity_field(identity): identity,
                     'password': password,
                     'context': res,
+                    'source': UserModel.USER_SOURCE.XPLATFORM
                 })
                 if created:
                     user = self.configure_user(user)
