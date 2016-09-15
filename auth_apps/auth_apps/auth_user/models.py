@@ -286,5 +286,10 @@ class TechUUser(AbstractUser):
         return cls.IDENTITY_TYPE_MAP.get(itype)
 
     @property
-    def xplatform_identity(self):
-        return self.context and json.loads(self.context).get(u'accountId')
+    def origin_id(self):
+        pk = None
+        if self.source == self.USER_SOURCE.XPLATFORM:
+            pk = self.context and json.loads(self.context).get(u'accountId')
+        else:
+            pk = self.pk
+        return self.source, pk
