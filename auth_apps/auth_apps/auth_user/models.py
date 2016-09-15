@@ -73,6 +73,9 @@ class TechUUserManager(UserManager):
             password = None
         return self.create_user(username, email, password, **extra_fields)
 
+    def create(self, **user_data):
+        return self.create_techu_user(**user_data)
+
     def get_or_create_techu_user(self, **extra_fields):
         user = None
         created = False
