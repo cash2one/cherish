@@ -4,7 +4,7 @@ import base64
 import logging
 import urlparse
 
-from django.db import transaction
+from django.db import IntegrityError
 from rest_framework import generics
 from rest_framework.response import Response
 from pyDes import des, ECB, PAD_PKCS5
@@ -194,16 +194,24 @@ class GetOrCreateSchoolAPIView(generics.GenericAPIView):
         else:
             area = city
 
-        with transaction.atomic():
+        try:
             school, created = area.schools.get_or_create(
-                name=school_name, category=category,
+                name=school_name, category=category, area_code=area,
                 defaults={
-                    'area_code': area,
                     'source': School.SCHOOL_SOURCE.USER
                 })
             if created:
                 # create new school
                 logger.warn('create new school: {s}'.format(s=school))
+        except IntegrityError:
+            logger.warn('create new school fail, try to get: {s}'.format(s=school))
+            try:
+                school = area.schools.get(
+                    name=school_name, category=category, area_code=area
+                )
+            except School.DoesNotExist:
+                logger.error('unknown error on school creation')
+                raise ParameterError("get school fail")
 
         response = {
             'province_code': province.code,
