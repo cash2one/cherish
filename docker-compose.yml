@@ -26,8 +26,9 @@ rproxy:
      - cache:cache
 
 web:
-    image: "docker.zuoyetong.com.cn:8888/account_web:latest"
+    image: "docker.zuoyetong.com.cn:8888/account_web:201604281137"
     volumes:
+     - ./auth_apps/auth_apps:/code
      - /code/static
     log_opt:
         max-size: "5m"
@@ -53,7 +54,7 @@ web:
     command: ./run-site.sh 
 
 celery_worker:
-    image: "docker.zuoyetong.com.cn:8888/account_web:latest"
+    image: "docker.zuoyetong.com.cn:8888/account_web:201604281137"
     volumes:
      - ./auth_apps/auth_apps:/code
     environment:

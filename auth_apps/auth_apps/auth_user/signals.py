@@ -17,20 +17,26 @@ def user_set_password_handler(sender, **kwargs):
     """
     user = kwargs['user']
     raw_password = kwargs['raw_password']
-    if user.pk:
-        logger.debug('user change password, username: ' + user.username)
-        # set id None, use username change password
-        xplatform_changepwd.delay(None, user.username, raw_password)
+    source, account_id = user.origin_id
+
+    if source == user.USER_SOURCE.XPLATFORM:
+        if user.pk:
+            logger.debug('user change password use xplatform indentiry: {identity}'.format(
+                         identity=account_id))
+            xplatform_changepwd.delay(account_id, None, raw_password)
     else:
-        logger.debug('register user set password')
-        # TODO nickname use username
-        register_entries = [
-            {
-                'username': user.username,
-                'password': raw_password,
-                'nickname': user.nickname or user.username
-            }
-        ]
-        xplatform_register.delay(register_entries)
+        if user.pk:
+            logger.debug('user change password use username')
+            xplatform_changepwd.delay(None, user.username, raw_password)
+        else:
+            logger.debug('register user set password')
+            register_entries = [
+                {
+                    'username': user.username,
+                    'password': raw_password,
+                    'nickname': user.nickname or user.username
+                }
+            ]
+            xplatform_register.delay(register_entries)
 
 user_set_password_signal.connect(user_set_password_handler)

@@ -26,6 +26,7 @@ SECRET_KEY = 'a&5^-%7tpg1d%8ti9&qw7i)m19xv%mo*q^ej6+4max2+5sz-jx'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = int(os.getenv('DJANGO_DEBUG', 0))
 TEST = int(os.getenv('DJANGO_TEST', 0))
+TEMPLATE_DEBUG = False
 
 ALLOWED_HOSTS = [os.getenv('DJANGO_HOST')]
 
@@ -157,7 +158,8 @@ AUTHENTICATION_BACKENDS = [
     # 'oauth_provider.backends.OAuth2Backend',  # for OAuth2 login users
     'auth_user.backend.TechUBackend',  # for account center site
     'auth_user.backend.XPlatformBackend',  # for users from xplatform
-    'django.contrib.auth.backends.ModelBackend',  # for admin site
+    'auth_user.backend.XPlatformOnceTokenBackend',  # for once token users from xplatform
+    'auth_user.backend.AdminBackend',  # for admin site
 ]
 
 # password settings
@@ -213,6 +215,11 @@ LOGGING = {
     },
     'loggers': {
         'oauthlib': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'django': {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': True,
