@@ -181,7 +181,7 @@ class GetOrCreateSchoolAPITestCase(APITestCase):
         }
         self.assertEqual(response.data, correct_response)
 
-    def test_create_school_use_city_as_area(self):
+    def test_create_school_fail_due_to_invalid_area(self):
         self.assertEqual(School.objects.count(), 0)
         url = reverse_lazy('education:v1:api_get_or_create_school')
         data = {
@@ -192,17 +192,9 @@ class GetOrCreateSchoolAPITestCase(APITestCase):
             'category': 2,
         }
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(School.objects.count(), 1)
-        school = School.objects.get()
-        self.assertTrue(school)
-        correct_response = {
-            'province_code': self.province.code,
-            'city_code': self.city.code,
-            'area_code': self.city.code,
-            'school_id': school.school_id,
-        }
-        self.assertEqual(response.data, correct_response)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, {'detail': 'area invalid'})
+        self.assertEqual(School.objects.count(), 0)
 
     def test_create_school_fail_due_to_invalid_city(self):
         self.assertEqual(School.objects.count(), 0)
