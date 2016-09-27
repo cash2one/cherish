@@ -188,7 +188,7 @@ class GetOrCreateSchoolAPIView(generics.GenericAPIView):
                 try:
                     area = city.children.get(name__contains=area_name)
                 except (Location.DoesNotExist, Location.MultipleObjectsReturned):
-                    area = city
+                    raise ParameterError("area invalid")
             except Location.MultipleObjectsReturned:
                 raise ParameterError("area invalid, multiple found")
         else:
