@@ -143,3 +143,151 @@ class GetFuzzleSchoolTestCase(APITestCase):
         response = self.client.get(get_url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data.get('schools')), 2)
+
+
+class GetOrCreateSchoolAPITestCase(APITestCase):
+    def setUp(self):
+        cache.clear()
+        # province
+        self.province = Location.objects.create(code=1, name='广东省')
+        # city
+        self.city = Location.objects.create(code=2, name='河源市', parent=self.province)
+        # area
+        self.area = Location.objects.create(code=3, name='龙川县', parent=self.city)
+
+    def tearDown(self):
+        cache.clear()
+
+    def test_create_school_success(self):
+        self.assertEqual(School.objects.count(), 0)
+        url = reverse_lazy('education:v1:api_get_or_create_school')
+        data = {
+            'province': '广东',
+            'city': '河源',
+            'area': '龙川',
+            'school': '老隆中学',
+            'category': 2,
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(School.objects.count(), 1)
+        school = School.objects.get()
+        self.assertTrue(school)
+        correct_response = {
+            'province_code': self.province.code,
+            'city_code': self.city.code,
+            'area_code': self.area.code,
+            'school_id': school.school_id,
+        }
+        self.assertEqual(response.data, correct_response)
+
+    def test_create_school_use_city_as_area(self):
+        self.assertEqual(School.objects.count(), 0)
+        url = reverse_lazy('education:v1:api_get_or_create_school')
+        data = {
+            'province': '广东',
+            'city': '河源',
+            'area': 'invalid_area',
+            'school': '老隆中学',
+            'category': 2,
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(School.objects.count(), 1)
+        school = School.objects.get()
+        self.assertTrue(school)
+        correct_response = {
+            'province_code': self.province.code,
+            'city_code': self.city.code,
+            'area_code': self.city.code,
+            'school_id': school.school_id,
+        }
+        self.assertEqual(response.data, correct_response)
+
+    def test_create_school_fail_due_to_invalid_city(self):
+        self.assertEqual(School.objects.count(), 0)
+        url = reverse_lazy('education:v1:api_get_or_create_school')
+        data = {
+            'province': '广东',
+            'city': 'invalid_city',
+            'area': '龙川',
+            'school': '老隆中学',
+            'category': 2,
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, {'detail': 'city invalid'})
+        self.assertEqual(School.objects.count(), 0)
+
+    def test_create_school_fail_due_to_duplicated_city(self):
+        dup_city = Location.objects.create(code=4, name='河源', parent=self.province)
+        self.assertEqual(School.objects.count(), 0)
+        url = reverse_lazy('education:v1:api_get_or_create_school')
+        data = {
+            'province': '广东',
+            'city': '河',
+            'area': '龙川',
+            'school': '老隆中学',
+            'category': 2,
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, {'detail': 'city invalid'})
+        self.assertEqual(School.objects.count(), 0)
+
+    def test_use_exist_school_success(self):
+        exist_school = School.objects.create(
+            name='老隆中学',
+            area_code=self.area,
+            category=2
+        )
+        self.assertEqual(School.objects.count(), 1)
+        url = reverse_lazy('education:v1:api_get_or_create_school')
+        data = {
+            'province': '广东省',
+            'city': '河源市',
+            'area': '龙川',
+            'school': '老隆中学',
+            'category': 2,
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(School.objects.count(), 1)
+        correct_response = {
+            'province_code': self.province.code,
+            'city_code': self.city.code,
+            'area_code': self.area.code,
+            'school_id': exist_school.school_id,
+        }
+        self.assertEqual(response.data, correct_response)
+
+    def test_remove_duplicated_schools(self):
+        duplicated_count = 4
+        schools = []
+        for i in range(duplicated_count):
+            exist_school = School.objects.create(
+                name='老隆中学',
+                area_code=self.area,
+                category=2
+            )
+            schools.append(exist_school)
+        self.assertEqual(School.objects.count(), duplicated_count)
+        url = reverse_lazy('education:v1:api_get_or_create_school')
+        data = {
+            'province': '广东省',
+            'city': '河源市',
+            'area': '龙川',
+            'school': '老隆中学',
+            'category': 2,
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(School.objects.count(), 1)
+        correct_response = {
+            'province_code': self.province.code,
+            'city_code': self.city.code,
+            'area_code': self.area.code,
+            'school_id': schools[0].school_id, # 总是保留school_id最小的学校
+        }
+        self.assertEqual(response.data, correct_response)
+
