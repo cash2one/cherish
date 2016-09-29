@@ -1,7 +1,6 @@
 # coding: utf-8
 from __future__ import unicode_literals
 
-import random
 import mock
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.core.cache import cache
@@ -19,11 +18,12 @@ class MockCreateUserMixin(object):
     def create_user(self, **data):
         with mock.patch('auth_user.signals.xplatform_register') as mock_task:
             user = TechUUser.objects.create(**data)
-            mock_task.delay.assert_called_once_with([{
-                'username': user.username,
-                'password': data.get('password'),
-                'nickname': user.nickname or user.username,
-            }])
+            if user.source != TechUUser.USER_SOURCE.XPLATFORM:
+                mock_task.delay.assert_called_once_with([{
+                    'username': user.username,
+                    'password': data.get('password'),
+                    'nickname': user.nickname or user.username,
+                }])
             return user
         return None
 
@@ -72,6 +72,7 @@ class RegisterMobileUserTestCase(APITestCase):
         }
         response = self.client.post(
             self.register_code_url, data, format='json')
+        print response.data
         mobile_code = response.data.get('code')
         self.assertTrue(mobile_code)
         self.assertEqual(len(mobile_code), 6)
@@ -120,7 +121,7 @@ class RegisterExistUserTestCase(MockCreateUserMixin, APITestCase):
         data = {
             'mobile': self.mobile
         }
-        # user cannot get register mobile code when mobile already exist 
+        # user cannot get register mobile code when mobile already exist
         response = self.client.post(
             self.register_code_url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -445,15 +446,9 @@ class UserRetrieveUpdateTestCase(MockCreateUserMixin, OAuth2APITestCase):
         self.assertEqual(user.gender, data.get('gender'))
         self.assertEqual(user.nickname, data.get('nickname'))
 
-    def test_update_exists_user(self):
-        self.exists_mobile = '15724729700'
-        exists_user = {
-            'username': 'test1',
-            'mobile': self.exists_mobile,
-            'password': 'test1'
-        }
-        self.create_user(**exists_user)
-        user = TechUUser.objects.get(username=self.username)
+    def test_update_with_same_mobile_user(self):
+        self.assertEqual(TechUUser.objects.count(), 1)
+        user = TechUUser.objects.get()
         self.assertTrue(user)
         # generate access token
         access_token = '123455655'
@@ -465,10 +460,11 @@ class UserRetrieveUpdateTestCase(MockCreateUserMixin, OAuth2APITestCase):
         user_url = reverse_lazy(
             'v1:api_user_resource', kwargs={'pk': user.pk})
         data = {
-            'mobile': self.exists_mobile
+            'mobile': user.mobile
         }
         response = self.client.patch(user_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        # update with same value should be ok
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_retrieve_user(self):
         self.assertEqual(TechUUser.objects.count(), 1)
@@ -536,6 +532,7 @@ class UserUpdateBackendTestCase(MockCreateUserMixin, APITestCase):
             'password': 'test',
             'mobile': '15900001111',
             'nickname': 'test_nickname',
+            'source': TechUUser.USER_SOURCE.XPLATFORM,
             'context': {
                 'accountId': 1
             }
@@ -545,10 +542,10 @@ class UserUpdateBackendTestCase(MockCreateUserMixin, APITestCase):
         cache.clear()
 
     @mock.patch('auth_user.views.IPRestriction.has_permission')
-    @mock.patch('auth_user.views.xplatform_update_account')
+    @mock.patch('auth_user.mixins.xplatform_update_account')
     def test_update_identity_success(self, mock_xplatform_update, mock_perm):
         update_url = reverse_lazy(
-            'v1:api_user_update_backend', kwargs={'pk':self.test_user.pk})
+            'v1:api_user_update_backend', kwargs={'pk': self.test_user.pk})
         new_mobile = '13300000000'
         data = {
             'mobile': new_mobile,
@@ -570,7 +567,7 @@ class UserUpdateBackendTestCase(MockCreateUserMixin, APITestCase):
     @mock.patch('auth_user.views.IPRestriction.has_permission')
     def test_update_attribute_success(self, mock_perm):
         update_url = reverse_lazy(
-            'v1:api_user_update_backend', kwargs={'pk':self.test_user.pk})
+            'v1:api_user_update_backend', kwargs={'pk': self.test_user.pk})
         new_nickname = 'new_nickname'
         data = {
             'nickname': new_nickname,
@@ -582,3 +579,82 @@ class UserUpdateBackendTestCase(MockCreateUserMixin, APITestCase):
         self.assertTrue(updated_user)
         self.assertEqual(updated_user.nickname, new_nickname)
 
+
+class XplatformUserUpdateTestCase(MockCreateUserMixin, OAuth2APITestCase):
+    def setUp(self):
+        cache.clear()
+        self.test_username = 'user1'
+        self.test_user = self.create_user(**{
+            'username': 'test',
+            'password': 'test',
+            'mobile': '15900001111',
+            'nickname': 'test_nickname',
+            'source': TechUUser.USER_SOURCE.XPLATFORM,
+            'context': {
+                'accountId': 1
+            }
+        })
+        self.init_application(self.test_user)
+        access_token = '1234567890'
+        scope = 'user'
+        self.token = self.generate_token(self.test_user, access_token, scope)
+
+    def tearDown(self):
+        cache.clear()
+
+    @mock.patch('auth_user.mixins.xplatform_update_account')
+    def test_update_identity_success(self, mock_xplatform_update):
+        update_url = reverse_lazy(
+            'v1:api_user_resource', kwargs={'pk': self.test_user.pk})
+        new_mobile = '13300000000'
+        data = {
+            'mobile': new_mobile,
+        }
+        self.assertTrue(self.token.is_valid())
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.token.token)
+        response = self.client.patch(update_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        updated_user = TechUUser.objects.get()
+        self.assertTrue(updated_user)
+        self.assertEqual(updated_user.mobile, new_mobile)
+
+        mock_xplatform_update.delay.assert_called_once_with(
+            userid=1,
+            username=None,
+            mobile=updated_user.mobile
+        )
+
+    def test_update_exist_identity_success(self):
+        update_url = reverse_lazy(
+            'v1:api_user_resource', kwargs={'pk': self.test_user.pk})
+        same_mobile = '15900001111'
+        new_nickname = 'new_nickname'
+        data = {
+            'mobile': same_mobile,
+            'nickname': new_nickname,
+        }
+        self.assertTrue(self.token.is_valid())
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.token.token)
+        response = self.client.patch(update_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        updated_user = TechUUser.objects.get()
+        self.assertTrue(updated_user)
+        self.assertEqual(updated_user.mobile, same_mobile)
+        self.assertEqual(updated_user.nickname, new_nickname)
+
+    def test_update_attribute_success(self):
+        update_url = reverse_lazy(
+            'v1:api_user_resource', kwargs={'pk': self.test_user.pk})
+        new_nickname = 'new_nickname'
+        data = {
+            'nickname': new_nickname,
+        }
+        self.assertTrue(self.token.is_valid())
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.token.token)
+        response = self.client.patch(update_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        updated_user = TechUUser.objects.get()
+        self.assertTrue(updated_user)
+        self.assertEqual(updated_user.nickname, new_nickname)
