@@ -28,7 +28,7 @@ DEBUG = int(os.getenv('DJANGO_DEBUG', 0))
 TEST = int(os.getenv('DJANGO_TEST', 0))
 TEMPLATE_DEBUG = False
 
-ALLOWED_HOSTS = [os.getenv('DJANGO_HOST')]
+ALLOWED_HOSTS = os.getenv('DJANGO_HOST').split(',') if os.getenv('DJANGO_HOST') else []
 
 
 # Application definition
