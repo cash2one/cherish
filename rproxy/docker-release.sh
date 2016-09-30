@@ -9,7 +9,7 @@ IMAGE="${REGISTRY}${IMAGE_NAME}:${VERSION}"
 # copy site static file
 bash extract_statics.sh
 
-docker build -t ${IMAGE} .
+docker build -t  ${IMAGE} .
 if [ "$?" != "0" ]; then
     echo "${IMAGE} build fail"
     exit 1

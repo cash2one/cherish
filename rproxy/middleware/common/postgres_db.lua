@@ -1,7 +1,7 @@
 local _M = {}
 
 local pg = require "common.postgres"
-local resolver = require "common.resolver"
+local service_resolver = require "dns.resolver"
 
 function _M.get_connection()
     if ngx.ctx['db_conn'] then
@@ -15,14 +15,15 @@ function _M.get_connection()
 
     db:set_timeout(os.getenv("DB_CONN_TIMEOUT"))
 
-    local ip = resolver.find_ip_by_host(os.getenv("POSTGRES_HOST"))
-    if not ip then
+    local service= service_resolver.resolve_service(os.getenv("DB_SERVICE"))
+    ip, port = service:match("(.+):(%d+)")
+    if not (ip and port) then
         ngx.log(ngx.ERR, "failed to found ip addr")
     end
 
     local ok, err = db:connect({
         host = ip,
-        port = os.getenv("POSTGRES_PORT"),
+        port = port,
         database = os.getenv("POSTGRES_DATABASE"),
         user = os.getenv("POSTGRES_USER"),
         password = os.getenv("POSTGRES_PASSWORD"),

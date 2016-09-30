@@ -1,7 +1,7 @@
 local _M = {}
 
 local memcached = require "resty.memcached"
-local resolver = require "common.resolver"
+local service_resolver = require "dns.resolver"
 
 function _M.get_connection()
     if ngx.ctx['memc_conn'] then
@@ -15,12 +15,13 @@ function _M.get_connection()
 
     memc:set_timeout(os.getenv("DB_CONN_TIMEOUT"))
 
-    local ip = resolver.find_ip_by_host(os.getenv("MEMCACHED_ADDR"))
-    if not ip then
+    local service = service_resolver.resolve_service(os.getenv("CACHE_SERVICE"))
+    ip, port = service:match("(.+):(%d+)")
+    if not (ip and port) then
         ngx.log(ngx.ERR, "failed to found ip addr")
     end
 
-    local ok, err = memc:connect(ip, os.getenv("MEMCACHED_PORT"))
+    local ok, err = memc:connect(ip, port)
     if not ok then
         ngx.log(ngx.ERR, "failed to connect: " .. err)
     end

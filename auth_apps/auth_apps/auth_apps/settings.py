@@ -103,8 +103,8 @@ DATABASES = {
         'NAME': os.getenv('POSTGRES_DATABASE'),
         'USER': os.getenv('POSTGRES_USER'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': os.getenv('DB_PROXY_PORT_5432_TCP_ADDR'),
-        'PORT': os.getenv('DB_PROXY_PORT_3306_TCP_PORT'),
+        'HOST': os.getenv('POSTGRES_HOST'),
+        'PORT': os.getenv('POSTGRES_PORT'),
         'TEST': {
             'NAME': 'test_account_center',
         },
