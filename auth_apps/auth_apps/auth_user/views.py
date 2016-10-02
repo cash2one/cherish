@@ -203,14 +203,18 @@ class UserRetrieveUpdateAPIView(
     # override
     # NOTICE : only support partial update
     def update(self, request, *args, **kwargs):
-        instance = self.get_object()
-        if not instance:
+        try:
+            instance = self.get_object()
+        except:
             raise ParameterError(_('user identity not found.'))
         serializer = self.get_serializer(
             instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         self.techu_update(user=instance, data=request.data)
-        self.perform_update(serializer)
+        try:
+            self.perform_update(serializer)
+        except ValidationError as e:
+            raise ParameterError(e.message)
         return Response(serializer.data)
 
 
@@ -350,14 +354,18 @@ class UserUpdateBackendAPIView(generics.UpdateAPIView, TechUUserUpdateMixin):
     # override
     # NOTICE : only support partial update
     def update(self, request, *args, **kwargs):
-        instance = self.get_object()
-        if not instance:
+        try:
+            instance = self.get_object()
+        except:
             raise ParameterError(_('user identity not found.'))
         serializer = self.get_serializer(
             instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         self.techu_update(user=instance, data=request.data)
-        self.perform_update(serializer)
+        try:
+            self.perform_update(serializer)
+        except ValidationError as e:
+            raise ParameterError(e.message)
         return Response(serializer.data)
 
 
