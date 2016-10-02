@@ -186,7 +186,8 @@ class TechUUser(AbstractUser):
     def set_password(self, raw_password):
         self.password = make_password(
             raw_password, salt=self.BACKEND_SALT + self.username)
-        user_set_password_signal.send_robust(sender=self.__class__, user=self)
+        user_set_password_signal.send_robust(sender=self.__class__, user=self,
+                                             raw_password=raw_password)
 
     # override
     def set_unusable_password(self):
