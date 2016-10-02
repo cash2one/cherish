@@ -11,7 +11,7 @@ class TechUUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = TechUUser
         fields = (
-            'username', 'email', 'gender', 'birth_date', 'qq', 'remark',
+            'id', 'username', 'email', 'gender', 'birth_date', 'qq', 'remark',
             'mobile', 'phone', 'address', 'avatar', 'nickname', 'context'
         )
 
@@ -20,7 +20,7 @@ class TechUMobileUserRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = TechUUser
         fields = (
-            'mobile', 'password', 'gender', 'birth_date', 'qq', 'remark',
+            'id', 'mobile', 'password', 'gender', 'birth_date', 'qq', 'remark',
             'phone', 'address', 'avatar', 'nickname', 'context'
         )
 
@@ -42,6 +42,6 @@ class TechUBackendUserRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = TechUUser
         fields = (
-            'username', 'email', 'password', 'gender', 'birth_date', 'qq',
+            'id', 'username', 'email', 'password', 'gender', 'birth_date', 'qq',
             'remark', 'mobile', 'phone', 'address', 'avatar', 'context', 'source'
         )
