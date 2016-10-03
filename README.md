@@ -529,10 +529,10 @@ The application requests an access token by sending its credentials, its client 
 Request:
 ```
 {
-    "province": "黑龙江" # required
-    "city": "哈尔滨" # required
-    "area": "香坊区" # required
-    "school": "八中" # required
+    "province": "黑龙江", # required
+    "city": "哈尔滨", # required
+    "area": "香坊区", # required
+    "school": "八中", # required
     "category": 2 # required  1:小学, 2:初中, 3:高中, 4: 大学
 }
 ```
