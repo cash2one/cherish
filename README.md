@@ -517,3 +517,36 @@ The application requests an access token by sending its credentials, its client 
 ## 参考
 
 * [an introduction to oauth2](https://www.digitalocean.com/community/tutorials/an-introduction-to-oauth-2)
+
+---
+
+#### 获取或添加学校(省, 市, 地区) id 接口
+
+* url: `education/api/v1/loc/school/`
+* method: POST
+* Content-Type: application/json
+
+Request:
+```
+{
+    "province": "黑龙江" # required
+    "city": "哈尔滨" # required
+    "area": "香坊区" # required
+    "school": "八中" # required
+    "category": 2 # required  1:小学, 2:初中, 3:高中, 4: 大学
+}
+```
+
+Response status code:
+* 200 获取成功
+* 其他 失败
+
+Response:
+```
+{
+    "province_code": 1231,
+    "city_code": 4221,
+    "area_code": 12344,
+    "school_id": 60
+}
+```
