@@ -15,6 +15,7 @@ from .views import (
     ChangePasswordAPIView,
     UserRegisterBackendAPIView,
     UserUpdateBackendAPIView,
+    UserRetrieveBackendAPIView,
     XPlatformNotifyAPIView,
     # page views
     UserRegisterView,
@@ -69,6 +70,11 @@ api_urlpatterns = [
         r'^user/(?P<pk>[0-9]+)/$',
         UserRetrieveUpdateAPIView.as_view(),
         name='api_user_resource'
+    ),
+    url(
+        r'^user/retrieve/backend/(?P<identity>[^\/]+)/$',
+        UserRetrieveBackendAPIView.as_view(),
+        name='api_user_retrieve_backend'
     ),
     url(
         r'^group/(?P<pk>[0-9]+)/$',

@@ -369,6 +369,30 @@ class UserUpdateBackendAPIView(generics.UpdateAPIView, TechUUserUpdateMixin):
         return Response(serializer.data)
 
 
+class UserRetrieveBackendAPIView(generics.RetrieveAPIView):
+    """
+        get user info by user identity (username, mobile or email) from backend service
+    """
+    permission_classes = [
+        IPRestriction,
+    ]
+    throttle_classes = [
+        BackendAPIThrottle,
+    ]
+    queryset = TechUUser.objects.all()
+    serializer_class = TechUUserSerializer
+
+    # override
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+        identity = self.kwargs.get('identity')
+        identity_field = TechUUser.get_identity_field(identity)
+        filter_kwargs = {identity_field: identity}
+        obj = get_object_or_404(queryset, **filter_kwargs)
+        self.check_object_permissions(self.request, obj)
+        return obj
+
+
 class MobileCodeResetPasswordAPIView(APIView):
     """
         reset password by offering mobile code

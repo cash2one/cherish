@@ -197,6 +197,22 @@ Request:
 Response status code:
 * 200 注册成功
 * 其他 失败
+Response content:
+```
+{
+    "id": 123,
+    "mobile": "15911186897",
+    "code": "123456",
+    "password": "xxxxx",
+    "birth_date": "1990-01-01",
+    "qq": "123456789",
+    "remark": "xxxxx",
+    "phone": "010-6234567",
+    "address": "xxxxxx",
+    "context": <context_json_object>
+}
+```
+
 
 #### 后台用户注册接口
 
@@ -228,6 +244,22 @@ Request:
 Response status code:
 * 201 注册成功
 * 其他 失败
+Response content:
+```
+{
+    "id": 123,
+    "username": "jingyou",
+    "email": "jingyou@jy.cn",
+    "password": "xxxxxx",
+    "birth_date": "1990-01-01",
+    "qq": "123456789",
+    "remark": "xxxxx",
+    "phone": "010-6234567",
+    "address": "xxxxxx",
+    "context": <context_json_object>,
+    "source": 0
+}
+```
 
 #### 后台用户更新接口
 
@@ -245,14 +277,54 @@ Request:
     "qq": "123456789",
     "remark": "xxxxx",
     "phone": "010-6234567",
-    "address": "xxxxxx",
+    "address": "xxxxxx"
 }
 ```
 
 Response status code:
 * 200 更新成功
 * 其他 失败
+Response content:
+```
+{
+    "id": 123,
+    "username": "jingyou",
+    "email": "jingyou@jy.cn",
+    "password": "xxxxxx",
+    "birth_date": "1990-01-01",
+    "qq": "123456789",
+    "remark": "xxxxx",
+    "phone": "010-6234567",
+    "address": "xxxxxx"
+}
+```
 
+#### 后台用户查询接口
+
+* url: `accounts/api/v1/user/retrieve/backend/(?P\<identity\>[^\/]+)/`
+* method: GET
+* Content-Type: application/json
+
+Request:
+无
+
+Response status code:
+* 200 更新成功
+* 其他 失败
+Response content:
+```
+{
+    "id": 123,
+    "username": "jingyou",
+    "email": "jingyou@jy.cn",
+    "password": "xxxxxx",
+    "birth_date": "1990-01-01",
+    "qq": "123456789",
+    "remark": "xxxxx",
+    "phone": "010-6234567",
+    "address": "xxxxxx"
+}
+```
 
 
 #### 后台用户删除接口
