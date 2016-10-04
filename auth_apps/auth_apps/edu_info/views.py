@@ -63,7 +63,7 @@ class GetOrCreateSchoolAPIView(generics.GenericAPIView):
             raise ParameterError("province or city or area invalid")
 
         try:
-            school = area.schools.get(name__contains=school_name, category=category)
+            school = area.schools.get(name=school_name, category=category)
         except School.DoesNotExist:
             school = School.objects.create(
                 name=school_name,
