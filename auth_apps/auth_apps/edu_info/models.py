@@ -23,7 +23,7 @@ class School(models.Model):
         (SCHOOL_CATEGORY.UNIVERSITY, _('university')),
     ]
 
-    school_id = models.IntegerField(_('School ID'), primary_key=True)
+    school_id = models.AutoField(_('School ID'), primary_key=True)
     name = models.CharField(_('School Name'), max_length=255)
     pinyin = models.CharField(_('Scool PinYin'), max_length=255, default='')
     area_code = models.ForeignKey(Location, related_name='schools')
