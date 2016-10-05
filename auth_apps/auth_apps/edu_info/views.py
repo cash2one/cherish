@@ -5,6 +5,7 @@ from rest_framework.response import Response
 
 from auth_user.exceptions import ParameterError
 from loc_service.models import Location
+from loc_service.conf import ANDTEACH
 from .models import School
 from .serializers import SchoolSerializer, SchoolIDNameSerializer
 
@@ -56,9 +57,14 @@ class GetOrCreateSchoolAPIView(generics.GenericAPIView):
             raise ParameterError("category invalid")
 
         try:
-            province = Location.objects.get(name=province_name, parent=None)
-            city = province.children.get(name=city_name)
-            area = city.children.get(name=area_name)
+            province = Location.objects.get(name__contains=province_name, parent=None)
+            city = province.children.get(name__contains=city_name)
+
+            area_name = ANDTEACH.get(area_name, area_name)
+            if area_name:
+                area = city.children.get(name__contains=area_name)
+            else:
+                area = city
         except (Location.DoesNotExist, Location.MultipleObjectsReturned):
             raise ParameterError("province or city or area invalid")
 
