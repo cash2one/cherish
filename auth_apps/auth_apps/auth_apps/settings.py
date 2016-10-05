@@ -151,6 +151,9 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', None)
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', None)
 EMAIL_PORT = int(os.getenv('EMAIL_PORT', 0))
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+if TEST:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # auth setting
 AUTH_USER_MODEL = 'auth_user.TechUUser'

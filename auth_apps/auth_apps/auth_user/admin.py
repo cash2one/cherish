@@ -18,6 +18,7 @@ class TechUUserChangeForm(UserChangeForm):
 
 class TechUUserAdmin(UserAdmin):
     form = TechUUserChangeForm
+    search_fields = ['username', 'email', 'mobile']
 
     fieldsets = UserAdmin.fieldsets + (
         (_('Profile Info'), {
