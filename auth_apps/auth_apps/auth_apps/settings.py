@@ -333,7 +333,3 @@ if os.getenv('DSN_URL'):
 
 if TEST:
     CELERY_ALWAYS_EAGER = True
-    if os.getenv('TEST_DSN_URL'):
-        RAVEN_CONFIG = {
-            'dsn': os.getenv('TEST_DSN_URL')
-        }

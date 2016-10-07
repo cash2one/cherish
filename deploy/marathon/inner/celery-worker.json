@@ -51,7 +51,6 @@
     "POLICY_LOGIN_FLUSH_SECONDS": "180",
     "DB_SERVICE": "_db.account-center._tcp.marathon.slave.mesos.",
     "DSN_URL": "http://286f1175067a4143ab3a326632bc3b15:48ac0790b3b54c0bbfadd0558bd0164c@search-002.zuoyetong.com.cn:18888/2",
-    "TEST_DSN_URL": "http://286f1175067a4143ab3a326632bc3b15:48ac0790b3b54c0bbfadd0558bd0164c@search-002.zuoyetong.com.cn:18888/2"
   },
   "labels": {
     "celery": "worker"
