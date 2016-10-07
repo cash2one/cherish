@@ -48,6 +48,7 @@ INSTALLED_APPS = (
     'datetimewidget',
     'db_file_storage',
     'djcelery',
+    'raven.contrib.django.raven_compat',
     # my apps
     'common',
     'edu_info',
@@ -324,5 +325,15 @@ BROKER_URL = os.getenv('CELERY_BROKER_URL')
 # CELERY_RESULT_BACKEND = 'djcelery.backends.cache:CacheBackend'
 CELERY_ENABLE_UTC = True
 CELERY_TIMEZONE = TIME_ZONE
+
+if os.getenv('DSN_URL'):
+    RAVEN_CONFIG = {
+        'dsn': os.getenv('DSN_URL')
+    }
+
 if TEST:
     CELERY_ALWAYS_EAGER = True
+    if os.getenv('TEST_DSN_URL'):
+        RAVEN_CONFIG = {
+            'dsn': os.getenv('TEST_DSN_URL')
+        }
