@@ -3,6 +3,7 @@ from celery import Celery
 from celery.utils.log import get_task_logger
 from django.conf import settings
 from oauth2_provider.models import get_application_model
+from oauth2_provider.models import clear_expired
 
 from .utils import sync_send_mobile, sync_send_email
 from common.xplatform_service import xplatform_service
@@ -66,5 +67,22 @@ def xplatform_changepwd(self, userid, username, raw_password):
         logger.debug('change password userid: {uid}, username: {uname}'.format(
                      uid=userid, uname=username))
         xplatform_service.backend_changepwd(userid, username, raw_password)
+    except Exception as exc:
+        raise self.retry(exc=exc)
+
+
+@app.task(bind=True)
+def oauth_clear_expired(self):
+    try:
+        clear_expired()
+        logger.info('clear expired tokens')
+    except Exception as exc:
+        raise self.retry(exc=exc)
+
+
+@app.task(bind=True)
+def heartbeat(self):
+    try:
+        logger.warning('-------- heartbeat --------')
     except Exception as exc:
         raise self.retry(exc=exc)
