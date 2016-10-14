@@ -14,7 +14,7 @@ RUN apt-get update \
                           gettext \
                           git \
                           libjpeg-dev \
-    && pip install -r /requirements.txt \
+    && pip install -r /requirements.txt -i https://pypi.zuoyetong.com.cn/root/pypi/ \
     && apt-get purge -y build-essential git \
     && apt-get autoremove -y \
     && apt-get remove -y libpq-dev libjpeg-dev \
