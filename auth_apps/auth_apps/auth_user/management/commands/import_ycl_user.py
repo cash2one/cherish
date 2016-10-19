@@ -1,4 +1,6 @@
 # coding: utf-8
+from __future__ import unicode_literals
+
 from django.db import connection
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
@@ -104,14 +106,25 @@ class Command(BaseCommand):
                     new_user['address'] = p.get('address')
                 if p.get('gender'):
                     new_user['gender'] = p.get('gender')
-                user, created = user_model.objects.update_or_create_techu_user(
+                user, created = user_model.objects.plain_update_or_create(
                     **new_user)
                 if p.get('school_id'):
                     try:
-                        user_edu = EduProfile.objects.create(
-                            school=School.objects.get(school_id=p['school_id'])
+                        school = School.objects.get(school_id=p['school_id'])
+                    except School.DoesNotExist:
+                        self.stderr.write(
+                            'school({sid}) not exist, ignore'.format(
+                                sid=p['school_id'])
                         )
-                        user.edu_profile = user_edu
+                        continue
+                    try:
+                        if user.edu_profile:
+                            user.edu_profile.school = school
+                        else:
+                            user_edu = EduProfile.objects.create(
+                                school=school
+                            )
+                            user.edu_profile = user_edu
                         user.save()
                     except:
                         self.stderr.write(

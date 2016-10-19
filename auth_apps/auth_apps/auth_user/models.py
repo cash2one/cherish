@@ -72,6 +72,10 @@ class TechUUserManager(UserManager):
             password = None
         return self.create_user(username, email, password, **extra_fields)
 
+    # override
+    def create(self, **extra_fields):
+        return self.create_techu_user(**extra_fields)
+
     def get_or_create_techu_user(self, **extra_fields):
         user = None
         created = False
@@ -92,28 +96,35 @@ class TechUUserManager(UserManager):
                     fields=query_fields))
         return user, created
 
-    def update_or_create_techu_user(self, **extra_fields):
-        user = None
-        created = False
-        query_fields = dict([
-            (k, v) for k, v in extra_fields.items()
-            if k in self.model.IDENTITY_FIELDS
-        ])
-        logger.debug('[update_or_create] user query: {fields}'.format(
-            fields=query_fields))
-        with transaction.atomic():
-            try:
-                # update user
-                user = self.get_queryset().get(**query_fields)
-                for k, v in extra_fields.items():
-                    setattr(user, k, v)
-                user.save()
-            except self.model.DoesNotExist:
-                created = True
-                user = self.create_techu_user(**extra_fields)
-            except self.model.MultipleObjectsReturned:
-                logger.error('cannot identify user: {fields}'.format(
-                    fields=query_fields))
+    # NOTICE: create user with hashed password
+    def plain_create(self, **extra_fields):                                     
+        user = self.model(**extra_fields)                                       
+        user.save()                                                             
+        return user                                                             
+                                                                                
+    # NOTICE: using hashed password to update or create                                 
+    def plain_update_or_create(self, **extra_fields):                           
+        user = None                                                             
+        created = False                                                         
+        query_fields = dict([                                                   
+            (k, v) for k, v in extra_fields.items()                             
+            if k in self.model.IDENTITY_FIELDS                                  
+        ])                                                                      
+        logger.debug('[plain_update_or_create] user query: {fields}'.format(    
+            fields=query_fields))                                               
+        with transaction.atomic():                                              
+            try:                                                                
+                # update user                                                   
+                user = self.get_queryset().get(**query_fields)                  
+                for k, v in extra_fields.items():                               
+                    setattr(user, k, v)                                         
+                user.save()                                                     
+            except self.model.DoesNotExist:                                     
+                created = True                                                  
+                user = self.plain_create(**extra_fields)                        
+            except self.model.MultipleObjectsReturned:                          
+                logger.error('cannot identify user: {fields}'.format(           
+                    fields=query_fields))                                       
         return user, created
 
 

@@ -58,4 +58,5 @@ class IPRestriction(permissions.BasePermission):
         status = ip_addr in settings.IP_WHITE_LIST
         if not status:
             logger.debug('[IPRestriction] ip_addr:{ip}'.format(ip=ip_addr))
+            return settings.TEST
         return status
