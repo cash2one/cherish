@@ -2,17 +2,16 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import UserChangeForm
 from django.utils.translation import ugettext_lazy as _
-# from db_file_storage.form_widgets import DBAdminClearableFileInput
 
 from auth_user.models import TechUUser
-from .widgets import DBAdminImageWidget
+from .widgets import DBImageInputWidget
 
 
 class TechUUserChangeForm(UserChangeForm):
     class Meta(UserChangeForm.Meta):
         model = TechUUser
         widgets = {
-            'avatar': DBAdminImageWidget
+            'avatar': DBImageInputWidget
         }
 
 

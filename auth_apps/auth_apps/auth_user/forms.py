@@ -11,7 +11,6 @@ from django.utils.encoding import force_bytes
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.forms import UserCreationForm, SetPasswordForm
 from datetimewidget.widgets import DateWidget
-# from db_file_storage.form_widgets import DBClearableFileInput
 
 from .utils import (
     get_users_by_email, get_users_by_mobile,
@@ -20,7 +19,7 @@ from .utils import (
 from .models import TechUUser
 from .tokens import user_mobile_token_generator
 from .backend import LoginPolicy
-from .widgets import DBAdminImageWidget
+from .widgets import DBImageInputWidget
 from .tasks import send_mobile_task, send_email_task
 from .validators import validate_mobile
 
@@ -43,7 +42,7 @@ class UserRegisterForm(UserCreationForm):
                     'viewMode': 'years',
                 }
             ),
-            'avatar': DBAdminImageWidget,
+            'avatar': DBImageInputWidget,
         }
 
 
@@ -65,7 +64,7 @@ class UserProfileForm(forms.ModelForm):
                     'viewMode': 'years',
                 }
             ),
-            'avatar': DBAdminImageWidget,
+            'avatar': DBImageInputWidget,
         }
 
 
