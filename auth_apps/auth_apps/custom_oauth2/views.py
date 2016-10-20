@@ -28,7 +28,7 @@ class AppDevTagContextMixin(ContextMixin):
 
 
 class ErrorMsgTranslationMixin(object):
-    REPLACE_KEY = 'description'
+    REPLACE_KEY = 'error_description'
     ERROR_MESSAGES = {
         'Invalid credentials given.': _('Invalid credentials give.'),
     }
@@ -39,9 +39,14 @@ class ErrorMsgTranslationMixin(object):
             # add user info when get token success
             error_msg = jbody.get(self.REPLACE_KEY)
         except:
-            error_msg = None
+            return body
         if error_msg in self.ERROR_MESSAGES:
-            body[self.REPLACE_KEY] = self.ERROR_MESSAGES[error_msg]
+            try:
+                jbody[self.REPLACE_KEY] = self.ERROR_MESSAGES[error_msg]
+                body = json.dumps(jbody, ensure_ascii=False)
+            except:
+                logger.warning('fail to translate error message ({body})'.format(
+                    body=body))
         return body
 
 
