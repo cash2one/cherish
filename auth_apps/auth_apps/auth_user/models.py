@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+import json
 import string
 import random
 import logging
@@ -97,34 +98,34 @@ class TechUUserManager(UserManager):
         return user, created
 
     # NOTICE: create user with hashed password
-    def plain_create(self, **extra_fields):                                     
-        user = self.model(**extra_fields)                                       
-        user.save()                                                             
-        return user                                                             
-                                                                                
-    # NOTICE: using hashed password to update or create                                 
-    def plain_update_or_create(self, **extra_fields):                           
-        user = None                                                             
-        created = False                                                         
-        query_fields = dict([                                                   
-            (k, v) for k, v in extra_fields.items()                             
-            if k in self.model.IDENTITY_FIELDS                                  
-        ])                                                                      
-        logger.debug('[plain_update_or_create] user query: {fields}'.format(    
-            fields=query_fields))                                               
-        with transaction.atomic():                                              
-            try:                                                                
-                # update user                                                   
-                user = self.get_queryset().get(**query_fields)                  
-                for k, v in extra_fields.items():                               
-                    setattr(user, k, v)                                         
-                user.save()                                                     
-            except self.model.DoesNotExist:                                     
-                created = True                                                  
-                user = self.plain_create(**extra_fields)                        
-            except self.model.MultipleObjectsReturned:                          
-                logger.error('cannot identify user: {fields}'.format(           
-                    fields=query_fields))                                       
+    def plain_create(self, **extra_fields):
+        user = self.model(**extra_fields)
+        user.save()
+        return user
+
+    # NOTICE: using hashed password to update or create
+    def plain_update_or_create(self, **extra_fields):
+        user = None
+        created = False
+        query_fields = dict([
+            (k, v) for k, v in extra_fields.items()
+            if k in self.model.IDENTITY_FIELDS
+        ])
+        logger.debug('[plain_update_or_create] user query: {fields}'.format(
+            fields=query_fields))
+        with transaction.atomic():
+            try:
+                # update user
+                user = self.get_queryset().get(**query_fields)
+                for k, v in extra_fields.items():
+                    setattr(user, k, v)
+                user.save()
+            except self.model.DoesNotExist:
+                created = True
+                user = self.plain_create(**extra_fields)
+            except self.model.MultipleObjectsReturned:
+                logger.error('cannot identify user: {fields}'.format(
+                    fields=query_fields))
         return user, created
 
 
@@ -157,6 +158,14 @@ class TechUUser(AbstractUser):
         IDENTITY_TYPE.MOBILE: 'mobile',
     }
     IDENTITY_FIELDS = IDENTITY_TYPE_MAP.values()
+    USER_SOURCE = enum(
+        TECHU=0,
+        XPLATFORM=1,
+    )
+    USER_SOURCES = [
+        (USER_SOURCE.TECHU, _('techu')),
+        (USER_SOURCE.XPLATFORM, _('xplatform')),
+    ]
 
     nickname = models.CharField(
         _('Nickname'), max_length=64, null=True, blank=True)
@@ -183,6 +192,8 @@ class TechUUser(AbstractUser):
         EduProfile, on_delete=models.CASCADE, related_name='user',
         null=True, blank=True)
     context = JSONField(null=True, blank=True)
+    source = models.SmallIntegerField(
+        _('User Source'), default=USER_SOURCE.TECHU, choices=USER_SOURCES)
 
     objects = TechUUserManager()
 
@@ -281,3 +292,12 @@ class TechUUser(AbstractUser):
         """
         itype = cls.identity_type(identity)
         return cls.IDENTITY_TYPE_MAP.get(itype)
+
+    @property
+    def origin_id(self):
+        pk = None
+        if self.source == self.USER_SOURCE.XPLATFORM:
+            pk = self.context and json.loads(self.context).get(u'accountId')
+        else:
+            pk = self.pk
+        return self.source, pk

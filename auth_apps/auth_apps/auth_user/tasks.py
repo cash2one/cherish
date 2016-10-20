@@ -53,6 +53,8 @@ def application_notify(self, client_id, context):
 @app.task(bind=True)
 def xplatform_register(self, register_entries):
     try:
+        logger.debug('register user entries: {entries}'.format(
+                     entries=register_entries))
         xplatform_service.backend_batch_username_register(register_entries)
     except Exception as exc:
         raise self.retry(exc=exc)
@@ -61,6 +63,8 @@ def xplatform_register(self, register_entries):
 @app.task(bind=True)
 def xplatform_changepwd(self, userid, username, raw_password):
     try:
+        logger.debug('change password userid: {uid}, username: {uname}'.format(
+                     uid=userid, uname=username))
         xplatform_service.backend_changepwd(userid, username, raw_password)
     except Exception as exc:
         raise self.retry(exc=exc)
