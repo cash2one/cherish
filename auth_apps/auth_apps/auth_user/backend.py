@@ -1,10 +1,14 @@
 # coding: utf-8
 from __future__ import unicode_literals
 
+import logging
 from django.contrib.auth import get_user_model
+from django.contrib.auth.backends import ModelBackend
 from django.core.cache import cache
 
 from common.xplatform_service import xplatform_service
+
+logger = logging.getLogger(__name__)
 
 
 class LoginPolicy(object):
@@ -75,6 +79,7 @@ class TechUBackend(object):
             return None
 
     def authenticate(self, identity=None, password=None, request=None):
+        logger.debug('[{cls}] authenticate'.format(cls=self.__class__.__name__))
         user = self._try_auth(identity, password, self._get_user_by_email)
         if user:
             return user
@@ -100,6 +105,7 @@ class XPlatformBackend(object):
     create_unknown_user = True
 
     def authenticate(self, identity=None, password=None, request=None):
+        logger.debug('[{cls}] authenticate'.format(cls=self.__class__.__name__))
         if not identity:
             return
         user = None
@@ -117,6 +123,11 @@ class XPlatformBackend(object):
                 })
                 if created:
                     user = self.configure_user(user)
+                else:
+                    if user.USER_SOURCE.ONCE_XPLATFORM == user.source:
+                        user.update_password(password)
+                        user.source = user.USER_SOURCE.XPLATFORM
+                        user.save()
             else:
                 try:
                     user = UserModel._default_manager.get_by_natural_key(identity)
@@ -147,3 +158,53 @@ class XPlatformBackend(object):
         By default, returns the user unmodified.
         """
         return user
+
+
+class XPlatformOnceTokenBackend(object):
+
+    def authenticate(self, identity=None, password=None, request=None):
+        logger.debug('[{cls}] authenticate'.format(cls=self.__class__.__name__))
+        user = None
+        # check account_id
+        try:
+            account_id, once_token = int(identity), password
+        except ValueError:
+            return user
+        user_info = xplatform_service.backend_verify_get_account_info(
+            account_id, once_token)
+        if user_info:
+            UserModel = get_user_model()
+            # login success
+            identity = user_info.get(u'accountName') or user_info.get(u'mobilePhone')
+            logger.debug('identity: {i}'.format(i=identity))
+            user, created = UserModel._default_manager.get_or_create_techu_user(**{
+                UserModel.get_identity_field(identity): identity,
+                'password': None,
+                'context': user_info,
+                'source': UserModel.USER_SOURCE.ONCE_XPLATFORM
+            })
+        return user
+
+    def get_user(self, user_id):
+        UserModel = get_user_model()
+        try:
+            return UserModel.objects.get(pk=user_id)
+        except UserModel.DoesNotExist:
+            return None
+
+
+class AdminBackend(ModelBackend):
+    # override
+    def authenticate(self, username=None, password=None, **kwargs):
+        UserModel = get_user_model()
+        # NOTICE : can only use 'username' to login admin site
+        try:
+            user = UserModel._default_manager.get_by_natural_key(username)
+            if user.check_password(password) and user.is_active and user.is_staff:
+                return user
+        except UserModel.DoesNotExist:
+            # Run the default password hasher once to reduce the timing
+            # difference between an existing and a non-existing user (#20760).
+            # NOTICE : change to use 'update_password' to prevent extra signal sends from 'set_password'
+            UserModel().update_password(password)
+
