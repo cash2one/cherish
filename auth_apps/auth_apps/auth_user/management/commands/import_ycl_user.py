@@ -5,11 +5,20 @@ from django.db import connection
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
 
+from common.utils import enum
 from edu_info.models import School
 from auth_user.models import EduProfile
 
 
 class Command(BaseCommand):
+    ECLASS_ROLE = enum(
+        ADMIN=1,
+        STUDENT=2,
+        TEACHER=3,
+        SUPERVISOR=4,
+        PARENT=5,
+        TEACHER_PARENT=6,
+    )
     DB_TABLE = 'eclass_user'
     """
     table : eclass_user
@@ -96,7 +105,7 @@ class Command(BaseCommand):
                     new_user['date_joined'] = p.get('date_joined')
                 if p.get('last_login'):
                     new_user['last_login'] = p.get('last_login')
-                if p.get('mobile'):
+                if p.get('mobile') and p.get('role_id') != self.ECLASS_ROLE.STUDENT:
                     new_user['mobile'] = p.get('mobile')
                 if p.get('email'):
                     new_user['email'] = p.get('email')
