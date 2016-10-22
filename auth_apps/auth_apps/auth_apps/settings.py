@@ -256,6 +256,10 @@ TECHU_BACKEND_SALT = 'yzy-'
 DEFAULT_REQUEST_TIMEOUT = 3
 MOBILE_CODE_COUNTDOWN = 60  # seconds
 
+# policy setting
+POLICY_LOGIN_COUNT = int(os.getenv('POLICY_LOGIN_COUNT'))
+POLICY_LOGIN_FLUSH_SECONDS = int(os.getenv('POLICY_LOGIN_FLUSH_SECONDS'))
+
 # cache setting
 CACHES = {
     'default': {

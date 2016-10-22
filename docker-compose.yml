@@ -47,6 +47,8 @@ web:
      - SMS_SERVICE_URL=http://test.com
      - XPLATFORM_SERVICE_URL=https://dev.login.yunxiaoyuan.com
      - CELERY_BROKER_URL=redis://redis
+     - POLICY_LOGIN_COUNT=20
+     - POLICY_LOGIN_FLUSH_SECONDS=3600
     links:
      - db:db
      - cache:cache

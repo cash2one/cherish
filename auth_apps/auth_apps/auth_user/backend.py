@@ -5,6 +5,7 @@ import logging
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
 from django.core.cache import cache
+from django.conf import settings
 
 from common.xplatform_service import xplatform_service
 
@@ -13,8 +14,8 @@ logger = logging.getLogger(__name__)
 
 class LoginPolicy(object):
     CACHE_KEY_PREFIX = 'LC-'
-    LOGIN_COUNT = 3
-    LOGIN_FLUSH_SECONDS = 3600
+    LOGIN_COUNT = settings.POLICY_LOGIN_COUNT or 5
+    LOGIN_FLUSH_SECONDS = settings.POLICY_LOGIN_FLUSH_SECONDS or 3600
 
     class LoginConstraintException(Exception):
         pass
