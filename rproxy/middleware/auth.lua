@@ -70,7 +70,11 @@ function main()
                                         ngx.quote_sql_str(access_token)))
         db_conn:close()
         if not res or 0 == table.getn(res) then
-            ngx.log(ngx.ERR, "bad result: " .. err)
+            if err then
+                ngx.log(ngx.ERR, "bad result: " .. err)
+            else
+                ngx.log(ngx.ERR, "token not found, access_token: " .. access_token)
+            end
             ngx.exit(403)
         else
             local expires = res[1].expires
