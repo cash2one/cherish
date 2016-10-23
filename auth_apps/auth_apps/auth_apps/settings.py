@@ -98,16 +98,12 @@ WSGI_APPLICATION = 'auth_apps.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.getenv('DB_ENV_MYSQL_DATABASE'),
-        'USER': os.getenv('DB_ENV_MYSQL_USER'),
-        'PASSWORD': os.getenv('DB_ENV_MYSQL_PASSWORD'),
-        'HOST': os.getenv('DB_PORT_3306_TCP_ADDR'),
-        'PORT': os.getenv('DB_PORT_3306_TCP_PORT'),
-        'OPTIONS': {
-            'charset': 'utf8',
-            'init_command': 'SET storage_engine=InnoDB,character_set_connection=utf8,collation_connection=utf8_unicode_ci',
-        },
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.getenv('POSTGRES_DATABASE'),
+        'USER': os.getenv('POSTGRES_USER'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+        'HOST': os.getenv('DB_PROXY_PORT_5432_TCP_ADDR'),
+        'PORT': os.getenv('DB_PROXY_PORT_3306_TCP_PORT'),
         'TEST': {
             'NAME': 'test_account_center',
         },

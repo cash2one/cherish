@@ -13,7 +13,7 @@ from django.contrib.auth.hashers import make_password
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from db_file_storage.model_utils import delete_file, delete_file_if_needed
-from jsonfield import JSONField
+from django.contrib.postgres.fields import JSONField, ArrayField
 
 from edu_info.models import School, Subject
 from common.utils import enum
@@ -43,12 +43,14 @@ class EduProfile(models.Model):
         (USER_ROLE.PARENT, _('Parent')),
     ]
 
-    role = models.IntegerField(
-        _('Role'), choices=USER_ROLE_TYPES, default=USER_ROLE.UNKNOWN)
+    role = models.IntegerField(_('Role'), choices=USER_ROLE_TYPES)
     school = models.ForeignKey(
         School, on_delete=models.PROTECT, related_name='+', null=True)
     subject = models.ForeignKey(
         Subject, on_delete=models.PROTECT, related_name='+', null=True)
+
+    class Meta:
+        required_db_vendor = 'postgresql'
 
 
 class DatabaseFile(models.Model):
@@ -198,6 +200,9 @@ class TechUUser(AbstractUser):
         _('User Source'), default=USER_SOURCE.TECHU, choices=USER_SOURCES)
 
     objects = TechUUserManager()
+
+    class Meta:
+        required_db_vendor = 'postgresql'
 
     def __init__(self, *args, **kwargs):
         super(TechUUser, self).__init__(*args, **kwargs)

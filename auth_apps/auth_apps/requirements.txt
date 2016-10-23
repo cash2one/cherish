@@ -3,7 +3,6 @@ django-cors-headers
 django-oauth-toolkit
 django-widget-tweaks
 djangorestframework
-MySQL-python==1.2.5
 uWSGI==2.0.11.1
 python-memcached
 requests
@@ -11,10 +10,11 @@ django_braces==1.8.1
 git+https://github.com/lbjworld/django-datetime-widget.git
 django-db-file-storage
 Pillow
-jsonfield==1.0.3
 http://twhiteman.netfirms.com/pyDES/pyDes-2.0.1.zip
 celery==3.1.18
 django-celery
 redis
 git+https://github.com/stefanfoulis/django-sendsms.git@master
 django-mptt
+psycopg2
+simplejson==3.8.0

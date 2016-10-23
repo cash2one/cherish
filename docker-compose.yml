@@ -1,86 +1,49 @@
 rproxy:
-    image: "docker.zuoyetong.com.cn:8888/techu_openresty:latest"
+    extends:
+        file: common.yml
+        service: web_proxy
     ports:
-     - "5000:443"
-     - "5001:445"
+     - "5000:8000"
+     - "5001:8001"
     volumes:
      - ./rproxy/nginx/nginx.conf:/opt/openresty/nginx/conf/nginx.conf:ro
-     - ./rproxy/nginx/sslkey:/opt/openresty/nginx/conf/sslkey:ro
-    environment:
-     - MYSQL_HOST=db
-     - MYSQL_PORT=3306
-     - MYSQL_USER=mysql
-     - MYSQL_DATABASE=account_center
-     - MYSQL_PASSWORD=account_center123
-     - MEMCACHED_ADDR=cache
-     - MEMCACHED_PORT=11211
-     - DB_CONN_TIMEOUT=500
-    log_opt:
-        max-size: "5m"
-        max-file: "5"
     volumes_from:
      - web:ro
     links:
      - web:web
-     - db:db
+     - db_proxy:db_proxy
      - cache:cache
 
 web:
-    image: "docker.zuoyetong.com.cn:8888/account_web:201604281137"
+    extends:
+        file: common.yml
+        service: web
     volumes:
      - ./auth_apps/auth_apps:/code
      - /code/static
-    log_opt:
-        max-size: "5m"
-        max-file: "5"
-    environment:
-     - DJANGO_DEBUG=1
-     - DJANGO_HOST=auth-center.domain.com.cn
-     - EMAIL_USE_SSL=1
-     - EMAIL_USE_TLS=0
-     - EMAIL_HOST=stmp.163.com
-     - EMAIL_HOST_USER=<your email account>
-     - EMAIL_HOST_PASSWORD=<your email password>
-     - EMAIL_PORT=994
-     - MEMCACHED_ADDR=cache
-     - MEMCACHED_PORT=11211
-     - SMS_SERVICE_URL=http://test.com
-     - XPLATFORM_SERVICE_URL=https://dev.login.yunxiaoyuan.com
-     - CELERY_BROKER_URL=redis://redis
-     - POLICY_LOGIN_COUNT=20
-     - POLICY_LOGIN_FLUSH_SECONDS=3600
     links:
-     - db:db
+     - db_proxy:db_proxy
      - cache:cache
      - celery_redis:redis
     command: ./run-site.sh 
 
 celery_worker:
-    image: "docker.zuoyetong.com.cn:8888/account_web:201604281137"
+    extends:
+        file: common.yml
+        service: web
     volumes:
      - ./auth_apps/auth_apps:/code
-    environment:
-     - DJANGO_DEBUG=1
-     - DJANGO_HOST=auth-center.domain.com.cn
-     - EMAIL_USE_SSL=1
-     - EMAIL_USE_TLS=0
-     - EMAIL_HOST=smtp.163.com
-     - EMAIL_HOST_USER=lbj_world@163.com
-     - EMAIL_HOST_PASSWORD=dream829!@#
-     - EMAIL_PORT=994
-     - MEMCACHED_ADDR=cache
-     - MEMCACHED_PORT=11211
-     - SMS_SERVICE_URL=http://sms.zuoyetong.com.cn
-     - XPLATFORM_SERVICE_URL=https://dev.login.yunxiaoyuan.com
-     - CELERY_BROKER_URL=redis://redis
     links:
-     - db:db
+     - db_proxy:db_proxy
      - cache:cache
      - celery_redis:redis
     command: ./run-task-worker.sh
 
 celery_redis:
     image: "docker.zuoyetong.com.cn:8888/redis:3"
+    log_opt:
+        max-size: "5m"
+        max-file: "1"
 
 cache:
     image: "docker.zuoyetong.com.cn:8888/memcached:1.4"
@@ -88,16 +51,15 @@ cache:
         max-size: "5m"
         max-file: "1"
 
+db_proxy:
+    extends:
+        file: common.yml
+        service: db_proxy
+    
 db:
-    image: "docker.zuoyetong.com.cn:8888/mysql:5.6"
+    extends:
+        file: common.yml
+        service: db
     volumes:
-     - ./db/data:/var/lib/mysql
-     - ./mysql/:/etc/mysql/conf.d:ro
-    log_opt:
-        max-size: "5m"
-        max-file: "1"
-    environment:
-     - MYSQL_USER=mysql
-     - MYSQL_PASSWORD=account_center123
-     - MYSQL_ROOT_PASSWORD=account_center123
-     - MYSQL_DATABASE=account_center
+     - ./db/pgdata:/var/lib/postgresql/data
+    net: "container:db_proxy"
