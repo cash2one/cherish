@@ -101,7 +101,14 @@ token接口
 
 Request:
 
-根据不同的grant_type，参数有所不同，具体参见不同类型的demo
+> 根据不同的grant_type，参数有所不同，具体参见不同类型的demo
+
+eg:
+
+grant_type: password
+
+条件:
+* 验证: Basic Auth (eg: Authorization: Basic <client_id:client_secret>)
 
 Response:
 ```
@@ -115,12 +122,33 @@ Response:
 }
 ```
 
+刷新 token 接口
+
+```
+curl -X POST -d "grant_type=refresh_token&client_id=<client_id>&client_secret=<client_secret>&refresh_token=<refresh_token>" <domain>/oauth/token/
+```
+
+Response:
+```
+{
+    "user_id": xx,
+    "access_token": "sT4cgxel3aSyQJU367UQW4xJpmy60i",
+    "expires_in": 36000,
+    "token_type": "Bearer",
+    "scope": "user group",
+    "refresh_token": "Y3T0Xp7cyCNvNYpMoTy7HchEPM38OI"
+}
+```
+
 #### ^/oauth/revoke_token/$
 
 HTTP Method: POST
 
-刷新token接口
+废除token接口
 
+```
+curl --data  "token=<access_token>&client_id=<client_id>&client_secret=<client_secret>" <domain>/oauth/revoke_token/
+```
 
 ### 用户资源API
 
@@ -182,7 +210,7 @@ HTTP Method: POST
 用户修改密码接口（需要提供原始密码）
 
 条件：
-* 用户OAuth2登陆
+* 用户OAuth2登陆 (Authorization: Bearer <access_token>)
 * TOKEN SCOPE: user
 
 Request:
@@ -276,7 +304,7 @@ Response:
 #### ^accounts/user/(?P\<pk\>[0-9]+)/$
 #### ^accounts/user/(?P\<pk\>[0-9]+)\.(?P\<format\>[a-z0-9]+)/?$
 
-HTTP Method: GET, UPDATE 
+HTTP Method: GET, UPDATE
 
 获取/更新平台用户详情接口
 
@@ -285,7 +313,7 @@ HTTP Method: GET, UPDATE
 * TOKEN SCOPE: user
 
 > pk为应用ID
-> format为格式设置，可取值: json, html 
+> format为格式设置，可取值: json, html
 
 > 注意：该接口只能获取到授权用户信息
 
@@ -298,10 +326,10 @@ HTTP Method: GET
 
 条件：
 * 用户OAuth2登陆
-* TOKEN SCOPE: group 
+* TOKEN SCOPE: group
 
 > pk为应用ID
-> format为格式设置，可取值: json, html 
+> format为格式设置，可取值: json, html
 
 
 
