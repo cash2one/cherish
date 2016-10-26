@@ -1,3 +1,4 @@
+import json
 import logging
 
 from django.shortcuts import render, get_object_or_404
@@ -24,6 +25,8 @@ from rest_framework.views import APIView
 from oauth2_provider.ext.rest_framework import TokenHasScope
 from braces.views import LoginRequiredMixin
 
+from common.xplatform_service import xplatform_service
+from common.utils import enum
 from .models import TechUUser
 from .forms import (
     UserProfileForm, UserRegisterForm, PasswordResetForm,
@@ -351,3 +354,50 @@ class UserRegisterBackendAPIView(generics.CreateAPIView):
     ]
     queryset = TechUUser.objects.all()
     serializer_class = TechUBackendUserRegisterSerializer
+
+
+class XPlatformNotifyAPIView(APIView):
+    """
+        Receive xplatform notify
+    """
+    def post(self, request, *args, **kwargs):
+        data = json.dumps(request.data)
+        code = xplatform_service.push_notify(data, self.process_handler)
+        response = {
+            'code': code,
+        }
+        return Response(response)
+
+    @staticmethod
+    def process_handler(userid, op_type):
+        OP_TYPE = enum(
+            CHANGE_PASSWORD=1,
+            ADD_USER=2,
+            DELETE_USER=3,
+            EDIT_USER=4
+        )
+        user_info = xplatform_service.account_info(userid=userid)
+        if not user_info:
+            logger.warning('[Notify] not found user info. userid: {userid}'.format(
+                userid=userid
+            ))
+            return 0
+        UserModel = get_user_model()
+        identity = user_info.get(u'accountName') or user_info.get(u'mobilePhone')
+        try:
+            user = UserModel._default_manager.get(**{
+                UserModel.get_identity_field(identity): identity
+            })
+        except UserModel.DoesNotExist:
+            user = None
+
+        if op_type == OP_TYPE.CHANGE_PASSWORD:
+            if user:
+                # TODO delete user ?
+                pass
+        else:
+            logger.warning('[Notify] received identity:{i}, op_type:{op}'.format(
+                i=identity, op=op_type
+            ))
+        return 1
+

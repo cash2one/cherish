@@ -226,3 +226,24 @@ class ChangePasswordTestCase(OAuth2APITestCase):
         self.assertFalse(test_user.check_password(data.get('new_password')))
         self.assertFalse(test_user.check_password(data.get('old_password')))
         self.assertTrue(test_user.check_password('test'))
+
+
+class XPlatformNotifyAPITestCase(APITestCase):
+    def setUp(self):
+        cache.clear()
+        self.notify_url = reverse_lazy('v1:api_xplatform_notify')
+        self.url = 'http://localhost:5000/' + self.notify_url
+
+    def tearDown(self):
+        cache.clear()
+
+    def test_minimal_notify(self):
+        import time
+        from common.xplatform_service import xplatform_service
+        body = {
+            'accountId': '123',
+            'opType': 1,
+            'time': int(time.time())
+        }
+        response = xplatform_service.post(self.url, head={}, body=body)
+        self.assertNotEqual(response.status_code, status.HTTP_200_OK)
