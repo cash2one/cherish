@@ -9,4 +9,4 @@ wait_tcp_dependency ${MEMCACHED_HOST} ${MEMCACHED_PORT}
 echo "connecting to db ..."
 wait_tcp_dependency ${POSTGRES_HOST} ${POSTGRES_PORT}
 
-python manage.py test --noinput ${TEST_PARAMETER} 2>&1
+python manage.py test --keepdb --noinput --parallel=1 ${TEST_PARAMETER} 2>&1
