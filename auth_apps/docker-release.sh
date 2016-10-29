@@ -20,6 +20,8 @@ if [[ "$EXIST" == "" ]]; then
     fi
     docker tag -f ${REGISTRY}${IMAGE_NAME}:${VERSION} ${REGISTRY}${IMAGE_NAME}:latest
 fi
+# dump version file
+echo $VERSION > DOCKER.version
 
 if [ "$ACTION" == "push" ]; then
     echo "push image to repo ..."
