@@ -12,7 +12,7 @@ wait_tcp_dependency()
     while ! exec {id}<>/dev/tcp/${tcp_addr}/${tcp_port}; do
         echo "$(date) - trying to connect to ${testing_url}"
         sleep 1
-    done   
+    done
 }
 
 echo "connecting to cache ..."
@@ -23,4 +23,5 @@ echo "connecting to db ..."
 wait_tcp_dependency ${DB_PROXY_PORT_5432_TCP_ADDR} ${DB_PROXY_PORT_5432_TCP_PORT}
 
 echo "run celery worker ..."
-celery --app=auth_apps.celery:app worker --loglevel=DEBUG --autoreload
+celery --app=auth_apps.celery:app worker --loglevel=DEBUG --autoreload &
+celery --app=auth_apps.celery:app beat -S djcelery.schedulers.DatabaseScheduler
