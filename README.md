@@ -219,6 +219,19 @@ Request:
 }
 ```
 
+#### 后台用户删除接口
+
+* url: `accounts/api/v1/user/destroy/backend/`
+* mehtod: POST
+* Content-Type: application/json
+
+Request:
+```
+{
+    "usernames":["user1", "user2"]  # required
+}
+```
+
 Response status code:
 * 201 注册成功
 * 其他 失败

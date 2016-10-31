@@ -22,6 +22,7 @@ from django.conf import settings
 from rest_framework import permissions, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import status
 from oauth2_provider.ext.rest_framework import TokenHasScope
 from braces.views import LoginRequiredMixin
 
@@ -278,6 +279,33 @@ class ResetPasswordBackendAPIView(APIView):
         user.save()
         response = {}
         return Response(response)
+
+
+class UserDestroyBackendAPIView(APIView):
+    """
+        destroy user from backend service
+    """
+    permission_classes = [
+        IPRestriction,
+    ]
+    throttle_classes = [
+        BackendAPIThrottle,
+    ]
+
+    def post(self, request, *args, **kwargs):
+        users = []
+        UserModel = get_user_model()
+        usernames = request.data.get('usernames')
+        for username in usernames:
+            try:
+                user = UserModel._default_manager.get(username=username)
+            except UserModel.DoesNotExist:
+                user = None
+            if user:
+                users.append(user)
+        for user in users:
+            user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class MobileCodeResetPasswordAPIView(APIView):

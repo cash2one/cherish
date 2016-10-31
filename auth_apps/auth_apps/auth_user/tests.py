@@ -210,6 +210,27 @@ class ResetPasswordBackendTestCase(MockCreateUserMixin, APITestCase):
         self.assertTrue(user.check_password(raw_password))
 
 
+class UserDestroyBackendTestCase(MockCreateUserMixin, APITestCase):
+    def setUp(self):
+        cache.clear()
+        self.destroy_url = reverse_lazy('v1:api_user_destroy_backend')
+        self.test_usernames = ('user1', 'user2', 'user3')
+        test_users = [{'username': u, 'password': u} for u in self.test_usernames]
+        for user in test_users:
+            self.create_user(**user)
+
+    def tearDown(self):
+        cache.clear()
+
+    def test_destroy_success(self):
+        data = {
+            'usernames': self.test_usernames
+        }
+        response = self.client.post(self.destroy_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(TechUUser.objects.count(), 0)
+
+
 class MobileCodeResetPasswordTestCase(MockCreateUserMixin, OAuth2APITestCase):
     def setUp(self):
         cache.clear()
