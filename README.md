@@ -3,15 +3,15 @@
 中心用户系统，提供OAuth 2.0授权验证管理
 
 ## 功能
-
 ---
+
 1. 用户操作（注册、登录、账号找回）
 2. OAuth第三方应用授权管理
 3. 用户账号API（用于授权第三方应用访问用户信息，注册，找回密码等）
 
 ## 关于第三方应用接入
-
 ---
+
 1. 内部应用通过`resource owner password credentials`方式接入
     * 通过后台转发用户登陆请求至/oauth/token接口，接口返回access_token
     * 应用后台通过`加密通道`将access_token返回给前端应用（APP或前端网页）
@@ -23,94 +23,90 @@
 
 
 ### 用户操作页面
-
 ---
-#### /accounts/register/
 
-新用户注册
+#### 新用户注册
 
-#### /accounts/login/
+* url: `/accounts/register/`
 
-用户登陆（目前支持用户名/手机号/邮箱登陆）
+#### 用户登陆（目前支持用户名/手机号/邮箱登陆）
+
+* url: `/accounts/login/`
 
 > 多次登陆限制：连续三次登陆密码错误将在一个小时内限制该账户登陆
 
-#### /accounts/password_reset/
+#### 用户密码重置（需要用户提供注册邮箱或注册手机号）
 
-用户密码重置（需要用户提供注册邮箱或注册手机号）
+* url: `/accounts/password_reset/`
 
 > 重置密码将移除之前的`多次登陆限制`
 
 ### 应用管理页面
-
 ---
+
 > 需要登陆，需要用户在`app_dev`用户组中
 
-#### ^/oauth/applications/$
+#### 列出当前用户注册的应用
 
-列出当前用户注册的应用
+* url: `/oauth/applications/`
 
-#### ^/oauth/applications/register/$
+#### 为当前用户注册新应用
 
-为当前用户注册新应用
+* url: `/oauth/applications/register/`
 
-#### ^/oauth/applications/(?P\<pk\>\d+)/$
+#### 查看应用授权详情
 
-查看应用授权详情
-
-> pk为应用ID
-
-#### ^/oauth/applications/(?P\<pk\>\d+)/delete/$
-
-删除应用授权
+* url: `/oauth/applications/(?P\<pk\>\d+)/`
 
 > pk为应用ID
 
-#### ^/oauth/applications/(?P\<pk\>\d+)/update/$
+#### 删除应用授权
 
-更新应用授权信息
+* url: `/oauth/applications/(?P\<pk\>\d+)/delete/`
 
 > pk为应用ID
 
-#### ^/oauth/authorized_tokens/$
+#### 更新应用授权信息
 
-查看当前用户已经授权的有效token
+* url: `/oauth/applications/(?P\<pk\>\d+)/update/`
 
-#### ^/oauth/authorized_tokens/(?P\<pk\>\d+)/delete/$',
+> pk为应用ID
 
-删除指定token
+#### 查看当前用户已经授权的有效token
+
+* url: `/oauth/authorized_tokens/`
+
+#### 删除指定token
+
+* url: `/oauth/authorized_tokens/(?P\<pk\>\d+)/delete/`
 
 > pk为token ID
 
 
 ### 应用授权API
-
 ---
-#### ^/oauth/authorize/$
 
-应用授权API接口
+#### 应用授权API接口
 
-* first receive a `GET` request from user asking authorization for a certain client application, a form is served possibly showing some useful info and prompting for authorize/do not authorize.
-* then receive a `POST` request possibly after user authorized the access
+* url: `/oauth/authorize/`
 
-#### ^/oauth/token/$
+> first receive a `GET` request from user asking authorization for a certain client application, a form is served possibly showing some useful info and prompting for authorize/do not authorize.
+then receive a `POST` request possibly after user authorized the access
 
-HTTP Method: POST
+#### 获取 token 接口
 
-token接口
+* url: `/oauth/token/`
 
-Request:
+* method: POST
+
+* Content-Type: application/x-www-form-urlencoded
 
 > 根据不同的grant_type，参数有所不同，具体参见不同类型的demo
 
-eg:
-
-grant_type: password
-
-条件:
-* 验证: Basic Auth (eg: Authorization: Basic base64 encode(<client_id:client_secret>))
+Request: 略
 
 Response:
+
 ```
 {
     "user_id": 2,
@@ -122,15 +118,22 @@ Response:
 }
 ```
 
-刷新 token 接口
+eg:
 
-```
-curl -X POST -d "grant_type=refresh_token&client_id=<client_id>&client_secret=<client_secret>&refresh_token=<refresh_token>" <domain>/oauth/token/
-```
+    grant_type: password
 
-Request:
+    条件:
+    * 验证: Basic Auth (eg: Authorization: Basic base64 encode(<client_id:client_secret>))
+
+#### 刷新 token 接口
+
+* url: `/oauth/token/`
+
+* method: POST
 
 * Content-Type: application/x-www-form-urlencoded
+
+Request: 略
 
 Response:
 ```
@@ -144,123 +147,143 @@ Response:
 }
 ```
 
-#### ^/oauth/revoke_token/$
+curl:
+```
+curl -X POST -d "grant_type=refresh_token&client_id=<client_id>&client_secret=<client_secret>&refresh_token=<refresh_token>" <domain>/oauth/token/
+```
 
-HTTP Method: POST
+#### 废除token接口
 
-废除token接口
+* url: `/oauth/revoke_token/`
 
+* method: POST
+
+* Content-Type: application/x-www-form-urlencoded
+
+Request: 略
+
+Response: 略
+
+curl:
 ```
 curl --data  "token=<access_token>&client_id=<client_id>&client_secret=<client_secret>" <domain>/oauth/revoke_token/
 ```
 
+
 ### 用户资源API
-
 ---
-#### ^accounts/api/v1/user/register/mobile/$
 
-HTTP Method: POST
+#### 用户注册接口
 
-用户注册接口
+* url: `accounts/api/v1/user/register/mobile/`
+
+* method: POST
+
+* Content-Type: application/json
 
 Request:
 ```
-    {
-        "mobile": "15911186897", # required
-        "code": "123456", # required
-        "password": "xxxxx", # required
-        "birth_date": "1990-01-01",
-        "qq": "123456789",
-        "remark": "xxxxx",
-        "phone": "010-6234567",
-        "address": "xxxxxx",
-        "context": <context_json_object>
-    }
+{
+    "mobile": "15911186897", # required
+    "code": "123456", # required
+    "password": "xxxxx", # required
+    "birth_date": "1990-01-01",
+    "qq": "123456789",
+    "remark": "xxxxx",
+    "phone": "010-6234567",
+    "address": "xxxxxx",
+    "context": <context_json_object>
+}
 ```
 
 Response status code:
 * 200 注册成功
 * 其他 失败
 
-#### ^accounts/api/v1/user/register/backend/$
+#### 后台用户注册接口
 
-HTTP Method: POST
+* url: `accounts/api/v1/user/register/backend/`
 
-后台用户注册接口
+* method: POST
+
+* Content-Type: application/json
 
 Request:
 ```
-    {
-        "username": "jingyou", # required
-        "email": "jingyou@jy.cn",
-        "password": "xxxxxx", # required
-        "birth_date": "1990-01-01",
-        "qq": "123456789",
-        "remark": "xxxxx",
-        "phone": "010-6234567",
-        "address": "xxxxxx",
-        "context": <context_json_object>
-    }
+{
+    "username": "jingyou", # required
+    "email": "jingyou@jy.cn",
+    "password": "xxxxxx", # required
+    "birth_date": "1990-01-01",
+    "qq": "123456789",
+    "remark": "xxxxx",
+    "phone": "010-6234567",
+    "address": "xxxxxx",
+    "context": <context_json_object>
+}
 ```
 
 Response status code:
 * 201 注册成功
 * 其他 失败
 
-#### ^accounts/api/v1/user/change_password/$
+#### 用户修改密码接口（需要提供原始密码）
 
-HTTP Method: POST
+* url: `accounts/api/v1/user/change_password/`
 
-用户修改密码接口（需要提供原始密码）
+* method: POST
 
-条件：
-* 用户OAuth2登陆 (Authorization: Bearer <access_token>)
-* TOKEN SCOPE: user
+* Content-Type: application/json
+
+> 用户OAuth2登陆 (Authorization: Bearer <access_token>)
+> TOKEN SCOPE: user
 
 Request:
 ```
-    {
-        "old_password": "xxxxxx", # required
-        "new_password": "xxxxxx", # required
-    }
+{
+    "old_password": "xxxxxx", # required
+    "new_password": "xxxxxx", # required
+}
 ```
 
 Response status code:
 * 200 修改密码成功
 * 其他 失败
 
+#### 用户重置密码接口
 
-#### ^accounts/api/v1/user/reset_password/mobile/$
+* url: `accounts/api/v1/user/reset_password/mobile/`
 
-HTTP Method: POST
+* method: POST
 
-用户重置密码接口
+* Content-Type: application/json
 
 Request:
 ```
-    {
-        "mobile": "15911186897",
-        "code": "123456", # 手机验证码 required
-        "new_password": "xxxxxx", # required
-    }
+{
+    "mobile": "15911186897",
+    "code": "123456", # 手机验证码 required
+    "new_password": "xxxxxx", # required
+}
 ```
 
 Response status code:
 * 200 重置密码成功
 * 其他 失败
 
+#### 获取手机验证码接口
 
-#### ^accounts/api/v1/mobile_code/$
+* url: `accounts/api/v1/mobile_code/`
 
-HTTP Method: POST
+* method: POST
 
-获取手机验证码接口
+* Content-Type: application/json
 
 Request:
 ```
-    {
-        "mobile": "15911186897" # required
-    }
+{
+    "mobile": "15911186897" # required
+}
 ```
 
 Response status code:
@@ -269,25 +292,26 @@ Response status code:
 
 Response:
 ```
-    {
-        "mobile": "xxxxxxx",
-        "code": "123456",
-        "countdown": 60
-    }
+{
+    "mobile": "xxxxxxx",
+    "code": "123456",
+    "countdown": 60
+}
 ```
 
+##### 注册阶段获取手机验证码接口
 
-#### ^accounts/api/v1/register/mobile_code/$
+* url: ^accounts/api/v1/register/mobile_code/$
 
-HTTP Method: POST
+* method: POST
 
-注册阶段获取手机验证码接口
+* Content-Type: application/json
 
 Request:
 ```
-    {
-        "mobile": "15911186897" # required
-    }
+{
+    "mobile": "15911186897" # required
+}
 ```
 
 Response status code:
@@ -296,49 +320,42 @@ Response status code:
 
 Response:
 ```
-    {
-        "mobile": "xxxxxxx",
-        "code": "123456",
-        "countdown": 60
-    }
+{
+    "mobile": "xxxxxxx",
+    "code": "123456",
+    "countdown": 60
+}
 ```
 
+#### 获取/更新平台用户详情接口
 
+* url: `accounts/user/(?P\<pk\>[0-9]+)/`
+* url: `accounts/user/(?P\<pk\>[0-9]+)\.(?P\<format\>[a-z0-9]+)/?`
 
-#### ^accounts/user/(?P\<pk\>[0-9]+)/$
-#### ^accounts/user/(?P\<pk\>[0-9]+)\.(?P\<format\>[a-z0-9]+)/?$
+* method: GET, UPDATE
 
-HTTP Method: GET, UPDATE
-
-获取/更新平台用户详情接口
-
-条件：
-* 用户OAuth2登陆
-* TOKEN SCOPE: user
+> 用户OAuth2登陆
+> TOKEN SCOPE: user
 
 > pk为应用ID
 > format为格式设置，可取值: json, html
 
 > 注意：该接口只能获取到授权用户信息
 
-#### ^accounts/group/(?P\<pk\>[0-9]+)/$
-#### ^accounts/group/(?P\<pk\>[0-9]+)\.(?P\<format\>[a-z0-9]+)/?$
+#### 获取平台用户组详情接口
 
-HTTP Method: GET
+* url: `accounts/group/(?P\<pk\>[0-9]+)/`
+* url: `accounts/group/(?P\<pk\>[0-9]+)\.(?P\<format\>[a-z0-9]+)/?`
 
-获取平台用户组详情接口
+* method: GET
 
-条件：
-* 用户OAuth2登陆
-* TOKEN SCOPE: group
+> 用户OAuth2登陆
+> TOKEN SCOPE: group
 
 > pk为应用ID
 > format为格式设置，可取值: json, html
 
-
-
 ## OAuth角色
-
 ---
 * Resource Owner
 * Client
