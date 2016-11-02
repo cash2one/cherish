@@ -108,7 +108,7 @@ eg:
 grant_type: password
 
 条件:
-* 验证: Basic Auth (eg: Authorization: Basic <client_id:client_secret>)
+* 验证: Basic Auth (eg: Authorization: Basic base64 encode(<client_id:client_secret>))
 
 Response:
 ```

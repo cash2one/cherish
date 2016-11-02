@@ -75,7 +75,7 @@ def xplatform_changepwd(self, userid, username, raw_password):
 def oauth_clear_expired(self):
     try:
         clear_expired()
-        logger.debug('clear expired tokens')
+        logger.info('clear expired tokens')
     except Exception as exc:
         raise self.retry(exc=exc)
 
