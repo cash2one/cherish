@@ -294,9 +294,10 @@ class UserDestroyBackendAPIView(APIView):
 
     def post(self, request, *args, **kwargs):
         users = []
+        destroyed = []
         UserModel = get_user_model()
         usernames = request.data.get('usernames')
-        for username in usernames:
+        for username in set(usernames):
             try:
                 user = UserModel._default_manager.get(username=username)
             except UserModel.DoesNotExist:
@@ -304,8 +305,12 @@ class UserDestroyBackendAPIView(APIView):
             if user:
                 users.append(user)
         for user in users:
+            destroyed.append(user.username)
             user.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        response = {
+            'destroyed': destroyed
+        }
+        return Response(response, status=status.HTTP_200_OK)
 
 
 class MobileCodeResetPasswordAPIView(APIView):

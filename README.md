@@ -237,8 +237,15 @@ Request:
 ```
 
 Response status code:
-* 204 删除成功
+* 200 删除成功
 * 其他 失败
+
+Response:
+```
+{
+    "destroyed": ["user1", "user2"]
+}
+```
 
 #### 用户修改密码接口（需要提供原始密码）
 

@@ -227,8 +227,19 @@ class UserDestroyBackendTestCase(MockCreateUserMixin, APITestCase):
             'usernames': self.test_usernames
         }
         response = self.client.post(self.destroy_url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(TechUUser.objects.count(), 0)
+
+    def test_destroy_with_not_exists_username(self):
+        exists_user = ['user1', 'user2']
+        not_exists_user = ['user4']
+        data = {
+            'usernames': exists_user + not_exists_user
+        }
+        response = self.client.post(self.destroy_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        destroyed = response.data.get('destroyed')
+        self.assertEqual(set(destroyed), set(exists_user))
 
 
 class MobileCodeResetPasswordTestCase(MockCreateUserMixin, OAuth2APITestCase):
