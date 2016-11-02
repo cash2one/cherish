@@ -219,6 +219,10 @@ Request:
 }
 ```
 
+Response status code:
+* 201 注册成功
+* 其他 失败
+
 #### 后台用户删除接口
 
 * url: `accounts/api/v1/user/destroy/backend/`
@@ -233,7 +237,7 @@ Request:
 ```
 
 Response status code:
-* 201 注册成功
+* 204 删除成功
 * 其他 失败
 
 #### 用户修改密码接口（需要提供原始密码）
