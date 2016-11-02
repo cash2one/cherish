@@ -128,6 +128,10 @@ Response:
 curl -X POST -d "grant_type=refresh_token&client_id=<client_id>&client_secret=<client_secret>&refresh_token=<refresh_token>" <domain>/oauth/token/
 ```
 
+Request:
+
+* Content-Type: application/x-www-form-urlencoded
+
 Response:
 ```
 {
