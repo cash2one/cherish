@@ -25,6 +25,7 @@ class School(models.Model):
 
     school_id = models.IntegerField(_('School ID'), unique=True, default=0)
     name = models.CharField(_('School Name'), max_length=255)
+    pinyin = models.CharField(_('Scool PinYin'), max_length=255, default='')
     area_code = models.ForeignKey(Location, related_name='schools')
     category = models.IntegerField(
         _('School Category'),

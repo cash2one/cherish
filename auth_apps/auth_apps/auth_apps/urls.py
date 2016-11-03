@@ -23,8 +23,18 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
 
     url(
-        r'^oauth/', 
+        r'^oauth/',
         include('custom_oauth2.urls', namespace='oauth2_provider')
+    ),
+
+    url(
+        r'^location/',
+        include('loc_service.urls', namespace='location')
+    ),
+
+    url(
+        r'^education/',
+        include('edu_info.urls', namespace='education')
     ),
 
     url(r'^$', HomePageView.as_view(), name='home'),
