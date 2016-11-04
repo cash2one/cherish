@@ -299,9 +299,9 @@ Response:
 }
 ```
 
-##### 注册阶段获取手机验证码接口
+#### 注册阶段获取手机验证码接口
 
-* url: ^accounts/api/v1/register/mobile_code/$
+* url: `accounts/api/v1/register/mobile_code/`
 
 * method: POST
 
@@ -329,8 +329,8 @@ Response:
 
 #### 获取/更新平台用户详情接口
 
-* url: `accounts/user/(?P\<pk\>[0-9]+)/`
-* url: `accounts/user/(?P\<pk\>[0-9]+)\.(?P\<format\>[a-z0-9]+)/?`
+* url: `accounts/api/v1/user/(?P\<pk\>[0-9]+)/`
+* url: `accounts/api/v1/user/(?P\<pk\>[0-9]+)\.(?P\<format\>[a-z0-9]+)/?`
 
 * method: GET, UPDATE
 
@@ -344,8 +344,8 @@ Response:
 
 #### 获取平台用户组详情接口
 
-* url: `accounts/group/(?P\<pk\>[0-9]+)/`
-* url: `accounts/group/(?P\<pk\>[0-9]+)\.(?P\<format\>[a-z0-9]+)/?`
+* url: `accounts/api/v1/group/(?P\<pk\>[0-9]+)/`
+* url: `accounts/api/v1/group/(?P\<pk\>[0-9]+)\.(?P\<format\>[a-z0-9]+)/?`
 
 * method: GET
 
@@ -354,6 +354,14 @@ Response:
 
 > pk为应用ID
 > format为格式设置，可取值: json, html
+
+#### 接收 X 平台通知
+
+* url: `accounts/api/v1/xplatform/notify/`
+
+* method: POST
+
+> 请求内容根据最新文档
 
 ## OAuth角色
 ---
