@@ -12,7 +12,7 @@ class TechUUserSerializer(serializers.ModelSerializer):
         model = TechUUser
         fields = (
             'username', 'email', 'gender', 'birth_date', 'qq', 'remark',
-            'mobile', 'phone', 'address', 'avatar', 'context'
+            'mobile', 'phone', 'address', 'avatar', 'nickname', 'context'
         )
 
 
@@ -21,7 +21,7 @@ class TechUMobileUserRegisterSerializer(serializers.ModelSerializer):
         model = TechUUser
         fields = (
             'mobile', 'password', 'gender', 'birth_date', 'qq', 'remark',
-            'phone', 'address', 'avatar', 'context'
+            'phone', 'address', 'avatar', 'nickname', 'context'
         )
 
     # override

@@ -333,6 +333,68 @@ class ChangePasswordTestCase(MockCreateUserMixin, OAuth2APITestCase):
         self.assertTrue(fresh_user.check_password('test'))
 
 
+class UserRetrieveUpdateTestCase(MockCreateUserMixin, OAuth2APITestCase):
+    def setUp(self):
+        cache.clear()
+        test_user = {
+            'username': 'test',
+            'mobile': '15911186897',
+            'password': 'test',
+        }
+        self.test_user = test_user
+        user = self.create_user(**test_user)
+        self.init_application(user)
+
+    def tearDown(self):
+        cache.clear()
+       
+    def test_update_user(self):
+        self.assertEqual(TechUUser.objects.count(), 1)
+        user = TechUUser.objects.get()
+        self.assertTrue(user)
+        # generate access token
+        access_token = '1234567890'
+        scope = 'user'
+        token = self.generate_token(user, access_token, scope)
+        self.assertTrue(token.is_valid())
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + token.token)
+        # update user info
+        user_url = reverse_lazy(
+            'v1:api_user_resource', kwargs={'pk': user.pk})
+        data = {
+            'nickname': 'test_nickname',
+            'gender': 1,
+        }
+        response = self.client.patch(user_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # check database
+        user = TechUUser.objects.get()
+        self.assertEqual(user.gender, data.get('gender'))
+        self.assertEqual(user.nickname, data.get('nickname'))
+
+    def test_retrive_user(self):
+        self.assertEqual(TechUUser.objects.count(), 1)
+        user = TechUUser.objects.get()
+        self.assertTrue(user)
+        # generate access token
+        access_token = '1234567890'
+        scope = 'user'
+        token = self.generate_token(user, access_token, scope)
+        self.assertTrue(token.is_valid())
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + token.token)
+        # check user info
+        user_url = reverse_lazy(
+            'v1:api_user_resource', kwargs={'pk': user.pk})
+        response = self.client.get(user_url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK) 
+        self.assertEqual(
+            response.data.get('username'), self.test_user.get('username'))
+        self.assertEqual(
+            response.data.get('mobile'), self.test_user.get('mobile'))
+
+
+
+
 class XPlatformNotifyAPITestCase(LiveServerTestCase):
     def setUp(self):
         cache.clear()
