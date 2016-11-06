@@ -15,6 +15,8 @@ from oauth2_provider import views
 from oauth2_provider.models import get_application_model, AccessToken
 from braces.views import GroupRequiredMixin
 
+from auth_user.backend import LoginPolicy
+
 logger = logging.getLogger(__name__)
 
 APP_DEV_GROUP = 'app_dev'
@@ -78,9 +80,22 @@ class TokenViewWrapper(views.TokenView, ErrorMsgTranslationMixin):
     # override
     @method_decorator(sensitive_post_parameters('password'))
     def post(self, request, *args, **kwargs):
-        url, headers, body, status = self.create_token_response(request)
-        body = self.do_translate(body)
-        body = self._add_user_id(body)
+        try:
+            url, headers, body, status = self.create_token_response(request)
+            body = self.do_translate(body)
+            body = self._add_user_id(body)
+        except LoginPolicy.LoginConstraintException:
+            status = 401
+            headers = {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-store',
+                'Pragma': 'no-cache',
+            }
+            error_msg = {
+                'error': 'login_constraint',
+                'error_description': _("Too many times, You've limited to login"),
+            }
+            body = json.dumps(error_msg)
         response = HttpResponse(content=body, status=status)
         for k, v in headers.items():
             response[k] = v
