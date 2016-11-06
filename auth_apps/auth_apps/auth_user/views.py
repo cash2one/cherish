@@ -45,6 +45,7 @@ from .utils import get_user_by_mobile
 from .exceptions import ParameterError, OperationError
 from .tasks import send_mobile_task
 from .validators import validate_mobile
+from .throttle import BackendAPIThrottle
 
 logger = logging.getLogger(__name__)
 
@@ -256,6 +257,7 @@ class ResetPasswordBackendAPIView(APIView):
     permission_classes = [
         IPRestriction,
     ]
+    throttle_classes = BackendAPIThrottle
 
     def post(self, request, *args, **kwargs):
         identity = request.data.get('identity')
@@ -399,6 +401,7 @@ class UserRegisterBackendAPIView(generics.CreateAPIView):
     ]
     queryset = TechUUser.objects.all()
     serializer_class = TechUBackendUserRegisterSerializer
+    throttle_classes = BackendAPIThrottle
 
 
 class XPlatformNotifyAPIView(APIView):
