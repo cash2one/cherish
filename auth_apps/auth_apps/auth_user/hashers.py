@@ -25,6 +25,10 @@ class TechUPasswordHasher(BasePasswordHasher):
         hash = hashlib.md5(force_bytes(salt + front_password)).hexdigest()
         return "%s$%s$%s" % (self.algorithm, salt, hash)
 
+    @classmethod
+    def import_password(cls, hashed_password, salt):
+        return "%s$%s$%s" % (cls.algorithm, salt, hashed_password)
+
     def verify(self, password, encoded):
         algorithm, salt, hash = encoded.split('$', 2)
         assert algorithm == self.algorithm

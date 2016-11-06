@@ -8,6 +8,7 @@ from .views import (
     GroupRetrieveAPIView,
     MobileCodeAPIView,
     RegisterMobileCodeAPIView,
+    ResetPasswordBackendAPIView,
     MobileCodeResetPasswordAPIView,
     UserRegisterAPIView,
     ChangePasswordAPIView,
@@ -46,6 +47,11 @@ api_urlpatterns = [
         r'^user/reset_password/mobile/$',
         MobileCodeResetPasswordAPIView.as_view(),
         name='api_user_reset_password_mobile'
+    ),
+    url(
+        r'^user/reset_password/backend/$',
+        ResetPasswordBackendAPIView.as_view(),
+        name='api_user_reset_password_backend'
     ),
     url(
         r'^user/(?P<pk>[0-9]+)/$',

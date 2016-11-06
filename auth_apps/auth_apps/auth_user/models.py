@@ -23,6 +23,7 @@ from .validators import (
     username_not_digits
 )
 from .signals import user_set_password_signal
+from .hashers import TechUPasswordHasher
 
 logger = logging.getLogger(__name__)
 
@@ -223,6 +224,10 @@ class TechUUser(AbstractUser):
     def update_password(self, raw_password):
         self.password = make_password(
             raw_password, salt=self.BACKEND_SALT + self.username)
+
+    def update_hashed_password(self, hashed_password):
+        self.password = TechUPasswordHasher.import_password(
+            hashed_password, salt=self.BACKEND_SALT + self.username)
 
     # override
     def set_unusable_password(self):

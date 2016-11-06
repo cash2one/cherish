@@ -9,25 +9,27 @@ web:
     links:
      - db_proxy:db_proxy
      - cache:cache
-     - celery_redis:redis
+    # - celery_redis:redis
     command: ./run-unittest.sh
 
-celery_worker:
-    extends:
-        file: common.yml
-        service: web
-    volumes:
-     - ./auth_apps/auth_apps:/code
-    environment:
-     - DJANGO_TEST=1
-    links:
-     - db_proxy:db_proxy
-     - cache:cache
-     - celery_redis:redis
-    command: ./run-task-worker.sh
+# celery_worker:
+#     extends:
+#         file: common.yml
+#         service: web
+#     volumes:
+#      - ./auth_apps/auth_apps:/code
+#     environment:
+#      - DJANGO_DEBUG=0
+#      - DJANGO_LOG_LEVEL=INFO
+#      - DJANGO_TEST=1
+#     links:
+#      - db_proxy:db_proxy
+#      - cache:cache
+#      - celery_redis:redis
+#     command: ./run-task-worker.sh
 
-celery_redis:
-    image: "docker.zuoyetong.com.cn:8888/redis:3"
+#celery_redis:
+#    image: "docker.zuoyetong.com.cn:8888/redis:3"
 
 cache:
     image: "docker.zuoyetong.com.cn:8888/memcached:1.4"

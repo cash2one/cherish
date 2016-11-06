@@ -271,6 +271,30 @@ Response status code:
 * 200 重置密码成功
 * 其他 失败
 
+#### 后台用户重置密码接口
+
+* url: `accounts/api/v1/user/reset_password/backend/`
+
+* method: POST
+
+* Content-Type: application/json
+
+Request:
+```
+{
+    "identity": "test", # required
+    "hashed_password": "xxxxxxxxxxxxxxx", # required
+}
+```
+
+> 注意：`hashed_password`为两次加密后的密码
+
+Response status code:
+* 200 重置密码成功
+* 其他 失败
+
+
+
 #### 获取手机验证码接口
 
 * url: `accounts/api/v1/mobile_code/`
