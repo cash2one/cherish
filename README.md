@@ -176,9 +176,7 @@ curl --data  "token=<access_token>&client_id=<client_id>&client_secret=<client_s
 #### 用户注册接口
 
 * url: `accounts/api/v1/user/register/mobile/`
-
 * method: POST
-
 * Content-Type: application/json
 
 Request:
@@ -203,9 +201,7 @@ Response status code:
 #### 后台用户注册接口
 
 * url: `accounts/api/v1/user/register/backend/`
-
 * method: POST
-
 * Content-Type: application/json
 
 Request:
@@ -230,9 +226,7 @@ Response status code:
 #### 用户修改密码接口（需要提供原始密码）
 
 * url: `accounts/api/v1/user/change_password/`
-
 * method: POST
-
 * Content-Type: application/json
 
 > 用户OAuth2登陆 (Authorization: Bearer <access_token>)
@@ -253,9 +247,7 @@ Response status code:
 #### 用户重置密码接口
 
 * url: `accounts/api/v1/user/reset_password/mobile/`
-
 * method: POST
-
 * Content-Type: application/json
 
 Request:
@@ -274,9 +266,7 @@ Response status code:
 #### 后台用户重置密码接口
 
 * url: `accounts/api/v1/user/reset_password/backend/`
-
 * method: POST
-
 * Content-Type: application/json
 
 Request:
@@ -298,9 +288,7 @@ Response status code:
 #### 获取手机验证码接口
 
 * url: `accounts/api/v1/mobile_code/`
-
 * method: POST
-
 * Content-Type: application/json
 
 Request:
@@ -326,9 +314,7 @@ Response:
 #### 注册阶段获取手机验证码接口
 
 * url: `accounts/api/v1/register/mobile_code/`
-
 * method: POST
-
 * Content-Type: application/json
 
 Request:
@@ -356,7 +342,10 @@ Response:
 * url: `accounts/api/v1/user/(?P\<pk\>[0-9]+)/`
 * url: `accounts/api/v1/user/(?P\<pk\>[0-9]+)\.(?P\<format\>[a-z0-9]+)/?`
 
-* method: GET, PATCH 
+* method: GET, PATCH
+* Content-Type: 
+    * application/json (当format为json)
+    * application/x-www-form-urlencoded (当format为html)
 
 > 用户OAuth2登陆
 > TOKEN SCOPE: user
@@ -372,6 +361,10 @@ Response:
 * url: `accounts/api/v1/group/(?P\<pk\>[0-9]+)\.(?P\<format\>[a-z0-9]+)/?`
 
 * method: GET
+* Content-Type: 
+    * application/json (当format为json)
+    * application/x-www-form-urlencoded (当format为html)
+
 
 > 用户OAuth2登陆
 > TOKEN SCOPE: group
