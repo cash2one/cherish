@@ -257,7 +257,9 @@ class ResetPasswordBackendAPIView(APIView):
     permission_classes = [
         IPRestriction,
     ]
-    throttle_classes = BackendAPIThrottle
+    throttle_classes = [
+        BackendAPIThrottle,
+    ]
 
     def post(self, request, *args, **kwargs):
         identity = request.data.get('identity')
@@ -399,9 +401,11 @@ class UserRegisterBackendAPIView(generics.CreateAPIView):
     permission_classes = [
         IPRestriction,
     ]
+    throttle_classes = [
+        BackendAPIThrottle,
+    ]
     queryset = TechUUser.objects.all()
     serializer_class = TechUBackendUserRegisterSerializer
-    throttle_classes = BackendAPIThrottle
 
 
 class XPlatformNotifyAPIView(APIView):
