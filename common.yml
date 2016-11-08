@@ -1,5 +1,5 @@
 web_proxy:
-    image: "docker.zuoyetong.com.cn:8888/techu_openresty:latest"
+    image: "docker.zuoyetong.com.cn/account_center/techu_openresty:latest"
     restart: always
     volumes:
      - /etc/localtime:/etc/localtime:ro
@@ -18,7 +18,7 @@ web_proxy:
      - DB_CONN_TIMEOUT=500
 
 web:
-    image: "docker.zuoyetong.com.cn:8888/account_web:latest"
+    image: "docker.zuoyetong.com.cn/account_center/account_web:latest"
     restart: always
     volumes:
      - /etc/localtime:/etc/localtime:ro
@@ -50,7 +50,7 @@ web:
      - POLICY_LOGIN_FLUSH_SECONDS=3600
 
 db_proxy:
-    image: "docker.zuoyetong.com.cn:8888/account_db_proxy:latest"
+    image: "docker.zuoyetong.com.cn/account_center/account_db_proxy:latest"
     restart: always
     volumes:
      - /etc/localtime:/etc/localtime:ro
@@ -60,7 +60,7 @@ db_proxy:
         max-file: "5"
 
 db:
-    image: "docker.zuoyetong.com.cn:8888/postgres:9.4"
+    image: "docker.zuoyetong.com.cn/account_center/postgres:9.4"
     restart: always
     environment:
      - POSTGRES_PASSWORD=account_center123

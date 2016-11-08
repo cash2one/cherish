@@ -1,4 +1,4 @@
-FROM docker.zuoyetong.com.cn:8888/debian:jessie
+FROM docker.zuoyetong.com.cn/debian:jessie
 MAINTAINER "Bijia Lan <lbj.world@gmail.com>"
 
 ENV OPENRESTY_VERSION 1.9.7.3
@@ -53,10 +53,10 @@ RUN apt-get update \
  && apt-get autoremove -y \
  && apt-get remove -y libreadline-dev libncurses5-dev libpcre3-dev libssl-dev \
  && rm -rf /var/lib/apt/lists/*
- 
+
 
 WORKDIR $NGINX_PREFIX/
 
-COPY ./middleware $NGINX_PREFIX/middleware 
+COPY ./middleware $NGINX_PREFIX/middleware
 
 CMD ["nginx", "-g", "daemon off; error_log /dev/stderr info;"]
