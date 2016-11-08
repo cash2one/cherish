@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+import time
 import logging
 try:
     import simplejson as json
@@ -17,6 +18,7 @@ from braces.views import GroupRequiredMixin
 
 from auth_user.backend import LoginPolicy
 from custom_oauth2.oauth2_token_generator import techu_token_generator
+from custom_oauth2.oauth2_token_generator import techu_refresh_token_generator
 
 logger = logging.getLogger(__name__)
 
@@ -65,9 +67,10 @@ class TokenViewWrapper(views.TokenView, ErrorMsgTranslationMixin):
     def get_server(cls):
         server_class = cls.get_server_class()
         validator_class = cls.get_validator_class()
-        return server_class(validator_class(), token_generator=techu_token_generator)
+        return server_class(validator_class(), token_generator=techu_token_generator,
+                            refresh_token_generator=techu_refresh_token_generator)
 
-    def _add_user_id(self, body):
+    def _add_user_info(self, body):
         access_token = None
         try:
             jbody = json.loads(body)
@@ -79,6 +82,9 @@ class TokenViewWrapper(views.TokenView, ErrorMsgTranslationMixin):
             try:
                 token_obj = AccessToken.objects.get(token=access_token)
                 jbody['user_id'] = token_obj.user.pk
+                jbody['user_mobile'] = token_obj.user.mobile
+                jbody['user_username'] = token_obj.user.username
+                jbody['server_timestamp'] = int(time.time())
                 body = json.dumps(jbody, ensure_ascii=False)
             except AccessToken.DoesNotExist:
                 logger.warning('fail to get user by access_token({t})'.format(
@@ -91,7 +97,7 @@ class TokenViewWrapper(views.TokenView, ErrorMsgTranslationMixin):
         try:
             url, headers, body, status = self.create_token_response(request)
             body = self.do_translate(body)
-            body = self._add_user_id(body)
+            body = self._add_user_info(body)
         except LoginPolicy.LoginConstraintException:
             status = 401
             headers = {
