@@ -215,9 +215,15 @@ Request:
     "remark": "xxxxx",
     "phone": "010-6234567",
     "address": "xxxxxx",
-    "context": <context_json_object>
+    "context": <context_json_object>,
+    "source": 0
 }
 ```
+
+* source
+    * 0: 默认
+    * 3: Hejiaoyu
+    * 4: Pangu
 
 Response status code:
 * 201 注册成功

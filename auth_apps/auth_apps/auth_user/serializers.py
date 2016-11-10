@@ -43,5 +43,5 @@ class TechUBackendUserRegisterSerializer(serializers.ModelSerializer):
         model = TechUUser
         fields = (
             'username', 'email', 'password', 'gender', 'birth_date', 'qq',
-            'remark', 'mobile', 'phone', 'address', 'avatar', 'context'
+            'remark', 'mobile', 'phone', 'address', 'avatar', 'context', 'source'
         )

@@ -139,11 +139,15 @@ class TechUUser(AbstractUser):
         TECHU=0,
         XPLATFORM=1,
         ONCE_XPLATFORM=2,
+        HEJIAOYU=3,
+        PANGU=4,
     )
     USER_SOURCES = [
         (USER_SOURCE.TECHU, _('techu')),
         (USER_SOURCE.XPLATFORM, _('xplatform')),
         (USER_SOURCE.ONCE_XPLATFORM, _('once_xplatform')),
+        (USER_SOURCE.HEJIAOYU, _('hejiaoyu')),
+        (USER_SOURCE.PANGU, _('pangu')),
     ]
 
     nickname = models.CharField(
