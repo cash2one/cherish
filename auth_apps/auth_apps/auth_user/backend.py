@@ -128,7 +128,10 @@ class XPlatformBackend(object):
                     if user.USER_SOURCE.ONCE_XPLATFORM == user.source:
                         user.update_password(password)
                         user.source = user.USER_SOURCE.XPLATFORM
-                        user.save()
+                    # update xplatform token in 'context'
+                    # context.accountId, context.refreshToken, context.refreshTokenExpire
+                    user.context = res
+                    user.save()
             else:
                 try:
                     user = UserModel._default_manager.get_by_natural_key(identity)

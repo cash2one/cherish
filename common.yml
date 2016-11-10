@@ -60,7 +60,7 @@ db_proxy:
         max-file: "5"
 
 db:
-    image: "docker.zuoyetong.com.cn/account_center/postgres:9.4"
+    image: "docker.zuoyetong.com.cn/postgres:9.4"
     restart: always
     environment:
      - POSTGRES_PASSWORD=account_center123

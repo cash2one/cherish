@@ -29,10 +29,10 @@ web:
 #     command: ./run-task-worker.sh
 
 #celery_redis:
-#    image: "docker.zuoyetong.com.cn:8888/redis:3"
+#    image: "docker.zuoyetong.com.cn/redis:3"
 
 cache:
-    image: "docker.zuoyetong.com.cn:8888/memcached:1.4"
+    image: "docker.zuoyetong.com.cn/memcached:1.4"
 
 db_proxy:
     extends:
