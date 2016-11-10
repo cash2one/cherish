@@ -21,7 +21,7 @@ def user_set_password_handler(sender, **kwargs):
 
     if source == user.USER_SOURCE.XPLATFORM:
         if user.pk:
-            logger.debug('user change password use xplatform indentiry: {identity}'.format(
+            logger.debug('user change password use xplatform identity: {identity}'.format(
                          identity=account_id))
             xplatform_changepwd.delay(account_id, None, raw_password)
     else:

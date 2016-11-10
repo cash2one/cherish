@@ -6,6 +6,7 @@ web:
      - ./auth_apps/auth_apps:/code
     environment:
      - DJANGO_TEST=1
+    # - TEST_PARAMETER=auth_user.tests.RegisterBackendUserTestCase
     links:
      - db_proxy:db_proxy
      - cache:cache
@@ -38,7 +39,7 @@ db_proxy:
     extends:
         file: common.yml
         service: db_proxy
-    
+
 db:
     extends:
         file: common.yml

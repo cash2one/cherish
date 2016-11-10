@@ -1,11 +1,12 @@
 # coding: utf-8
 from __future__ import unicode_literals
 
+import random
 import mock
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.core.cache import cache
 from django.conf import settings
-from django.test import LiveServerTestCase
+from django.test import LiveServerTestCase, TestCase
 # from django.test import override_settings
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -115,22 +116,15 @@ class RegisterExistUserTestCase(MockCreateUserMixin, APITestCase):
     def tearDown(self):
         cache.clear()
 
-    @mock.patch('auth_user.views.send_mobile_task')
-    @mock.patch('auth_user.signals.xplatform_register')
-    def test_minimal_register(self, mock_task, mock_mobile_task):
+    def test_fail_to_get_code(self):
         data = {
             'mobile': self.mobile
         }
+        # user cannot get register mobile code when mobile already exist 
         response = self.client.post(
             self.register_code_url, data, format='json')
-        mobile_code = response.data.get('code')
-        data = {
-            'mobile': self.mobile,
-            'password': '123456',
-            'code': mobile_code
-        }
-        response = self.client.post(self.register_url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertFalse(response.data.get('code'))
         self.assertEqual(TechUUser.objects.count(), 1)
 
 
@@ -142,21 +136,23 @@ class RegisterBackendUserTestCase(APITestCase):
     def tearDown(self):
         cache.clear()
 
+    @mock.patch('auth_user.views.IPRestriction.has_permission')
     @mock.patch('auth_user.signals.xplatform_register')
-    def test_minimal_register(self, mock_task):
+    def test_minimal_register(self, mock_task, mock_perm):
         username = 'accountcenter'
         data = {
             'username': username,
             'nickname': username,
             'password': '123456'
         }
+        mock_perm.return_value = True
+
         response = self.client.post(self.register_url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(TechUUser.objects.count(), 1)
         self.assertEqual(TechUUser.objects.get().username, username)
 
-        mock_task.delay.assert_called_once_with(
-            [data])
+        mock_task.delay.assert_called_once_with([data])
 
 
 class ResetPasswordBackendTestCase(MockCreateUserMixin, APITestCase):
@@ -174,12 +170,14 @@ class ResetPasswordBackendTestCase(MockCreateUserMixin, APITestCase):
     def tearDown(self):
         cache.clear()
 
-    def test_invalid_identity(self):
+    @mock.patch('auth_user.views.IPRestriction.has_permission')
+    def test_invalid_identity(self, mock_perm):
         identity = 'invalid_id'
         data = {
             'identity': identity,
             'hashed_password': '123456'
         }
+        mock_perm.return_value = True
         response = self.client.post(self.reset_url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         # query DB to check
@@ -188,7 +186,8 @@ class ResetPasswordBackendTestCase(MockCreateUserMixin, APITestCase):
         self.assertTrue(user)
         self.assertTrue(user.check_password('test'))
 
-    def test_reset_success(self):
+    @mock.patch('auth_user.views.IPRestriction.has_permission')
+    def test_reset_success(self, mock_perm):
         import hashlib
         from .hashers import TechUPasswordHasher as hasher
         identity = 'test'
@@ -201,6 +200,7 @@ class ResetPasswordBackendTestCase(MockCreateUserMixin, APITestCase):
                 ).hexdigest()
             ).hexdigest()
         }
+        mock_perm.return_value = True
         response = self.client.post(self.reset_url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(TechUUser.objects.count(), 1)
@@ -222,20 +222,24 @@ class UserDestroyBackendTestCase(MockCreateUserMixin, APITestCase):
     def tearDown(self):
         cache.clear()
 
-    def test_destroy_success(self):
+    @mock.patch('auth_user.views.IPRestriction.has_permission')
+    def test_destroy_success(self, mock_perm):
         data = {
             'usernames': self.test_usernames
         }
+        mock_perm.return_value = True
         response = self.client.post(self.destroy_url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(TechUUser.objects.count(), 0)
 
-    def test_destroy_with_not_exists_username(self):
+    @mock.patch('auth_user.views.IPRestriction.has_permission')
+    def test_destroy_with_not_exists_username(self, mock_perm):
         exists_user = ['user1', 'user2']
         not_exists_user = ['user4']
         data = {
             'usernames': exists_user + not_exists_user
         }
+        mock_perm.return_value = True
         response = self.client.post(self.destroy_url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         destroyed = response.data.get('destroyed')
@@ -505,3 +509,76 @@ class XPlatformNotifyAPITestCase(LiveServerTestCase):
         response = self.client.post(self.test_url, head={}, body=body)
         # TODO : finish this unittest ?
         self.assertNotEqual(response.status_code, status.HTTP_200_OK)
+
+
+class IPRestrictionPermissionTestCase(TestCase):
+    def setUp(self):
+        white_list = "1.2.3.0/24,4.3.2.1"
+        self.ip_list = white_list.split(',')
+
+    def test_ip_restriction(self):
+        from .permissions import IPRestriction
+        instance = IPRestriction()
+        ban_ip = "1.2.4.10"
+        self.assertFalse(instance.check_ip(ban_ip, self.ip_list))
+        allow_ip = "1.2.3.9"
+        self.assertTrue(instance.check_ip(allow_ip, self.ip_list))
+        allow_ip = "4.3.2.1"
+        self.assertTrue(instance.check_ip(allow_ip, self.ip_list))
+
+
+class UserUpdateBackendTestCase(MockCreateUserMixin, APITestCase):
+    def setUp(self):
+        cache.clear()
+        self.test_username = 'user1'
+        self.test_user = self.create_user(**{
+            'username': 'test',
+            'password': 'test',
+            'mobile': '15900001111',
+            'nickname': 'test_nickname',
+            'context': {
+                'accountId': 1
+            }
+        })
+
+    def tearDown(self):
+        cache.clear()
+
+    @mock.patch('auth_user.views.IPRestriction.has_permission')
+    @mock.patch('auth_user.views.xplatform_update_account')
+    def test_update_identity_success(self, mock_xplatform_update, mock_perm):
+        update_url = reverse_lazy(
+            'v1:api_user_update_backend', kwargs={'pk':self.test_user.pk})
+        new_mobile = '13300000000'
+        data = {
+            'mobile': new_mobile,
+        }
+        mock_perm.return_value = True
+        response = self.client.patch(update_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        updated_user = TechUUser.objects.get()
+        self.assertTrue(updated_user)
+        self.assertEqual(updated_user.mobile, new_mobile)
+
+        mock_xplatform_update.delay.assert_called_once_with(
+            userid=1,
+            username=None,
+            mobile=updated_user.mobile
+        )
+
+    @mock.patch('auth_user.views.IPRestriction.has_permission')
+    def test_update_attribute_success(self, mock_perm):
+        update_url = reverse_lazy(
+            'v1:api_user_update_backend', kwargs={'pk':self.test_user.pk})
+        new_nickname = 'new_nickname'
+        data = {
+            'nickname': new_nickname,
+        }
+        mock_perm.return_value = True
+        response = self.client.patch(update_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        updated_user = TechUUser.objects.get()
+        self.assertTrue(updated_user)
+        self.assertEqual(updated_user.nickname, new_nickname)
+

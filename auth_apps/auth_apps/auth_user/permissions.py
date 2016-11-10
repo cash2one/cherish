@@ -1,4 +1,7 @@
 import logging
+import socket
+import struct
+import functools
 
 from django.conf import settings
 from rest_framework import permissions
@@ -40,7 +43,7 @@ class OnceGeneralMobileCodeCheck(permissions.BasePermission):
     """
     message = 'mobile code invalid'
 
-    def has_object_permission(self, request, view, obj):
+    def has_permission(self, request, view):
         code = request.data.pop('code')
         mobile = request.data.get('mobile')
         if mobile and code:
@@ -52,11 +55,27 @@ class OnceGeneralMobileCodeCheck(permissions.BasePermission):
 
 class IPRestriction(permissions.BasePermission):
     message = 'ip invalid'
+    net_list = settings.IP_WHITE_LIST
 
     def has_permission(self, request, view):
         ip_addr = request.META['REMOTE_ADDR']
-        status = ip_addr in settings.IP_WHITE_LIST
+        status = self.check_ip(ip_addr, self.net_list)
         if not status:
             logger.debug('[IPRestriction] ip_addr:{ip}'.format(ip=ip_addr))
-            return settings.TEST
+            return False
         return status
+
+    def check_ip(self, ip, net_list):
+        if not (ip and net_list):
+            return []
+        ip_filter = functools.partial(IPRestriction._addr_in_net, ip)
+        return filter(ip_filter, net_list)
+
+    @staticmethod
+    def _addr_in_net(ip, net):
+        """Is an address in a network"""
+        ipaddr = struct.unpack('I', socket.inet_aton(ip))[0]
+        net += "/32" if net.find('/') < 0 else ""
+        netaddr, bits = net.split('/')
+        netmask = struct.unpack('I', socket.inet_aton(netaddr))[0] & ((2L << int(bits)-1) - 1)
+        return ipaddr & netmask == netmask
