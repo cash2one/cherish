@@ -223,6 +223,30 @@ Response status code:
 * 201 注册成功
 * 其他 失败
 
+#### 后台用户删除接口
+
+* url: `accounts/api/v1/user/destroy/backend/`
+* mehtod: POST
+* Content-Type: application/json
+
+Request:
+```
+{
+    "usernames":["user1", "user2"]  # required
+}
+```
+
+Response status code:
+* 200 删除成功
+* 其他 失败
+
+Response:
+```
+{
+    "destroyed": ["user1", "user2"]
+}
+```
+
 #### 用户修改密码接口（需要提供原始密码）
 
 * url: `accounts/api/v1/user/change_password/`
