@@ -78,7 +78,6 @@ class XPlatformService(object):
         def __repr__(self):
             return 'Request: ' + self.__str__()
 
-
     class BaseResponse:
         def __init__(self, data):
             assert(data)
@@ -128,7 +127,7 @@ class XPlatformService(object):
 
     def post(self, url, head, body):
         try:
-            request= self.BaseRequest(head=head, body=body)
+            request = self.BaseRequest(head=head, body=body)
             logger.debug('[XPLATFORM] url: {url}, request: {r}'.format(
                 url=url, r=request))
             r = requests.post(

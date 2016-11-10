@@ -3,7 +3,7 @@ from django.utils.translation import ugettext as _
 
 
 validate_mobile = validators.RegexValidator(
-    r'^[\d]{10,14}$',
+    r'^1[\d]{10}$',
     _('Invalid mobile number.'),
     )
 

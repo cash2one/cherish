@@ -179,14 +179,17 @@ class XPlatformOnceTokenBackend(object):
         if user_info:
             UserModel = get_user_model()
             # login success
-            identity = user_info.get(u'accountName') or user_info.get(u'mobilePhone')
-            logger.debug('identity: {i}'.format(i=identity))
+            identity = user_info.get('mobilePhone') or user_info.get('accountName')
+            logger.debug('once xplatform identity: {i}'.format(i=identity))
             user, created = UserModel._default_manager.get_or_create_techu_user(**{
                 UserModel.get_identity_field(identity): identity,
                 'password': None,
                 'context': user_info,
                 'source': UserModel.USER_SOURCE.ONCE_XPLATFORM
             })
+            if not created:
+                user.context = user_info
+                user.save()
         return user
 
     def get_user(self, user_id):
@@ -211,4 +214,3 @@ class AdminBackend(ModelBackend):
             # difference between an existing and a non-existing user (#20760).
             # NOTICE : change to use 'update_password' to prevent extra signal sends from 'set_password'
             UserModel().update_password(password)
-

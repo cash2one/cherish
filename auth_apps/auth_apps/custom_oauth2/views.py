@@ -72,11 +72,12 @@ class TokenViewWrapper(views.TokenView, ErrorMsgTranslationMixin):
 
     def _get_xplatform_authority(self, user):
         ticket = None
-        if user.context and user.context.get('accountId') and user.context.get('refreshToken'):
-            ticket = {
-                'accountId': user.context['accountId'],
-                'refreshToken': user.context['refreshToken']
-            }
+        if user.context and type(user.context) == dict:
+            ticket = {}
+            if user.context.get('accountId'):
+                ticket['accountId'] = user.context['accountId']
+            if user.context.get('refreshToken'):
+                ticket['refreshToken'] = user.context['refreshToken']
         return ticket
 
     def _add_user_info(self, body):
