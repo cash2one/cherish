@@ -7,8 +7,8 @@ rproxy:
      - "5001:8001"
     volumes:
      - ./rproxy/nginx/nginx.conf:/opt/openresty/nginx/conf/nginx.conf:ro
-    volumes_from:
-     - web:ro
+    environment:
+     - ACCOUNT_SITE_ENDPOINT=web:8000
     links:
      - web:web
      - db_proxy:db_proxy
@@ -20,7 +20,6 @@ web:
         service: web
     volumes:
      - ./auth_apps/auth_apps:/code
-     - /code/static
     links:
      - db_proxy:db_proxy
      - cache:cache
@@ -54,12 +53,6 @@ cache:
 db_proxy:
     extends:
         file: common.yml
-        service: db_proxy
-
-db:
-    extends:
-        file: common.yml
         service: db
     volumes:
      - ./db/pgdata:/var/lib/postgresql/data
-    net: "container:db_proxy"

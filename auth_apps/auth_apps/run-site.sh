@@ -12,15 +12,62 @@ wait_tcp_dependency()
     while ! exec {id}<>/dev/tcp/${tcp_addr}/${tcp_port}; do
         echo "$(date) - trying to connect to ${testing_url}"
         sleep 1
-    done   
+    done
 }
 
+resolve_service()
+{
+    local service=$1;
+    echo "querying "$service" service ..."
+    is_local=$(echo $service | grep ':')
+    if [ "$is_local" != "" ]; then
+        # resolve local service
+        raw_ip=$(echo $service | awk -F: '{print $1}')
+        raw_port=$(echo $service | awk -F: '{print $2}')
+        RESOLVE_IP=${raw_ip//\"/}
+        RESOLVE_PORT=${raw_port//\"/}
+    else
+        # resolve remote service
+        if [ "${DNS_SERVICE}" == "" ]; then
+            echo "no DNS service found"
+            exit 1
+        fi
+        result=`curl http://${DNS_SERVICE}/v1/services/${service}`
+        raw_ip=$(echo $result | awk -F, '{print $3}' | awk -F: '{print $2}')
+        RESOLVE_IP=${raw_ip//\"/}
+        RESOLVE_IP=${RESOLVE_IP// /}
+        raw_port=$(echo $result | awk -F, '{print $4}' | awk -F: '{print $2}' | awk -F} '{print $1}' )
+        RESOLVE_PORT=${raw_port//\"/}
+        RESOLVE_PORT=${RESOLVE_PORT// /}
+    fi
+    echo "query result (ip:"$RESOLVE_IP", port:"$RESOLVE_PORT")"
+}
+
+if [ "${DB_SERVICE}" != "" ]; then
+    echo "setting DB service ..."
+    resolve_service ${DB_SERVICE}
+    export POSTGRES_HOST=$RESOLVE_IP
+    export POSTGRES_PORT=$RESOLVE_PORT
+fi
+if [ "${REDIS_SERVICE}" != "" ]; then
+    echo "setting redis service ..."
+    resolve_service ${REDIS_SERVICE}
+    export REDIS_HOST=$RESOLVE_IP
+    export REDIS_PORT=$RESOLVE_PORT
+fi
+if [ "${CACHE_SERVICE}" != "" ]; then
+    echo "setting cache redis service ..."
+    resolve_service ${CACHE_SERVICE}
+    export MEMCACHED_HOST=$RESOLVE_IP
+    export MEMCACHED_PORT=$RESOLVE_PORT
+fi
+
 echo "connecting to cache ..."
-wait_tcp_dependency ${MEMCACHED_ADDR} ${MEMCACHED_PORT}
+wait_tcp_dependency ${MEMCACHED_HOST} ${MEMCACHED_PORT}
 echo "connecting to redis ..."
-wait_tcp_dependency ${REDIS_PORT_6379_TCP_ADDR} ${REDIS_PORT_6379_TCP_PORT}
+wait_tcp_dependency ${REDIS_HOST} ${REDIS_PORT}
 echo "connecting to db ..."
-wait_tcp_dependency ${DB_PROXY_PORT_5432_TCP_ADDR} ${DB_PROXY_PORT_5432_TCP_PORT}
+wait_tcp_dependency ${POSTGRES_HOST} ${POSTGRES_PORT}
 
 # do database migration
 python manage.py makemigrations
@@ -30,5 +77,6 @@ python manage.py compilemessages
 # collect static files
 python manage.py collectstatic --noinput
 # run server
+export CELERY_BROKER_URL=redis://${REDIS_HOST}:${REDIS_PORT}
 # python manage.py runserver 0.0.0.0:${SERVICE_PORT}
 uwsgi --ini uwsgi.ini
