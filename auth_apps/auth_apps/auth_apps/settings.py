@@ -295,7 +295,7 @@ POLICY_LOGIN_FLUSH_SECONDS = int(os.getenv('POLICY_LOGIN_FLUSH_SECONDS', 300))
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': os.getenv('MEMCACHED_ADDR', 'localhost') + ':' + os.getenv('MEMCACHED_PORT', '11211'),
+        'LOCATION': os.getenv('MEMCACHED_HOST', 'localhost') + ':' + os.getenv('MEMCACHED_PORT', '11211'),
     }
 }
 

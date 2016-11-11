@@ -6,7 +6,7 @@ web:
      - ./auth_apps/auth_apps:/code
     environment:
      - DJANGO_TEST=1
-    # - TEST_PARAMETER=auth_user.tests.RegisterBackendUserTestCase
+    # - TEST_PARAMETER=auth_user.tests.UserRetrieveUpdateTestCase
     links:
      - db_proxy:db_proxy
      - cache:cache
