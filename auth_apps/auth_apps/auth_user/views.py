@@ -214,8 +214,8 @@ class UserRetrieveUpdateAPIView(
             self.techu_update(user=instance, data=request.data)
             self.perform_update(serializer)
         except ValidationError as e:
-            logger.warning('[USER UPDATE] ValidationError: %s' % e.message)
-            raise ParameterError(e.message)
+            logger.warning('[USER UPDATE] ValidationError %s' % e.messages and e.messages[0])
+            raise ParameterError(e.messages and e.messages[0])
         return Response(serializer.data)
 
 
@@ -366,8 +366,8 @@ class UserUpdateBackendAPIView(generics.UpdateAPIView, TechUUserUpdateMixin):
             self.techu_update(user=instance, data=request.data)
             self.perform_update(serializer)
         except ValidationError as e:
-            logger.warning('[BACKEND UPDATE] ValidationError: %s' % e.message)
-            raise ParameterError(e.message)
+            logger.warning('[BACKEND UPDATE] ValidationError %s' % e.messages and e.messages[0])
+            raise ParameterError(e.messages and e.messages[0])
         return Response(serializer.data)
 
 
