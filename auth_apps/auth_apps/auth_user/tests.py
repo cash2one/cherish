@@ -86,6 +86,8 @@ class RegisterMobileUserTestCase(APITestCase):
         }
         response = self.client.post(self.register_url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        # add user id in response
+        self.assertTrue(response.data.get('id'))
         self.assertEqual(TechUUser.objects.count(), 1)
         self.assertEqual(TechUUser.objects.get().mobile, mobile)
         self.assertTrue(TechUUser.objects.get().username)
@@ -150,6 +152,7 @@ class RegisterBackendUserTestCase(APITestCase):
 
         response = self.client.post(self.register_url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(response.data.get('id'))
         self.assertEqual(TechUUser.objects.count(), 1)
         self.assertEqual(TechUUser.objects.get().username, username)
 
@@ -658,3 +661,47 @@ class XplatformUserUpdateTestCase(MockCreateUserMixin, OAuth2APITestCase):
         updated_user = TechUUser.objects.get()
         self.assertTrue(updated_user)
         self.assertEqual(updated_user.nickname, new_nickname)
+
+
+class UserRetrieveBackendTestCase(MockCreateUserMixin, APITestCase):
+    def setUp(self):
+        cache.clear()
+        self.test_username = 'user1'
+        self.test_user = self.create_user(**{
+            'username': 'test',
+            'password': 'test',
+            'mobile': '15900001111',
+            'nickname': 'test_nickname',
+            'email': 'test@test.com'
+        })
+
+    def tearDown(self):
+        cache.clear()
+
+    @mock.patch('auth_user.views.IPRestriction.has_permission')
+    def test_retrieve_username_success(self, mock_perm):
+        retrieve_url = reverse_lazy(
+            'v1:api_user_retrieve_backend', kwargs={'identity': self.test_user.username})
+        mock_perm.return_value = True
+        response = self.client.get(retrieve_url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('id'), self.test_user.pk)
+
+    @mock.patch('auth_user.views.IPRestriction.has_permission')
+    def test_retrieve_mobile_success(self, mock_perm):
+        retrieve_url = reverse_lazy(
+            'v1:api_user_retrieve_backend', kwargs={'identity': self.test_user.mobile})
+        mock_perm.return_value = True
+        response = self.client.get(retrieve_url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('id'), self.test_user.pk)
+
+    @mock.patch('auth_user.views.IPRestriction.has_permission')
+    def test_retrieve_email_success(self, mock_perm):
+        retrieve_url = reverse_lazy(
+            'v1:api_user_retrieve_backend', kwargs={'identity': self.test_user.email})
+        mock_perm.return_value = True
+        response = self.client.get(retrieve_url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('id'), self.test_user.pk)
+
