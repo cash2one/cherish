@@ -207,13 +207,14 @@ class UserRetrieveUpdateAPIView(
             instance = self.get_object()
         except:
             raise ParameterError(_('user identity not found.'))
-        serializer = self.get_serializer(
-            instance, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        self.techu_update(user=instance, data=request.data)
         try:
+            serializer = self.get_serializer(
+                instance, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            self.techu_update(user=instance, data=request.data)
             self.perform_update(serializer)
         except ValidationError as e:
+            logger.warning('[USER UPDATE] ValidationError: %s' % e.message)
             raise ParameterError(e.message)
         return Response(serializer.data)
 
@@ -358,13 +359,14 @@ class UserUpdateBackendAPIView(generics.UpdateAPIView, TechUUserUpdateMixin):
             instance = self.get_object()
         except:
             raise ParameterError(_('user identity not found.'))
-        serializer = self.get_serializer(
-            instance, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        self.techu_update(user=instance, data=request.data)
         try:
+            serializer = self.get_serializer(
+                instance, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            self.techu_update(user=instance, data=request.data)
             self.perform_update(serializer)
         except ValidationError as e:
+            logger.warning('[BACKEND UPDATE] ValidationError: %s' % e.message)
             raise ParameterError(e.message)
         return Response(serializer.data)
 
