@@ -5,6 +5,7 @@ import logging
 import requests
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
+from django.contrib.auth.models import Group
 from auth_user.models import TechUUser
 from custom_oauth2.models import TechUApplication
 
@@ -31,6 +32,9 @@ class TestPassword(StaticLiveServerTestCase):
     def setUp(self):
         self.base_url = self.live_server_url
         self.user = TechUUser.objects.create_user(**USER)
+        # add user groups for test
+        self.group = Group.objects.create(**{'name': 'test_group'})
+        self.user.groups.add(self.group)
         data = {}
         data.update(APPLICATION)
         data.update({
@@ -92,6 +96,8 @@ class TestPassword(StaticLiveServerTestCase):
         self.assertEqual(access_token_info.get('user_id'), self.user.pk)
         self.assertEqual(access_token_info.get('user_mobile'), self.user.mobile)
         self.assertEqual(access_token_info.get('user_username'), self.user.username)
+        self.assertTrue(isinstance(access_token_info.get('groups'), list))
+        self.assertEqual(access_token_info.get('groups'), [self.group.name])
         user_info = self._application_requests_resource(access_token_info)
         self.assertTrue(user_info)
         res = self._application_revoke_token(access_token_info)

@@ -94,6 +94,7 @@ class TokenViewWrapper(views.TokenView, ErrorMsgTranslationMixin):
                 jbody['user_id'] = token_obj.user.pk
                 jbody['user_mobile'] = token_obj.user.mobile
                 jbody['user_username'] = token_obj.user.username
+                jbody['groups'] = [g.name for g in token_obj.user.groups.all()]
                 jbody['server_timestamp'] = int(time.time())
                 xplatform_ticket = self._get_xplatform_authority(token_obj.user)
                 if xplatform_ticket:
