@@ -39,5 +39,3 @@ db_proxy:
     extends:
         file: common.yml
         service: db
-    volumes:
-     - ./db/pgdata:/var/lib/postgresql/data
