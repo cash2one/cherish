@@ -4,10 +4,9 @@ web_proxy:
     volumes:
      - /etc/localtime:/etc/localtime:ro
      - /etc/timezone:/etc/timezone:ro
-    logging:
-        options:
-            max-size: "5m"
-            max-file: "5"
+    log_opt:
+        max-size: "5m"
+        max-file: "5"
     environment:
      - DB_SERVICE=db_proxy:5433
      - POSTGRES_USER=account_center
@@ -22,10 +21,9 @@ web:
     volumes:
      - /etc/localtime:/etc/localtime:ro
      - /etc/timezone:/etc/timezone:ro
-    logging:
-        options:
-            max-size: "5m"
-            max-file: "5"
+    log_opt:
+        max-size: "5m"
+        max-file: "5"
     environment:
      - DJANGO_DEBUG=1
      - DJANGO_LOG_LEVEL=DEBUG
@@ -54,10 +52,9 @@ db:
      - POSTGRES_PASSWORD=account_center123
      - POSTGRES_USER=account_center
      - POSTGRES_DATABASE=account_center
-    logging:
-        options:
-            max-size: "10m"
-            max-file: "5"
+    log_opt:
+        max-size: "10m"
+        max-file: "5"
     volumes:
      - /etc/localtime:/etc/localtime:ro
      - /etc/timezone:/etc/timezone:ro
