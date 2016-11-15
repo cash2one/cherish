@@ -1,6 +1,6 @@
 web_proxy:
     image: "docker.zuoyetong.com.cn/account_center/techu_openresty:latest"
-    restart: always
+    #restart: always
     volumes:
      - /etc/localtime:/etc/localtime:ro
      - /etc/timezone:/etc/timezone:ro
@@ -17,7 +17,7 @@ web_proxy:
 
 web:
     image: "docker.zuoyetong.com.cn/account_center/account_web:latest"
-    restart: always
+    #restart: always
     volumes:
      - /etc/localtime:/etc/localtime:ro
      - /etc/timezone:/etc/timezone:ro
@@ -47,7 +47,7 @@ web:
 
 db:
     image: "docker.zuoyetong.com.cn/postgres-proxy:9.4"
-    restart: always
+    #restart: always
     environment:
      - POSTGRES_PASSWORD=account_center123
      - POSTGRES_USER=account_center
