@@ -1,0 +1,111 @@
+{
+  "id": "/DEPLOY_NAME/rproxy",
+  "cmd": null,
+  "cpus": 1,
+  "mem": 256,
+  "disk": 0,
+  "instances": 1,
+  "constraints": [
+    [
+      "hostname",
+      "LIKE",
+      "search-002.zuoyetong.com.cn"
+    ]
+  ],
+  "acceptedResourceRoles": [
+    "offline"
+  ],
+  "container": {
+    "type": "DOCKER",
+    "volumes": [],
+    "docker": {
+      "image": "docker.zuoyetong.com.cn/account_center/techu_openresty:201606221537",
+      "network": "BRIDGE",
+      "portMappings": [
+        {
+          "containerPort": 8000,
+          "hostPort": 16000,
+          "servicePort": 10015,
+          "protocol": "tcp",
+          "name": "site-port",
+          "labels": {}
+        },
+        {
+          "containerPort": 8001,
+          "hostPort": 16001,
+          "servicePort": 10016,
+          "protocol": "tcp",
+          "name": "proxy-port",
+          "labels": {}
+        }
+      ],
+      "privileged": false,
+      "parameters": [
+        {
+          "key": "volume",
+          "value": "/etc/localtime:/etc/localtime:ro"
+        },
+        {
+          "key": "volume",
+          "value": "/etc/timezone:/etc/timezone:ro"
+        }
+      ],
+      "forcePullImage": false
+    }
+  },
+  "env": {
+    "DNS": "10.10.6.80:53",
+    "ACCOUNT_SITE_ENDPOINT": "_web.account-center._tcp.marathon.slave.mesos.",
+    "POSTGRES_DATABASE": "account_center",
+    "POSTGRES_USER": "account_center",
+    "CACHE_SERVICE": "_cache.account-center._tcp.marathon.slave.mesos.",
+    "POSTGRES_PASSWORD": "account_center123",
+    "PROXY_SITE_ENDPOINT": "10.10.23.135:9080",
+    "DB_CONN_TIMEOUT": "500",
+    "DB_SERVICE": "_db.account-center._tcp.marathon.slave.mesos."
+  },
+  "healthChecks": [
+    {
+      "protocol": "TCP",
+      "portIndex": 0,
+      "gracePeriodSeconds": 300,
+      "intervalSeconds": 60,
+      "timeoutSeconds": 20,
+      "maxConsecutiveFailures": 3,
+      "ignoreHttp1xx": false,
+      "port": 16000
+    },
+    {
+      "protocol": "TCP",
+      "portIndex": 1,
+      "gracePeriodSeconds": 300,
+      "intervalSeconds": 60,
+      "timeoutSeconds": 20,
+      "maxConsecutiveFailures": 3,
+      "ignoreHttp1xx": false,
+      "port": 16001
+    }
+  ],
+  "labels": {
+    "openresty": "proxy"
+  },
+  "portDefinitions": [
+    {
+      "port": 10015,
+      "protocol": "tcp",
+      "labels": {}
+    },
+    {
+      "port": 10016,
+      "protocol": "tcp",
+      "labels": {}
+    }
+  ],
+  "uris": [
+    "http://docker.zuoyetong.com.cn/build/.docker.tgz"
+  ],
+  "upgradeStrategy": {
+    "minimumHealthCapacity": 0,
+    "maximumOverCapacity": 0
+  }
+}

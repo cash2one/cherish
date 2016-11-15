@@ -1,0 +1,56 @@
+{
+  "id": "/DEPLOY_NAME/cache",
+  "cmd": null,
+  "cpus": 0.5,
+  "mem": 512,
+  "disk": 0,
+  "instances": 1,
+  "acceptedResourceRoles": [
+    "offline"
+  ],
+  "container": {
+    "type": "DOCKER",
+    "volumes": [],
+    "docker": {
+      "image": "docker.zuoyetong.com.cn/memcached:1.4",
+      "network": "BRIDGE",
+      "portMappings": [
+        {
+          "containerPort": 11211,
+          "hostPort": 0,
+          "servicePort": 10012,
+          "protocol": "tcp",
+          "name": "cache-port",
+          "labels": {}
+        }
+      ],
+      "privileged": false,
+      "parameters": [],
+      "forcePullImage": false
+    }
+  },
+  "healthChecks": [
+    {
+      "protocol": "TCP",
+      "portIndex": 0,
+      "gracePeriodSeconds": 300,
+      "intervalSeconds": 60,
+      "timeoutSeconds": 20,
+      "maxConsecutiveFailures": 3,
+      "ignoreHttp1xx": false
+    }
+  ],
+  "labels": {
+    "memcached": "cache"
+  },
+  "portDefinitions": [
+    {
+      "port": 10012,
+      "protocol": "tcp",
+      "labels": {}
+    }
+  ],
+  "uris": [
+    "http://docker.zuoyetong.com.cn/build/.docker.tgz"
+  ]
+}
