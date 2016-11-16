@@ -38,21 +38,19 @@ class ErrorMsgTranslationMixin(object):
         'Invalid credentials given.': _('Invalid credentials give.'),
     }
 
-    def do_translate(self, body):
+    def do_translate(self, jbody):
         try:
-            jbody = json.loads(body)
             # add user info when get token success
             error_msg = jbody.get(self.REPLACE_KEY)
         except:
-            return body
+            return jbody
         if error_msg in self.ERROR_MESSAGES:
             try:
                 jbody[self.REPLACE_KEY] = self.ERROR_MESSAGES[error_msg]
-                body = json.dumps(jbody, ensure_ascii=False)
             except:
                 logger.warning('fail to translate error message ({body})'.format(
-                    body=body))
-        return body
+                    body=jbody))
+        return jbody
 
 
 # oauth2 API
@@ -80,17 +78,16 @@ class TokenViewWrapper(views.TokenView, ErrorMsgTranslationMixin):
                 ticket['refreshToken'] = user.context['refreshToken']
         return ticket
 
-    def _add_user_info(self, body):
+    def _add_user_info(self, request, jbody):
         access_token = None
         try:
-            jbody = json.loads(body)
             # add user info when get token success
             access_token = jbody.get('access_token')
         except:
-            logger.exception('body error, type({t})'.format(t=type(body)))
+            logger.exception('body error, type({t})'.format(t=type(jbody)))
         if access_token:
             try:
-                token_obj = AccessToken.objects.get(token=access_token)
+                token_obj = AccessToken.objects.select_related('user').get(token=access_token)
                 jbody['user_id'] = token_obj.user.pk
                 jbody['user_mobile'] = token_obj.user.mobile
                 jbody['user_username'] = token_obj.user.username
@@ -99,19 +96,20 @@ class TokenViewWrapper(views.TokenView, ErrorMsgTranslationMixin):
                 xplatform_ticket = self._get_xplatform_authority(token_obj.user)
                 if xplatform_ticket:
                     jbody['xplatform'] = xplatform_ticket
-                body = json.dumps(jbody, ensure_ascii=False)
             except AccessToken.DoesNotExist:
                 logger.warning('fail to get user by access_token({t})'.format(
                     t=access_token))
-        return body
+        return jbody
 
     # override
     @method_decorator(sensitive_post_parameters('password'))
     def post(self, request, *args, **kwargs):
         try:
             url, headers, body, status = self.create_token_response(request)
-            body = self.do_translate(body)
-            body = self._add_user_info(body)
+            jbody = json.loads(body)
+            jbody = self.do_translate(jbody)
+            jbody = self._add_user_info(request, jbody)
+            body = json.dumps(jbody)
         except LoginPolicy.LoginConstraintException:
             status = 401
             headers = {
