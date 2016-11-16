@@ -2,6 +2,7 @@ import logging
 
 from rest_framework import generics
 from rest_framework.response import Response
+from rest_framework.throttling import UserRateThrottle
 
 from common.utils import enum
 from .models import Location
@@ -19,7 +20,13 @@ LOC_LEVEL = enum(
 )
 
 
+class LocationUserRateThrottle(UserRateThrottle):
+    rate = '100/minute'
+
+
 class GetProvinceAPIView(generics.GenericAPIView):
+    throttle_classes = (LocationUserRateThrottle,)
+
     def get(self, request, *args, **kwargs):
         queryset = Location.objects.filter(level=LOC_LEVEL.PROVINCE)
         serializer = ProvinceSerializer(queryset, many=True)
@@ -32,6 +39,8 @@ class GetProvinceAPIView(generics.GenericAPIView):
 
 
 class GetCityAPIView(generics.GenericAPIView):
+    throttle_classes = (LocationUserRateThrottle,)
+
     def get(self, request, pk, *args, **kwargs):
         queryset = Location.objects.filter(**{
             'level': LOC_LEVEL.CITY,
@@ -47,6 +56,8 @@ class GetCityAPIView(generics.GenericAPIView):
 
 
 class GetAreaAPIView(generics.GenericAPIView):
+    throttle_classes = (LocationUserRateThrottle,)
+
     def get(self, request, pk, *args, **kwargs):
         queryset = Location.objects.filter(**{
             'level': LOC_LEVEL.AREA,
@@ -62,6 +73,8 @@ class GetAreaAPIView(generics.GenericAPIView):
 
 
 class GetLocationFuzzleAPIView(generics.GenericAPIView):
+    throttle_classes = (LocationUserRateThrottle,)
+
     def get(self, request, *args, **kwargs):
         keyword = request.query_params.get('keyword')
         queryset = Location.objects.filter(name__contains=keyword)
