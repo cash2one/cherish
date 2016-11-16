@@ -13,7 +13,7 @@
     ]
   ],
   "acceptedResourceRoles": [
-    "offline"
+    "online"
   ],
   "container": {
     "type": "DOCKER",

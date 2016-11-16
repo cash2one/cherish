@@ -6,7 +6,7 @@
   "disk": 0,
   "instances": 1,
   "acceptedResourceRoles": [
-    "offline"
+    "online"
   ],
   "container": {
     "type": "DOCKER",
