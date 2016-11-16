@@ -40,7 +40,7 @@
   },
   "env": {
     "EMAIL_USE_TLS": "0",
-    "EMAIL_HOST_PASSWORD": " techupangu2015",
+    "EMAIL_HOST_PASSWORD": "techupangu2015",
     "SMS_SERVICE_URL": "http://10.10.15.252:8100",
     "POLICY_LOGIN_COUNT": "20",
     "DJANGO_LOG_LEVEL": "DEBUG",
