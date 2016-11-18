@@ -49,6 +49,7 @@ class School(models.Model):
 
     class Meta:
         ordering = ['name']
+        unique_together = (('name', 'category', 'area_code'),)
 
 
 class Subject(models.Model):
