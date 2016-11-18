@@ -44,7 +44,8 @@ class School(models.Model):
                                               default=SCHOOL_SOURCE.TECHU)
 
     def __unicode__(self):
-        return '{name}'.format(name=self.name)
+        return '{sid}:{name}:{category}'.format(
+            sid=self.school_id, name=self.name, category=self.category)
 
     class Meta:
         ordering = ['name']

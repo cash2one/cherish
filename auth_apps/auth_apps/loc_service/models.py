@@ -12,7 +12,7 @@ class Location(MPTTModel):
         'self', null=True, blank=True, related_name='children', db_index=True)
 
     def __unicode__(self):
-        return self.name
+        return '{code}:{name}'.format(code=self.code, name=self.name)
 
     class MPTTMeta:
         order_insertion_by = ['code']

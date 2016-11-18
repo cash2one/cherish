@@ -4,6 +4,7 @@ import base64
 import logging
 import urlparse
 
+from django.db import transaction
 from rest_framework import generics
 from rest_framework.response import Response
 from pyDes import des, ECB, PAD_PKCS5
@@ -159,52 +160,60 @@ class GetOrCreateSchoolAPIView(generics.GenericAPIView):
             raise ParameterError("category invalid")
         # province
         try:
-            province = Location.objects.get(name__contains=province_name, parent=None)
+            # do exact query first
+            province = Location.objects.get(name=province_name, parent=None)
         except Location.DoesNotExist:
-            raise ParameterError("province invalid")
-        except Location.MultipleObjectsReturned:
-            # do exact query again
             try:
-                province = Location.objects.get(name=province_name, parent=None)
-            except Location.DoesNotExist:
-                raise ParameterError("province invalid(exact match)")
+                province = Location.objects.get(name__contains=province_name, parent=None)
+            except (Location.DoesNotExist, Location.MultipleObjectsReturned):
+                raise ParameterError("province invalid")
+        except Location.MultipleObjectsReturned:
+            raise ParameterError("province invalid, multiple found")
         # city
         try:
-            city = province.children.get(name__contains=city_name)
+            city = province.children.get(name=city_name)
         except Location.DoesNotExist:
-            raise ParameterError("city invalid")
-        except Location.MultipleObjectsReturned:
-            # do exact query again
             try:
-                city = province.children.get(name=city_name)
-            except Location.DoesNotExist:
-                raise ParameterError("city invalid(exact match)")
-        # area
-        try:
-            area_name = ANDTEACH.get(area_name, area_name)
-            if area_name:
-                area = city.children.get(name__contains=area_name)
-            else:
-                area = city
-        except Location.DoesNotExist:
-            raise ParameterError("area invalid")
+                city = province.children.get(name__contains=city_name)
+            except (Location.DoesNotExist, Location.MultipleObjectsReturned):
+                raise ParameterError("city invalid")
         except Location.MultipleObjectsReturned:
-            # do exact query again
+            raise ParameterError("city invalid, multiple found")
+        # area
+        area_name = ANDTEACH.get(area_name, area_name)
+        if area_name:
             try:
                 area = city.children.get(name=area_name)
             except Location.DoesNotExist:
-                raise ParameterError("area invalid(exact match)")
+                try:
+                    area = city.children.get(name__contains=area_name)
+                except (Location.DoesNotExist, Location.MultipleObjectsReturned):
+                    raise ParameterError("area invalid")
+            except Location.MultipleObjectsReturned:
+                raise ParameterError("area invalid, multiple found")
+        else:
+            area = city
 
-        try:
-            school = area.schools.get(name=school_name, category=category)
-        except School.DoesNotExist:
-            school = School.objects.create(
-                name=school_name,
-                area_code=area,
-                category=category
-            )
-        except School.MultipleObjectsReturned:
-            raise ParameterError("school invalid")
+        with transaction.atomic():
+            # 总是保留school_id最小的学校
+            schools = area.schools.filter(
+                name=school_name, category=category).order_by('school_id')
+            if not schools:
+                # create new school
+                school = School.objects.create(
+                    name=school_name,
+                    area_code=area,
+                    category=category
+                )
+                logger.warn('create new school: {s}'.format(s=school))
+            else:
+                # choose one school, and remove others
+                # NOTICE: 因为之前创建学校无法保证原子性，这里需要额外删除之前添加的重复学校
+                school = schools[0]
+                if len(schools) > 1:
+                    for s in schools[1:]:
+                        logger.warn('delete duplicated school: {sid}'.format(sid=s.school_id))
+                        s.delete()
 
         response = {
             'province_code': province.code,
