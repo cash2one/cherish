@@ -151,24 +151,49 @@ class GetOrCreateSchoolAPIView(generics.GenericAPIView):
         category = request.data.get('category')
 
         if not (province_name and city_name and area_name and school_name):
-            raise ParameterError("province or city or area or school invalid ")
+            raise ParameterError("province or city or area or school empty")
 
         try:
             category = int(category)
         except:
             raise ParameterError("category invalid")
-
+        # province
         try:
             province = Location.objects.get(name__contains=province_name, parent=None)
+        except Location.DoesNotExist:
+            raise ParameterError("province invalid")
+        except Location.MultipleObjectsReturned:
+            # do exact query again
+            try:
+                province = Location.objects.get(name=province_name, parent=None)
+            except Location.DoesNotExist:
+                raise ParameterError("province invalid(exact match)")
+        # city
+        try:
             city = province.children.get(name__contains=city_name)
-
+        except Location.DoesNotExist:
+            raise ParameterError("city invalid")
+        except Location.MultipleObjectsReturned:
+            # do exact query again
+            try:
+                city = province.children.get(name=city_name)
+            except Location.DoesNotExist:
+                raise ParameterError("city invalid(exact match)")
+        # area
+        try:
             area_name = ANDTEACH.get(area_name, area_name)
             if area_name:
                 area = city.children.get(name__contains=area_name)
             else:
                 area = city
-        except (Location.DoesNotExist, Location.MultipleObjectsReturned):
-            raise ParameterError("province or city or area invalid")
+        except Location.DoesNotExist:
+            raise ParameterError("area invalid")
+        except Location.MultipleObjectsReturned:
+            # do exact query again
+            try:
+                area = city.children.get(name=area_name)
+            except Location.DoesNotExist:
+                raise ParameterError("area invalid(exact match)")
 
         try:
             school = area.schools.get(name=school_name, category=category)
