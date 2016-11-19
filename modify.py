@@ -9,12 +9,16 @@ from sh import bash
 
 peoples = [
     {
-        'name': 'dinghailong',
+        'name': 'Haeryong Ding',
         'email': 'mongoo@sina.cn'
     },
     {
         'name': 'xuchongbo',
-        'email': 'xuchongbo@qq.com'
+        'email': 'xcbfreedom@gmail.com'
+    },
+    {
+        'name': 'lanbijia',
+        'email': 'lbj.world.gmail.com'
     }
 ]
 
