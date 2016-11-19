@@ -18,7 +18,7 @@ peoples = [
     },
     {
         'name': 'lanbijia',
-        'email': 'lbj.world.gmail.com'
+        'email': 'lbj.world@gmail.com'
     }
 ]
 
@@ -60,6 +60,7 @@ print len(times)
 
 try:
     for index in range(commit_count - 1):
+        print '.' * 10, index
         path = git('rev-parse', '--git-dir').stdout.strip() + '/refs/original/'
         rm('-rf', path)
         commits = git('rev-list', '--all').stdout.split()
