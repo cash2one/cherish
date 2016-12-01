@@ -1,0 +1,86 @@
+{
+  "id": "/DEPLOY_NAME/db",
+  "cmd": null,
+  "cpus": 1,
+  "mem": 256,
+  "disk": 0,
+  "instances": 1,
+  "constraints": [
+    [
+      "hostname",
+      "LIKE",
+      "data-002.zuoyetong.com.cn"
+    ]
+  ],
+  "acceptedResourceRoles": [
+    "offline"
+  ],
+  "container": {
+    "type": "DOCKER",
+    "volumes": [],
+    "docker": {
+      "image": "docker.zuoyetong.com.cn/postgres-proxy:9.4",
+      "network": "BRIDGE",
+      "portMappings": [
+        {
+          "containerPort": 5433,
+          "hostPort": 15433,
+          "servicePort": 15433,
+          "protocol": "tcp",
+          "name": "db-port",
+          "labels": {}
+        }
+      ],
+      "privileged": false,
+      "parameters": [
+        {
+          "key": "volume",
+          "value": "/data/mesos_pvolume/account-center-db-data:/var/lib/postgresql/data"
+        },
+        {
+          "key": "volume",
+          "value": "/etc/localtime:/etc/localtime:ro"
+        },
+        {
+          "key": "volume",
+          "value": "/etc/timezone:/etc/timezone:ro"
+        }
+      ],
+      "forcePullImage": true
+    }
+  },
+  "env": {
+    "POSTGRES_USER": "account_center",
+    "POSTGRES_PASSWORD": "account_center123",
+    "POSTGRES_DATABASE": "account_center"
+  },
+  "healthChecks": [
+    {
+      "protocol": "TCP",
+      "portIndex": 0,
+      "gracePeriodSeconds": 300,
+      "intervalSeconds": 60,
+      "timeoutSeconds": 20,
+      "maxConsecutiveFailures": 3,
+      "ignoreHttp1xx": false
+    }
+  ],
+  "labels": {
+    "postgres": "db"
+  },
+  "portDefinitions": [
+    {
+      "port": 15433,
+      "protocol": "tcp",
+      "labels": {}
+    }
+  ],
+  "uris": [
+    "http://docker.zuoyetong.com.cn/build/.docker.tgz"
+  ],
+  "requirePorts": true,
+  "upgradeStrategy": {
+    "minimumHealthCapacity": 0,
+    "maximumOverCapacity": 0
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "id": "/DEPLOY_NAME/celery-worker",
+  "cmd": "./run-task-worker.sh",
+  "cpus": 1,
+  "mem": 128,
+  "disk": 0,
+  "instances": 1,
+  "acceptedResourceRoles": [
+    "offline"
+  ],
+  "container": {
+    "type": "DOCKER",
+    "volumes": [],
+    "docker": {
+      "image": "docker.zuoyetong.com.cn/account_center/account_web:IMAGE_VERSION",
+      "network": "HOST",
+      "privileged": false,
+      "parameters": [
+        {
+          "key": "volume",
+          "value": "/etc/localtime:/etc/localtime:ro"
+        },
+        {
+          "key": "volume",
+          "value": "/etc/timezone:/etc/timezone:ro"
+        }
+      ],
+      "forcePullImage": false
+    }
+  },
+  "env": {
+    "EMAIL_USE_TLS": "0",
+    "EMAIL_HOST_PASSWORD": " techupangu2015",
+    "SMS_SERVICE_URL": "http://10.10.15.252:8100",
+    "POLICY_LOGIN_COUNT": "10",
+    "DJANGO_LOG_LEVEL": "DEBUG",
+    "REDIS_SERVICE": "_redis.account-center._tcp.marathon.slave.mesos.",
+    "EMAIL_USE_SSL": "1",
+    "EMAIL_PORT": "994",
+    "POSTGRES_DATABASE": "account_center",
+    "EMAIL_HOST": "smtp.126.com",
+    "POSTGRES_USER": "account_center",
+    "DJANGO_HOST": "auth.yuncelian.com,auth.zuoyetong.com.cn",
+    "XPLATFORM_SERVICE_URL": "https://dev.login.yunxiaoyuan.com",
+    "DJANGO_DEBUG": "1",
+    "CACHE_SERVICE": "_cache.account-center._tcp.marathon.slave.mesos.",
+    "POSTGRES_PASSWORD": "account_center123",
+    "IP_WHITE_LIST": "172.17.0.0/16,10.10.0.0/16,114.111.166.250,121.69.7.10",
+    "EMAIL_HOST_USER": "techyou@126.com",
+    "DNS_SERVICE": "10.10.6.80:8123",
+    "POLICY_LOGIN_FLUSH_SECONDS": "180",
+    "DB_SERVICE": "_db.account-center._tcp.marathon.slave.mesos."
+  },
+  "labels": {
+    "celery": "worker"
+  },
+  "portDefinitions": [
+    {
+      "port": 10013,
+      "protocol": "tcp",
+      "labels": {}
+    }
+  ],
+  "uris": [
+    "http://docker.zuoyetong.com.cn/build/.docker.tgz"
+  ],
+  "upgradeStrategy": {
+    "minimumHealthCapacity": 0,
+    "maximumOverCapacity": 0
+  }
+}
