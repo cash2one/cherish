@@ -157,8 +157,8 @@ if TEST:
 AUTH_USER_MODEL = 'auth_user.TechUUser'
 AUTHENTICATION_BACKENDS = [
     # 'oauth_provider.backends.OAuth2Backend',  # for OAuth2 login users
-    'auth_user.backend.XPlatformBackend',  # for users from xplatform
     'auth_user.backend.TechUBackend',  # for account center site
+    'auth_user.backend.XPlatformBackend',  # for users from xplatform
     'auth_user.backend.XPlatformOnceTokenBackend',  # for once token users from xplatform
     'auth_user.backend.AdminBackend',  # for admin site
 ]
