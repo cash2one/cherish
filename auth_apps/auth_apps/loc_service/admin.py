@@ -7,6 +7,7 @@ from .models import Location
 class LocationMPTTModelAdmin(MPTTModelAdmin):
     # specify pixel amount for this ModelAdmin only:
     mptt_level_indent = 20
+    list_display = ('code', 'name')
     search_fields = ['name', 'code']
 
 
