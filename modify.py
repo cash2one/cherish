@@ -58,6 +58,9 @@ times.append(end_time)
 print commit_count
 print len(times)
 
+for _ in times:
+    print _
+
 try:
     for index in range(commit_count - 1):
         print '.' * 10, index
