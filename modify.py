@@ -44,7 +44,7 @@ seeds.append(commit_count - total)
 
 time = begin_time
 for days in seeds:
-    time += timedelta(days=days)
+    time += timedelta(days=random.choice([days / 2, days / 2, days / 2 + 1]))
     ts = []
     for _ in range(days):
         t = time + timedelta(hours=random.choice(range(-8, 3)),
