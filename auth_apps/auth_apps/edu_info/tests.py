@@ -252,34 +252,3 @@ class GetOrCreateSchoolAPITestCase(APITestCase):
             'school_id': exist_school.school_id,
         }
         self.assertEqual(response.data, correct_response)
-
-    def test_remove_duplicated_schools(self):
-        duplicated_count = 4
-        schools = []
-        for i in range(duplicated_count):
-            exist_school = School.objects.create(
-                name='老隆中学',
-                area_code=self.area,
-                category=2
-            )
-            schools.append(exist_school)
-        self.assertEqual(School.objects.count(), duplicated_count)
-        url = reverse_lazy('education:v1:api_get_or_create_school')
-        data = {
-            'province': '广东省',
-            'city': '河源市',
-            'area': '龙川',
-            'school': '老隆中学',
-            'category': 2,
-        }
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(School.objects.count(), 1)
-        correct_response = {
-            'province_code': self.province.code,
-            'city_code': self.city.code,
-            'area_code': self.area.code,
-            'school_id': schools[0].school_id, # 总是保留school_id最小的学校
-        }
-        self.assertEqual(response.data, correct_response)
-

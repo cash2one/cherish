@@ -4,7 +4,7 @@ import base64
 import logging
 import urlparse
 
-from django.db import transaction
+from django.db import IntegrityError
 from rest_framework import generics
 from rest_framework.response import Response
 from pyDes import des, ECB, PAD_PKCS5
@@ -194,26 +194,24 @@ class GetOrCreateSchoolAPIView(generics.GenericAPIView):
         else:
             area = city
 
-        with transaction.atomic():
-            # 总是保留school_id最小的学校
-            schools = area.schools.filter(
-                name=school_name, category=category).order_by('school_id')
-            if not schools:
+        try:
+            school, created = area.schools.get_or_create(
+                name=school_name, category=category, area_code=area,
+                defaults={
+                    'source': School.SCHOOL_SOURCE.USER
+                })
+            if created:
                 # create new school
-                school = School.objects.create(
-                    name=school_name,
-                    area_code=area,
-                    category=category
-                )
                 logger.warn('create new school: {s}'.format(s=school))
-            else:
-                # choose one school, and remove others
-                # NOTICE: 因为之前创建学校无法保证原子性，这里需要额外删除之前添加的重复学校
-                school = schools[0]
-                if len(schools) > 1:
-                    for s in schools[1:]:
-                        logger.warn('delete duplicated school: {sid}'.format(sid=s.school_id))
-                        s.delete()
+        except IntegrityError:
+            logger.warn('create new school fail, try to get: {s}'.format(s=school))
+            try:
+                school = area.schools.get(
+                    name=school_name, category=category, area_code=area
+                )
+            except School.DoesNotExist:
+                logger.error('unknown error on school creation')
+                raise ParameterError("get school fail")
 
         response = {
             'province_code': province.code,
