@@ -44,6 +44,7 @@ web:
      - XPLATFORM_SERVICE_URL=https://dev.login.yunxiaoyuan.com
      - POLICY_LOGIN_COUNT=20
      - POLICY_LOGIN_FLUSH_SECONDS=3600
+     - DSN_URL=http://286f1175067a4143ab3a326632bc3b15:48ac0790b3b54c0bbfadd0558bd0164c@search-002.zuoyetong.com.cn:18888/2
 
 db:
     image: "docker.zuoyetong.com.cn/postgres-proxy:9.4"
