@@ -56,10 +56,18 @@ def xplatform_register(self, register_entries):
     try:
         logger.debug('register user entries: {entries}'.format(
                      entries=register_entries))
-        if register_entries.get('mobile'):
-            xplatform_service.backend_batch_mobile_register(register_entries)
-        else:
-            xplatform_service.backend_batch_username_register(register_entries)
+        # split entries into mobile_entries and username_entries
+        mobile_entries = []
+        username_entries = []
+        for entry in register_entries:
+            if entry.get('mobile'):
+                mobile_entries.append(entry)
+            else:
+                username_entries.append(entry)
+        if mobile_entries:
+            xplatform_service.backend_batch_mobile_register(mobile_entries)
+        if username_entries:
+            xplatform_service.backend_batch_username_register(username_entries)
     except Exception as exc:
         raise self.retry(exc=exc)
 
