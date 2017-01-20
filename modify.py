@@ -70,6 +70,7 @@ try:
         commits = commits[::-1]
         commit = commits[index]
         time = times[index]
+        print time
         people = random.choice(peoples)
         bash('modify_commit.sh', commit, time, people['name'], people['email'])
 except IndexError:
