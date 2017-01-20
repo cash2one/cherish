@@ -33,7 +33,7 @@ seeds = []
 total = 0
 while 1:
     tmp = total
-    seed = random.choice([1, 2, 3, 4, 5])
+    seed = random.choice([2, 4, 6, 8])
     tmp += seed
     if tmp > commit_count:
         break
@@ -44,16 +44,16 @@ seeds.append(commit_count - total)
 
 time = begin_time
 for days in seeds:
-    time += timedelta(days=random.choice([days / 3, days / 2, days / 2]))
+    time += timedelta(days=days / 2)
     ts = []
     for _ in range(days):
         t = time + timedelta(hours=random.choice(range(-8, 3)),
                              minutes=random.choice(range(-10, 10)),
                              seconds=random.choice(range(-20, 20)))
         ts.append(t)
+    ts.sort()
     times += ts
 times.append(end_time)
-times.sort()
 
 print commit_count
 print len(times)
